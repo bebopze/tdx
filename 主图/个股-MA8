@@ -1,0 +1,958 @@
+MA5  : MA(C,  5) COLORWHITE  ;
+MA10 : MA(C, 10) COLORYELLOW ;
+MA20 : MA(C, 20) COLORMAGENTA;
+MA30 :=MA(C, 30) COLORLIRED  ;
+MA50 : MA(C, 50) COLORGREEN  ;
+MA100: MA(C,100) COLORLIGRAY ;
+MA150:=MA(C,150) ;
+MA200: MA(C,200) COLORBLUE;
+MA250:=MA(C,250) ;
+
+
+{STICKLINE(BARSSINCEN(新龙头,         10)=0,   LLV(L,200), 3*HHV(H,200),   0.2, 0) COLORRED;}
+{----------------------}
+BS状态 : BS状态       NODRAW;
+
+动量股 : TOOLS.动量股 NODRAW;
+趋势股 : TOOLS.趋势股 NODRAW;
+慢牛股 : TOOLS.慢牛股 NODRAW;
+
+
+{
+口袋突破   :=  ABS(口袋支点) + ABS(首次三线红(85)) + ABS(N日新高(60)) + ABS(放量)  NODRAW;
+口袋突破_H :=  HHV(H,  BARSSINCEN(口袋突破, 10)) NODRAW;
+}
+
+MA10_ZF_N   := MA10/REF(MA10,3)  *100-100              NODRAW COLORYELLOW;
+MA10_ZF_5   := MA10/REF(MA10,5)  *100-100              NODRAW COLORYELLOW;
+MA10_ZF_10  := REF(MA10,5)/REF(MA10,10) *100-100       NODRAW COLORYELLOW;
+
+MA20_ZF_N   := MA20/REF(MA20,3)  *100-100              NODRAW COLORMAGENTA;
+MA20_ZF_5   := MA20/REF(MA20,5)  *100-100              NODRAW COLORMAGENTA;
+MA20_ZF_10  := REF(MA20,5)/REF(MA20,10) *100-100       NODRAW COLORMAGENTA;
+
+MA50_ZF_N   := MA50/REF(MA50,3)  *100-100              NODRAW COLORGREEN;
+MA50_ZF_5   := MA50/REF(MA50,5)  *100-100              NODRAW COLORGREEN;
+MA50_ZF_10  := REF(MA50,5)/REF(MA50,10) *100-100       NODRAW COLORGREEN;
+
+MA100_ZF_N  := MA100/REF(MA100,3)  *100-100            NODRAW COLORLIGRAY;
+MA100_ZF_5  := MA100/REF(MA100,5)  *100-100            NODRAW COLORLIGRAY;
+MA100_ZF_10 := REF(MA100,5)/REF(MA100,10) *100-100     NODRAW COLORLIGRAY;
+
+MA200_ZF_N  := MA200/REF(MA200,3)  *100-100            NODRAW COLORBLUE;
+MA200_ZF_5  := MA200/REF(MA200,5)  *100-100            NODRAW COLORBLUE;
+MA200_ZF_10 := REF(MA200,5)/REF(MA200,10) *100-100     NODRAW COLORBLUE;
+
+
+NOTEXT_MA10_N  : IF(MA10_ZF_N  < REF(MA10_ZF_N,1)     ,MA10,   DRAWNULL)    COLORC08080    LINETHICK3;
+NOTEXT_MA20_N  : IF(MA20_ZF_N  < REF(MA20_ZF_N,1)     ,MA20,   DRAWNULL)    COLORC08080    LINETHICK3;
+NOTEXT_MA50_N  : IF(MA50_ZF_N  < REF(MA50_ZF_N,1)     ,MA50,   DRAWNULL)    COLORC08080    LINETHICK3;
+NOTEXT_MA100_N := IF(MA100_ZF_N < REF(MA100_ZF_N,1)   ,MA100,  DRAWNULL)    COLORC08080    LINETHICK3;
+NOTEXT_MA200_N := IF(MA200_ZF_N < REF(MA200_ZF_N,1)   ,MA200,  DRAWNULL)    COLORC08080    LINETHICK3;
+
+NOTEXT_MA10_3  : IF(MA10_ZF_5  < MA10_ZF_10     ,MA10,   DRAWNULL)   COLOR404080     LINETHICK3;
+NOTEXT_MA20_3  : IF(MA20_ZF_5  < MA20_ZF_10     ,MA20,   DRAWNULL)   COLOR404080     LINETHICK3;
+NOTEXT_MA50_3  : IF(MA50_ZF_5  < MA50_ZF_10     ,MA50,   DRAWNULL)   COLOR404080     LINETHICK3;
+NOTEXT_MA100_3 : IF(MA100_ZF_5 < MA100_ZF_10    ,MA100,  DRAWNULL)   COLOR404080     LINETHICK3;
+NOTEXT_MA200_3 : IF(MA200_ZF_5 < MA200_ZF_10    ,MA200,  DRAWNULL)   COLOR404080     LINETHICK3;
+
+
+
+NOTEXT_MA10_1  : IF(C < MA10                ,MA10,  DRAWNULL)   COLORFF0080   LINETHICK2;
+NOTEXT_MA10_2  : IF(MA10 < REF(MA10,1)      ,MA10,  DRAWNULL)   COLORCYAN     LINETHICK2;
+
+NOTEXT_MA20_1  : IF(C < MA20                ,MA20,  DRAWNULL)   COLORFF0080   LINETHICK3;
+NOTEXT_MA20_2  : IF(MA20 < REF(MA20,1)      ,MA20,  DRAWNULL)   COLORCYAN     LINETHICK3;
+
+NOTEXT_MA50_1  : IF(C < MA50                ,MA50,  DRAWNULL)   COLORFF0080   LINETHICK4;
+NOTEXT_MA50_2  : IF(MA50 < REF(MA50,1)      ,MA50,  DRAWNULL)   COLORCYAN     LINETHICK4;
+
+NOTEXT_MA100_1 : IF(C < MA100               ,MA100, DRAWNULL)   COLORFF0080   LINETHICK5;
+NOTEXT_MA100_2 : IF(MA100 < REF(MA100,1)    ,MA100, DRAWNULL)   COLORCYAN     LINETHICK5;
+
+NOTEXT_MA200_1 : IF(C <  MA200              ,MA200, DRAWNULL)   COLORFF0080   LINETHICK6;
+NOTEXT_MA200_2 : IF(MA200 < REF(MA200,1)    ,MA200, DRAWNULL)   COLORCYAN     LINETHICK6;
+
+
+
+
+
+
+
+
+中期调整_N := IF(MA多(100) || MA多(200),   100,   200);
+
+
+_H    :=  HHV(H,     中期调整_N);
+H_DAY :=  HHVBARS(H, 中期调整_N)   +1;
+
+_L    :=  LLV(L, H_DAY);
+L_DAY :=  BARSLAST(L=_L)  +1;
+
+
+调整幅度  : _L/_H *100 -100     COLORCYAN NODRAW;
+调整天数  : H_DAY - L_DAY       COLORCYAN NODRAW;
+调整幅度2 :  L/_H *100 -100     COLORCYAN NODRAW;
+调整天数2 : H_DAY -1            COLORCYAN NODRAW;
+
+
+DRAWNUMBER(CURRBARSCOUNT=CONST(L_DAY),   _L      ,   调整幅度);
+DRAWNUMBER(CURRBARSCOUNT=CONST(L_DAY),   _L *0.97,   调整天数);
+
+
+
+{
+B1:=(HHV(H,  中期调整_N));
+B2:=HHVBARS(H,中期调整_N)+1;
+B3:=(LLV(L,B2));
+B4:=B3/B1;
+TZFD:=B4*100-100;
+B6:=CONST(BARSLAST(L=B3)) +1 ;
+
+DRAWNUMBER(CURRBARSCOUNT=B6,B3,TZFD);
+调整幅度2:TZFD,COLORCYAN,NODRAW;
+
+TZTS:= B2 - B6;
+调整天数2:TZTS,COLORCYAN,NODRAW;
+}
+
+
+
+
+{ ---------------- 提前大盘止跌 }
+
+
+
+
+
+
+
+{ ---------------- }
+{
+DRAWTEXT_FIX(显示板块,0.01,0.01,0,DYBLOCK),COLORYELLOW;
+}
+DRAWTEXT_FIX(显示板块,0.01,0.05,0,HYBLOCK),COLORYELLOW;
+DRAWTEXT_FIX(显示板块,0.01,0.10,0,GNBLOCK),COLORYELLOW;
+
+DRAWTEXT_FIX(显示板块,0.01,0.15,0,ZDBLOCK),COLORWHITE;
+{
+DRAWTEXT_FIX(显示板块,0.01,0.20,0,ZSBLOCK),COLORWHITE;
+DRAWTEXT_FIX(显示板块,0.01,0.25,0,FGBLOCK),COLORWHITE;
+DRAWTEXT_FIX(显示板块,0.01,0.30,0,ZHBLOCK),COLORWHITE;
+
+DRAWTEXT_FIX(ISLASTBAR,0,0,0,CODE);
+DRAWTEXT_FIX(ISLASTBAR,0,0,0,STKNAME);
+}
+
+
+
+{
+A股  : TOOLS_RPS.A股    NODRAW;
+港股 : TOOLS_RPS.港股   NODRAW;
+美股 : TOOLS_RPS.美股   NODRAW;
+板块 : TOOLS_RPS.板块   NODRAW;
+}
+
+
+
+
+
+RPS10  :=  TOOLS_RPS.RPS10   NODRAW;
+RPS20  :=  TOOLS_RPS.RPS20   NODRAW;
+RPS50  :=  TOOLS_RPS.RPS50   NODRAW;
+RPS120 :=  TOOLS_RPS.RPS120  NODRAW;
+RPS250 :=  TOOLS_RPS.RPS250  NODRAW;
+
+
+
+_20CM :=  CODELIKE('688') || CODELIKE('30') || CODELIKE('83')     NODRAW;
+
+
+
+
+
+{ ------------------------------------------- }
+AMO_MA5    :=  MA(AMO, 5)   NODRAW;
+AMO_MA10   :=  MA(AMO,10)   NODRAW;
+涨停       :=  C/REF(C,1)>=1.098 AND C=H;
+AMO_VAL    :=  IF(涨停, MAX(AMO, AMO_MA10), AMO)   NODRAW;
+
+RPS_DAY    :=  IF(RPS250=0,  BARSLAST(RPS50<50),  BARSLAST(ABS(RPS50<50)+ABS(RPS120<50)+ABS(RPS250<50) >=2))   NODRAW;   {上次 RPS双线<50  距今天数}
+AMO_起涨前 :=  REF(SUM(AMO_MA10,10)/10, RPS_DAY)  NODRAW;
+
+
+AMO_BL     :  AMO_VAL / AMO_起涨前        COLORRED NODRAW;
+AMO_BL2    :  AMO_VAL / REF(AMO_MA10,10)  COLORRED NODRAW;      {  当日成交额  /  10日前的  MA10_成交额  }
+
+
+
+
+
+
+;{ ------------------------------ 0、指标统计 输出 -------------------------------- }
+
+中期涨幅_MA20  :  中期涨幅N(20)     COLORMAGENTA NODRAW;
+中期涨幅_MA50  :  中期涨幅N(50)     COLORGREEN   NODRAW;
+
+中期天数_MA20  :  中期天数N(20)     COLORMAGENTA NODRAW;
+中期天数_MA50  :  中期天数N(50)     COLORGREEN   NODRAW;
+
+
+
+
+
+中期涨幅     :   中期涨幅.中期涨幅,   COLORRED NODRAW;
+
+中期涨幅_H   :=  HHV(中期涨幅, 10);
+中期涨幅_H20 :=  HHV(中期涨幅, 20);
+中期涨幅_H50 :=  HHV(中期涨幅, 50);
+
+
+中期天数     :   中期涨幅.中期天数   COLORRED NODRAW;
+中期均线     :   中期涨幅.中期均线   COLORRED NODRAW;
+
+
+
+
+
+C_MA20比率 := C/MA20   COLORRED NODRAW;
+
+
+C新高 : SUMBARS((REF(C,1)-C),C*0.0001)   COLORGREEN NODRAW;
+H新高 : SUMBARS((REF(H,1)-H),H*0.0001)   COLORGREEN NODRAW;
+
+
+AMO倍量 := AMO_BL     NODRAW COLORRED;
+
+
+
+
+
+{----------------------}
+{上影线0 : ABS(H-MAX(C,O)) > ABS(C-O) ,COLORGREEN NODRAW;}
+
+涨幅_H := H/REF(C,1) *100-100;
+振幅   := H/L *100-100 NODRAW;
+
+
+上影线_比例 :  (C-L)/(H-L)     COLORGREEN NODRAW;
+上影线      :  (C-L)/(H-L) < 0.4     AND     (振幅>=HHV(振幅,10)*0.7 || IF(_20CM, 振幅>10, 振幅>5)),COLORGREEN NODRAW;   { 收盘价 位于振幅 下1/3}
+
+
+
+
+{   ----- 1、CON_月多 -----   }
+
+{ MACD月多  -  月/周金叉  -  日上0轴 }
+MACD月_比率     :=  MIN(ABS(MACD.DEA#MONTH), ABS(MACD.DIF#MONTH)) / MAX(ABS(MACD.DEA#MONTH), ABS(MACD.DIF#MONTH));
+MACD月_接近金叉 :=  (BARSLASTCOUNT(MACD.DIF#MONTH >= REF(MACD.DIF#MONTH, 1 *20))>=1.2*20   AND   MACD月_比率>=0.9)   ||   (BARSLASTCOUNT(MACD.DIF#MONTH > REF(MACD.DIF#MONTH, 1 *20))>=1   AND   MACD月_比率>=0.95);
+MACD_月金叉     :=   MACD.MACD#MONTH>=0   ||   (MACD.MACD#MONTH = HHV(MACD.MACD#MONTH, 9 *20)   AND   MACD月_接近金叉),  COLORCYAN NODRAW;
+
+
+MACD_周金叉  :=  MACD.MACD#WEEK >=0,  COLORCYAN NODRAW;
+
+
+MACD_日上0轴 :=  (MACD.DIF>=0 AND MACD.DEA>=0)   OR   (                MACD.MACD>=0 AND MACD.MACD=HHV(MACD.MACD,10))  ,  COLORCYAN NODRAW;
+
+
+
+
+
+MACD月多:= MACD_月金叉  AND  MACD_周金叉  AND  MACD_日上0轴,  COLORLIMAGENTA NODRAW;
+DRAWTEXT(BARSSINCEN(MACD月多,   15)=0 , 0.99*L,  'MACD多')    COLORYELLOW;
+DRAWTEXT(BARSSINCEN(MACD月多=0, 15)=0 , 1.01*H,  'MACD空')    COLORCYAN;
+
+
+
+{ SAR周多  -  C > SAR#周 }
+SAR周多:  C>=SAR.SAR#WEEK ,COLORMAGENTA NODRAW;
+DRAWTEXT(BARSSINCEN(SAR周多,   15)=0 , 0.98*L,  'SAR多') COLORYELLOW;
+DRAWTEXT(BARSSINCEN(SAR周多=0, 10)=0 , 1.02*H,  'SAR空') COLORCYAN;
+
+
+
+MACD日多 := MACD.MACD>=0;
+ SAR日多 := C>=SAR.SAR;
+
+
+月多       :  MACD月多 AND (SAR周多||BARSSINCEN(均线萌出,2)=0),  COLORYELLOW NODRAW;
+CON_月日_多:=     月多 AND SAR日多;
+
+RPS三线红       :=  RPS50>=RPS AND RPS120>=RPS AND RPS250>=RPS;
+CON_月多_三线红 :=        月多 AND RPS三线红,  COLORRED NODRAW;
+
+
+STICKLINE(BARSSINCEN(    月多,          2)=0   ,0,1  ,0,3) COLORGREEN;
+STICKLINE(BARSSINCEN(CON_月日_多,       2)=0   ,0,1  ,0,3) COLORMAGENTA;
+STICKLINE(BARSSINCEN(CON_月多_三线红,   2)=0   ,0,1  ,0,3) COLORYELLOW;
+
+STICKLINE(BARSSINCEN(CON_月多_三线红=0, 2)=0   ,0,1  ,0,3) COLORMAGENTA;
+STICKLINE(BARSSINCEN(CON_月日_多=0,     2)=0   ,0,1  ,0,3) COLORBLUE;
+STICKLINE(BARSSINCEN(    月多=0,        2)=0   ,0,1  ,1,3) COLORCYAN;
+
+
+
+
+{
+SX_L:=LLV(L,500);
+STICKLINE(COND_周_多  , SX_L*1.5,SX_L*1.65, 0,-1) COLORCYAN;
+STICKLINE(COND_日周_多, SX_L*1.5,SX_L*1.60, 0,1) COLORGREEN;
+}
+
+MACD周多 :=    MACD_周金叉  AND  MACD_日上0轴  AND  (MACD_月金叉  ||  (MA250=0 AND C>MA20 AND MA20>MA50)  ||  (C>MA100 AND C>MA250 AND (MA50>MA100 || MA50>MA250) AND (MA100>REF(MA100,1) || MA250>REF(MA250,1) )) ),   COLORYELLOW NODRAW;
+周多     :=    MACD周多 AND (SAR周多||BARSSINCEN(均线萌出,2)=0),   COLORYELLOW NODRAW;
+
+
+
+{ -----------------  均线萌出  ----------------- }
+均线萌出 :  均线萌出     COLORWHITE NODRAW;
+STICKLINE(BARSSINCEN(均线萌出,   20)=0,   LLV(L,200), 2*HHV(H,200)   ,0,-1) COLORWHITE;
+
+
+
+
+
+
+
+{ -----  买点：月多__XXX   /   卖点：月空__XX ----- }
+
+CON_月空_MA   :=   CON_月多=0  ||  (C<=MA20 AND C<=MA50)  ||  (中期涨幅_H>=50 AND C<MA20)  ||  (MA20<REF(MA20,1) AND C<MA20)  ||  COUNT(C<MA20,3)>=2  {||  COUNT(MA20<REF(MA20,1),3)>=2}  ,COLORFFFF00 NODRAW;
+
+
+
+{  MA20 + MA50 +  MA100||MA200   均线 萌出 + ↑  }
+CON_月多_MA   :=   CON_月多     AND     (  (C>=MA200 AND MA100>=REF(MA100,1))     OR     (MA200=0{次新股}  AND  C>=MA50 AND MA50>=REF(MA50,1))   )   ,COLORGREEN NODRAW;
+
+
+持股线_MA20 :=  RPS20>=95 AND RPS50>=95 AND COUNT(C>MA10 AND MA10>MA20,30)>=25 , COLORMAGENTA NODRAW;
+持股线_MA50 :=                RPS50>=95 AND COUNT(C>MA20 AND MA10>MA50,30)>=25 , COLORMAGENTA NODRAW;
+
+短期涨幅        :=     H/LLV(C,4);
+非_短期涨幅巨大 :=     H/LLV(C,4)<=1.4; { 3日内涨幅超过40% - B点之前 连续涨停 }
+
+
+
+{  买点必须   收阳 + 上MA20↑   +   (中期涨幅<40%  ||  RPS三线98 [最强TOP - 中期调整 不下MA20] )   +  20CM - 中期涨幅<55% }
+MACD日_近多     :=    MACD.MACD<0  AND  HHV(MACD.MACD,5)=MACD.MACD;   { 买点1   -  MACD 接近金叉多头   -  当前MACD值 为 最近5日最大值 }
+CON_MA20_中期   :=    (SAR日多 AND (MACD日多 || MACD日_近多))   AND   C>=MA20   {AND MA20>=REF(MA20,1)}   {AND   非_短期涨幅巨大}
+                      
+                      AND    (   中期涨幅<=48   
+					  ||     (   _20CM AND 中期涨幅<=60   )  { 20CM-稍放宽 }
+
+                      ||     (   RPS50>=98     AND RPS120>=98 AND RPS250>=98   )  { 最强TOP-回调不下MA20 }  
+                      ||     (   中期涨幅>=80  AND  RPS20>=99 AND RPS50 >=99   )  { 最强TOP-回调不下MA20 }  
+
+                      ||     (   RPS50>=95 AND COUNT(C>MA10 AND MA10>MA20,30)>=25   )  { 派能科技↑350% - 双线火车轨-连续100天↑ 不回调MA20 }
+                      ), COLORMAGENTA NODRAW;
+
+
+CON_月多_MA_RPS :=     CON_月空_MA=0   AND   CON_月多_MA   AND   CON_MA20_中期   AND   (RPS50>=88 || RPS120>=89 || RPS250>=90)   ,COLORMAGENTA NODRAW;
+
+
+
+月多_MA_PRS_VOL :=  CON_月多_MA_RPS   AND   AMO_BL >= 1.3;        { 抓 趋势加速/平台突破  -  放量启动 趋势加速 }
+月多_MA_PRS_V2  :=  CON_月多_MA_RPS   AND   AMO_BL >= 2.5;
+多_MA_RPS_V_ZT  :=  月多_MA_PRS_V2    AND   涨停;                 { 抓 妖股/涨停启动趋势  -  放量 + 涨停启动   }
+
+
+
+
+
+{ 上次  CON_月空_MA - 距今的天数  }
+LAST_非空_DAY :=  IF(BARSLAST(CON_月空_MA=0)=DRAWNULL, BARSCOUNT(C), BARSLAST(CON_月空_MA=0))   ,COLORFFFF00   NODRAW;   {  当前距离  LAST-非空  的天数  -  初上市 非空-NULL问题  }
+LAST_空_DAY   :=  BARSLAST(LAST_非空_DAY>0)                                                     ,COLORGREEN    NODRAW;   {  当前距离  LAST-空    的天数  }
+
+DAY_1  :=  IF( LAST_空_DAY=0  AND  REF(LAST_空_DAY,1)>0,  REF(LAST_空_DAY,1)+1,  LAST_空_DAY)   ,COLORMAGENTA  NODRAW;   { 判断 临界点 - 当前自身为 空线(NOW)   ->   空(LAST) ... 多...  空(NOW)   }
+
+
+
+
+{ BARSSINCEN(X,N)=0   等价于   COUNT(X,N)=1 AND X;       --- 解决 BARSSINCEN函数  参数N 不支持变量 }
+首多_MA      :=   CON_月多_MA      AND  COUNT(CON_月多_MA    , DAY_1)=1   COLORGREEN   NODRAW;
+首多_MA_RPS  :=   CON_月多_MA_RPS  AND  COUNT(CON_月多_MA_RPS, DAY_1)=1   COLORRED     NODRAW;
+首空_MA      :=   CON_月空_MA      AND  COUNT(CON_月空_MA,     DAY_1)=1   COLORFFFF00  NODRAW;
+
+
+
+
+
+{ 首多_MA_RPS  距今天数 }
+首多_今日_DAY   :=  BARSLAST(首多_MA_RPS AND COUNT(首多_MA_RPS,  DAY_1)=1)  COLOR8000FF NODRAW;
+DAY_3 := 首多_今日_DAY   NODRAW;
+
+
+
+
+{ 买点涨幅  }
+_买点涨幅 := C/REF(C,DAY_3) *100 -100 ,COLORRED NODRAW;
+
+
+
+
+
+
+
+
+LAST_多 := IF(BARSLAST(首多_MA_RPS)=0, REF(BARSLAST(首多_MA_RPS),1) +1, BARSLAST(首多_MA_RPS) ) ,COLORRED    NODRAW;
+LAST_空 := IF(BARSLAST(首空_MA)=0,     REF(BARSLAST(首空_MA),1)     +1, BARSLAST(首空_MA)     ) ,COLORFFFF00 NODRAW;
+
+
+B:= 首多_MA_RPS                                             ,COLORRED    NODRAW;
+S:= 首空_MA AND  LAST_空> LAST_多   ,COLORFFFF00 NODRAW;   { 真-首空：两个S点之间  必须有B点}
+
+
+
+LAST_B := BARSLAST(B) NODRAW;
+LAST_S := BARSLAST(S) NODRAW;
+
+
+涨:= CON_月空_MA=0  AND  BARSLAST(B)<BARSLAST(S)     ,  COLORRED   NODRAW;
+跌:= 涨=0     ,  COLORFFFF00   NODRAW;
+
+
+
+
+{  ---------- 持股/空仓  }
+
+持股天数 :=  IF(涨||S,BARSLAST(B),0)    ,  COLORRED   NODRAW;
+买点涨幅 :=  C/REF(C,持股天数) *100-100 ,  COLORRED   NODRAW;
+
+空仓天数 :=  IF(跌,   BARSLAST(S),0)    ,  COLORGREEN NODRAW;
+卖点跌幅 :=  C/REF(C,空仓天数) *100-100 ,  COLORGREEN NODRAW;
+
+
+
+
+
+
+
+
+
+
+{  时间段内   所有 S点-买点涨幅（含 当前-最后一次 还在ING中的涨幅）  之 复利（乘积）  }
+
+{ING: 涨 AND BARSNEXT(S),COLORRED  NODRAW;}
+
+
+S_涨幅       :=  IF(S,  买点涨幅/100,  0)      ,COLORRED  NODRAW;
+累计涨幅_X天 :=  MULAR(1+S_涨幅, X) *100-100   ,COLORRED  NODRAW;
+
+
+累计持股_X天 :=  SUM(IF(S,持股天数,0) ,X) ,COLORRED  NODRAW;
+累计空仓_X天 :=  SUM(IF(B,REF(空仓天数,1),0) ,X) ,COLORRED  NODRAW;
+
+
+
+近1年  :=  MULAR(1+S_涨幅, 250*1) *100-100  ,  COLOR00FFFF   NODRAW;
+近2年  :=  MULAR(1+S_涨幅, 250*2) *100-100  ,  COLOR4080FF   NODRAW;
+近3年  :=  MULAR(1+S_涨幅, 250*3) *100-100  ,  COLOR008080   NODRAW;
+
+近5年  :=  MULAR(1+S_涨幅, 250*5) *100-100  ,  COLORC08080   NODRAW;
+近10年 :=  MULAR(1+S_涨幅, 250*7.25)*100-100,  COLOR808040   NODRAW;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{ ------------------------------------------- }
+{
+趋势起爆点 :=  TOOLS.前置过滤   AND   BS合_起爆.趋势起爆点;
+妖股起爆点 :=  TOOLS.前置过滤   AND   BS合_起爆.妖股起爆点;
+
+STICKLINE(BARSSINCEN(趋势起爆点 AND 妖股起爆点=0,     2)=0,   LLV(L,200), 3*HHV(H,200)   ,0,-1) COLORMAGENTA;
+STICKLINE(BARSSINCEN(妖股起爆点 AND 趋势起爆点=0,     2)=0,   LLV(L,200), 3*HHV(H,200)   ,0,-1) COLORYELLOW;
+
+STICKLINE(BARSSINCEN(趋势起爆点 AND 妖股起爆点,       2)=0,   LLV(L,200), 3*HHV(H,200)   ,0,-1) COLORRED;
+
+
+STICKLINE(BARSSINCEN(TOOLS.前置过滤   AND   TOOLS.紧凑上涨中继,     2)=0,   LLV(L,200), 3*HHV(H,200),   0,  -1) COLORLIMAGENTA;
+STICKLINE(BARSSINCEN(TOOLS.前置过滤   AND   TOOLS.基底突破,         2)=0,   LLV(L,200), 3*HHV(H,200),   0.2, 0) COLORYELLOW;
+}
+
+{ ------------------------------------------- }
+{
+上影VAL   :  (C-L)/(H-L)      COLORCYAN NODRAW;
+长上影线  :  TOOLS.长上影线   COLORCYAN NODRAW;
+大阴线    :  TOOLS.大阴线     COLORCYAN NODRAW;
+
+上影大阴  :  TOOLS.上影大阴   COLORCYAN NODRAW;
+}
+
+
+{ ------------------------------------------- }
+{
+月线反转     :=  TOOLS.月线反转       COLORYELLOW NODRAW;
+一二阶段     :=  TOOLS.一二阶段       COLORYELLOW NODRAW;
+
+均线萌出_    :=  TOOLS.均线萌出       COLORYELLOW NODRAW;
+口袋支点_    :=  TOOLS.口袋支点       COLORYELLOW NODRAW;
+
+紧凑上涨中继 :=  TOOLS.紧凑上涨中继   COLORYELLOW NODRAW;
+基底突破     :=  TOOLS.基底突破       COLORYELLOW NODRAW;
+
+趋势起爆点   :=  TOOLS.趋势起爆点     COLORYELLOW NODRAW;
+妖股起爆点   :=  TOOLS.妖股起爆点     COLORYELLOW NODRAW;
+
+
+STICKLINE(BARSSINCEN(趋势起爆点 AND 妖股起爆点=0,     2)=0,   LLV(L,200), 3*HHV(H,200)   ,0,-1) COLORMAGENTA;
+STICKLINE(BARSSINCEN(妖股起爆点 AND 趋势起爆点=0,     2)=0,   LLV(L,200), 3*HHV(H,200)   ,0,-1) COLORYELLOW;
+
+STICKLINE(BARSSINCEN(趋势起爆点 AND 妖股起爆点,       2)=0,   LLV(L,200), 3*HHV(H,200)   ,0,-1) COLORRED;
+
+
+STICKLINE(BARSSINCEN(紧凑上涨中继,     2)=0,   LLV(L,200), 3*HHV(H,200),   0,  -1) COLORLIMAGENTA;
+STICKLINE(BARSSINCEN(基底突破,         2)=0,   LLV(L,200), 3*HHV(H,200),   0.2, 0) COLORYELLOW;
+}
+
+
+
+
+
+
+
+
+
+;
+{ ------------------------------ 1、20日均线  朝向/斜率 -------------------------------- }
+
+
+
+;{ 上MA20 }
+CON_1:= REF(C,1) < REF(MA20,1)    AND   C >= MA20   AND   (月多 || 周多);
+DRAWICON(CON_1, 0.997*LOW, 42);
+
+;{ 下MA20 }
+CON_2:= REF(C,1) >= REF(MA20,1)   AND   C <  MA20   AND   (月多 || 周多);
+DRAWICON(CON_2, 1.035*H, 43);
+
+
+
+
+
+
+
+
+{  最低点 转向 }
+CON2_1_1:=  REF(MA向下(20), 1)   AND   MA向上(20);
+
+{  最高点 转向 }
+CON2_2_1:=  REF(MA向上(20), 1)   AND   MA向下(20);
+
+
+
+{  最近50日  收盘价 跌幅  }
+CON2_DF:= 1 - LLV(C,10) / HHV(C,50);
+
+{  最近50日  收盘价 涨幅  }
+CON2_ZF:= HHV(C,10) / LLV(C,50) - 1;
+
+
+
+{  最低点  AND  跌幅 >= 20%  }
+CON2_1:= CON2_1_1 AND CON2_DF >= 0.2;
+
+{  最高点  AND  涨幅 >= 30%  }
+CON2_2:= CON2_2_1 AND CON2_ZF >= 0.3;
+
+
+{
+DRAWICON(CON2_1, 0.93*LOW, 13);
+DRAWICON(CON2_2, 1.055*H, 14);
+}
+
+
+
+
+
+
+
+
+ZF:=(MA20/REF(MA20,1)-1)*100;
+MA20_XL:=ATAN(ZF)*180/3.14115926;
+
+
+{MA20_XL_2:=SLOPE(MA20,2) * 100;  { 取最近2日的MA20值，然后拟合出直线，计算斜率 }
+
+
+
+
+MA20斜率 := MA20_XL,COLORMAGENTA,NODRAW;
+{MA20斜率_2:MA20_XL_2,COLORMAGENTA,NODRAW;}
+
+
+
+
+{ 强势卖出点 / 朝向 转换临界点   -   XL >= 70°}
+CON2_3:= MA20_XL >= 70;
+
+{DRAWICON(CON2_3, 0.985*LOW, 37);}
+
+
+
+{ 买点 / 朝向 转换临界点   -  -5°<= XL <= 5°}
+CON2_4:= MA20_XL >= -5  AND  MA20_XL <= 5;
+
+{DRAWICON(CON2_4, 0.985*LOW, 36);}
+
+
+
+
+{  H / MA20  倍数  }
+
+{C_MA5倍数: C/MA5  ,COLORWHITE NODRAW;    { 警戒线：1.2倍 }
+{H_MA5倍数: H/MA5  ,COLORWHITE NODRAW;    { 警戒线：1.2倍 }
+
+{C_MA20倍数: C/MA20  ,COLORGREEN NODRAW;    { 警戒线：1.40倍 }
+{H_MA20倍数: H/MA20  ,COLORGREEN NODRAW;    { 警戒线：1.45倍 }
+
+
+
+
+
+
+;{ ---------------------------------- 2、放5/10/20/50倍量  ------------------------------------ }
+
+{AMO_BL22:= AMO / REF(MA(AMO,10), 10);                  {  当日成交额  /  10日前的  MA10_成交额  }
+CON_3_BL_收阳:= C >= O AND C >= REF(C,1) AND C>MA20;   {  收阳线  }
+
+
+CON_3_BL_1_5:=  AMO_BL >=  4.5;
+CON_3_BL_1_10:= AMO_BL >=  8;
+CON_3_BL_1_20:= AMO_BL >= 17;
+CON_3_BL_1_30:= AMO_BL >= 27;
+CON_3_BL_1_40:= AMO_BL >= 37;
+CON_3_BL_1_50:= AMO_BL >= 47;
+
+
+
+CON_3_BL_50:= CON_3_BL_1_50 AND CON_3_BL_收阳;
+
+CON_3_BL_40:= CON_3_BL_1_40 AND CON_3_BL_收阳 AND CON_3_BL_50 = 0;
+CON_3_BL_30:= CON_3_BL_1_30 AND CON_3_BL_收阳 AND CON_3_BL_50 = 0 AND CON_3_BL_40 = 0;
+CON_3_BL_20:= CON_3_BL_1_20 AND CON_3_BL_收阳 AND CON_3_BL_50 = 0 AND CON_3_BL_40 = 0 AND CON_3_BL_30 = 0;
+CON_3_BL_10:= CON_3_BL_1_10 AND CON_3_BL_收阳 AND CON_3_BL_50 = 0 AND CON_3_BL_40 = 0 AND CON_3_BL_30 = 0 AND CON_3_BL_20 = 0;
+CON_3_BL_5:=  CON_3_BL_1_5  AND CON_3_BL_收阳 AND CON_3_BL_50 = 0 AND CON_3_BL_40 = 0 AND CON_3_BL_30 = 0 AND CON_3_BL_20 = 0 AND CON_3_BL_10 = 0;
+
+
+{
+DRAWTEXT(BARSSINCEN(CON_3_BL_5 ,  2)=0,   H,   '5'     )COLORYELLOW;
+DRAWTEXT(BARSSINCEN(CON_3_BL_10,  2)=0,   H,   '10'    )COLORYELLOW;
+DRAWTEXT(BARSSINCEN(CON_3_BL_20,  2)=0,   H,   '20倍'  )COLORYELLOW;
+DRAWTEXT(BARSSINCEN(CON_3_BL_30,  2)=0,   H,   '30倍'  )COLORYELLOW;
+DRAWTEXT(BARSSINCEN(CON_3_BL_40,  2)=0,   H,   '40倍'  )COLORYELLOW;
+DRAWTEXT(BARSSINCEN(CON_3_BL_50,  2)=0,   H,   '50倍量')COLORYELLOW;
+}
+
+
+{DRAWICON(BARSSINCEN(CON_3_BL_1_5 AND CON_3_BL_收阳,5)=0,  0.935*LOW, 7);}
+DRAWICON(CON_3_BL_1_5 AND CON_3_BL_收阳   AND   AMO_BL2>=2   AND   中期涨幅_H<=55,  0.935*LOW, 7);   {5倍量 + 收阳}
+
+
+
+
+
+{AMO倍量:AMO_BL,NODRAW COLORRED;}
+
+{ _AMO_R5_MA10_亿:REF(MA(AMO,10), 5) / 100000000,NODRAW COLORYELLOW; }
+
+
+
+
+
+
+
+
+;{ ---------------------------------- 3、当日涨停  ------------------------------------ }
+{ 日涨幅 > 10% }
+
+DRAWICON(涨停,   0.995*LOW,   11);
+
+
+
+
+
+{ ---------------------------------- 4、月线反转（4阶段 --> 1阶段）  ------------------------------------ }
+
+DRAWICON( BARSSINCEN((月线反转.月线反转),  30)=0,   LOW,   34);
+
+
+
+
+
+{ ---------------------------------- 5、三线开花  ------------------------------------ }
+
+三线开花 :=  三线开花       COLORYELLOW NODRAW;
+
+DRAWICON(三线开花,   0.96*LOW,   18);
+
+
+
+
+
+{ ----------------------------------- 6、口袋支点 ------------------------------------- }
+
+口袋支点 :  TOOLS.口袋支点       COLORYELLOW NODRAW;
+
+DRAWICON(口袋支点,   0.98*LOW,   15);
+
+
+
+
+
+{ ---------------------------------- 7、RPS三线翻红 ------------------------------------ }
+RPS_H_1 := RPS250>=RPS;
+RPS_H_2 := RPS120>=RPS;
+RPS_H_3 := RPS50 >=RPS;
+RPS_H_4 := RPS20 >=RPS;
+RPS_H_5 := RPS10 >=RPS;
+
+
+RPS_3H_1:=BARSSINCEN(RPS_H_1 AND RPS_H_2 AND RPS_H_3 ,N)=0;
+RPS_3H_2:=BARSSINCEN(RPS_H_1 AND RPS_H_2 AND RPS_H_4 ,N)=0;
+RPS_3H_3:=BARSSINCEN(RPS_H_1 AND RPS_H_3 AND RPS_H_4 ,N)=0;
+RPS_3H_4:=BARSSINCEN(RPS_H_2 AND RPS_H_3 AND RPS_H_4 ,N)=0;
+
+RPS_3H_5:=BARSSINCEN(RPS_H_3 AND RPS_H_4 AND RPS_H_5,50)=0;
+
+
+CON_3H := RPS_3H_1 OR RPS_3H_2 OR RPS_3H_3 OR RPS_3H_4 OR RPS_3H_5;
+DRAWICON(CON_3H, 0.966*LOW, 25);
+DRAWICON(CON_3H, 0.96 *LOW, 25);
+DRAWICON(CON_3H, 0.954*LOW, 25);
+
+
+
+
+{ ---------------------------------- 8、RPSS双线99 ------------------------------------ }
+RPS_H2_1:=RPS250>=RPS2;
+RPS_H2_2:=RPS120>=RPS2;
+RPS_H2_3:=RPS50 >=RPS2;
+RPS_H2_4:=RPS20 >=RPS2;
+
+
+RPS_2H_99_1:=BARSSINCEN(RPS_H2_1 AND RPS_H2_2 ,N)=0;
+RPS_2H_99_2:=BARSSINCEN(RPS_H2_1 AND RPS_H2_3 ,N)=0;
+RPS_2H_99_3:=BARSSINCEN(RPS_H2_2 AND RPS_H2_3 ,N)=0;
+
+
+CON_2H_99:= RPS_2H_99_1 OR RPS_2H_99_2 OR RPS_2H_99_3;
+DRAWICON(CON_2H_99, 0.966*LOW, 26);
+DRAWICON(CON_2H_99, 0.96 *LOW, 26);
+
+
+{ ---------------------------------- 9、RPSS三线99 ------------------------------------ }
+RPS_3H_99_1:=BARSSINCEN(RPS_H2_1 AND RPS_H2_2 AND RPS_H2_3 ,N)=0;
+RPS_3H_99_2:=BARSSINCEN(RPS_H2_1 AND RPS_H2_2 AND RPS_H2_4 ,N)=0;
+RPS_3H_99_3:=BARSSINCEN(RPS_H2_1 AND RPS_H2_3 AND RPS_H2_4 ,N)=0;
+RPS_3H_99_4:=BARSSINCEN(RPS_H2_2 AND RPS_H2_3 AND RPS_H2_4 ,N)=0;
+
+
+CON_3H_99:= RPS_3H_99_1 OR RPS_3H_99_2 OR RPS_3H_99_3 OR RPS_3H_99_4;
+DRAWICON(CON_3H_99, 0.966*LOW, 26);
+DRAWICON(CON_3H_99, 0.96 *LOW, 26);
+DRAWICON(CON_3H_99, 0.954*LOW, 26);
+
+
+
+
+{ ---------------------------------- 10、缩50日最小量 ------------------------------------ }
+
+{ -- 排除 涨/跌停日 -- }
+
+{
+CON_10_ZDT:= C / REF(C,1) >= 1.098  OR  REF(C,1) / C >= 1.1098;
+CON_10_1:= IF(CON_10_ZDT,0,1);
+
+
+CON_10_N_LAST:=BARSLAST(CON_10_ZDT);
+CON_10_DAY:= IF(CON_10_N_LAST < 50,20,50);
+
+
+CON_10_2:= LLV(VOL, CON_10_DAY) = VOL;
+
+
+
+CON_10:= CON_10_1 AND CON_10_2;
+DRAWICON(CON_10, 0.99*LOW, 44);
+}
+
+
+
+
+{ ---------------------------------- 11、中期涨幅100% ------------------------------------ }
+
+CON_11_1  :=  TOOLS.倍;   { 倍 }
+CON_11_2  :=  TOOLS.危;   { 危 }
+
+
+
+DRAWTEXT(CON_11_1 AND NOT(CON_11_2),  1.015*H,  '倍') COLORRED;
+DRAWTEXT(CON_11_2                  ,  1.015*H,  '危') COLORCYAN;
+
+
+
+
+{ 动量股 - 大双头        MACD 对 动量股 不敏感（特别是 A杀的 妖股）  }
+
+动量股_大双头 :=  动量股   AND   调整天数2 >=10   {AND   MACD.MACD<0 {死叉};  
+
+
+DRAWTEXT( ( CON_11_1 || CON_11_2 || 动量股_大双头 )   AND   MACD新高.MACD新高        ,  0.985*L,  'MACD新高'  ) COLORGREEN;
+DRAWTEXT( ( CON_11_1 || CON_11_2 || 动量股_大双头 )   AND   MACD顶背离.MACD顶背离    ,  1.035*H,  '线背离'    ) COLORCYAN;
+DRAWTEXT( ( CON_11_1 || CON_11_2 || 动量股_大双头 )   AND   MACD柱顶背离.MACD柱顶背离,  1.055*H,  '柱背离'    ) COLORBLUE;
+
+
+
+
+{
+DRAWTEXT(CON_11_1 AND NOT(CON_11_2),  1.015*H,  '低吸买') COLORRED;
+DRAWTEXT(CON_11_2                  ,  1.015*H,  '追高买') COLORCYAN;
+}
+
+{
+DRAWTEXT( (动量股 || 趋势股 || 慢牛股)   AND   买点2.买点,  0.98*L,  '低吸买')     COLORWHITE;}
+
+
+
+M2 :=  买点2.买点#WEEK NODRAW;
+
+DRAWTEXT( 买点2.买点 || 买点2.买点#WEEK,  0.98*L,  '低吸买')     COLORWHITE;
+
+
+
+
+
+{
+换行拼接
+
+TEXT_0_1 := STRCAT('涨幅：' , CON2STR(REF(中期涨幅 ,DAY_3) ,1));
+TEXT_0_2 := STRCAT('&倍量：', CON2STR(REF(AMO_BL   ,DAY_3) ,1));
+DRAWTEXT(首多_MA_RPS, 1.15*H, STRCAT(TEXT_0_1,TEXT_0_2)) COLORRED;
+}
+
+
+
+
+
+;{ ---------------------------------- 12、H新高 ------------------------------------ }
+{ 最高价 - N日新高 }
+CON_12_1_H新高:= SUMBARS((REF(H,1)-H),H*0.000001);
+
+{ 20日内 - H新高 }
+CON_12_H60 := BARSSINCEN((CON_12_1_H新高 >=  60 AND CON_12_1_H新高 < 200), 20)=0;
+CON_12_H200:= BARSSINCEN((CON_12_1_H新高 >= 200 AND CON_12_1_H新高 < 400), 20)=0;
+CON_12_H400:= BARSSINCEN((CON_12_1_H新高 >= 400), 20)=0;
+
+
+DRAWTEXT(CON_12_H60 , 1.01*H,  '60新高') COLORGREEN;
+DRAWTEXT(CON_12_H200, 1.01*H, '200新高') COLORGREEN;
+DRAWTEXT(CON_12_H400, 1.01*H, '400新高') COLORGREEN;
+
+
+
+
+
+
+;{ ---------------------------------- 13、趋势买点 ------------------------------------ }
+
+
+
+
+{  C >= MA5 > MA10 > MA20 }
+
+{  60日新高  }
+
+{  上20日线以来：   阳线天数  >  阴线天数  }
+
+
+
+{  趋势-起涨阶段  买点1：       30% <= 涨幅 <= 50%}
+
+
+{  趋势-跳涨/加速阶段  买点2：  50% <= 涨幅 <= 70%};
+
+
+
+
+
+{ ------------------------ 高位 调整幅度 警示 };
+
+中期_DAY    :=   BARSLAST(中期涨幅>75)                    NODRAW;
+
+中期_H      :=   CONST(REF(HHV(H,20), MAX(中期_DAY-5,0))) NODRAW;     { 杯顶 }
+中期_H_DAY  :=   CONST(BARSLAST(H=中期_H))                NODRAW;
+
+
+中期区间    :=   CONST(MAX(中期_H-MA50, 中期_H*0.25));
+中期_L      :=   中期_H - 中期区间;                                   { 杯底 }
+
+中期_L_占比 :    (中期_L/中期_H-1)*100   NODRAW COLORCYAN;
+
+
+杯柄_2_3    :=   中期_L + 中期区间*0.65;   { 2/3 }
+杯柄_1_2    :=   中期_L + 中期区间*0.50;   { 1/2 }
+杯柄_1_3    :=   中期_L + 中期区间*0.35;   { 1/3 }
+
+
+
+CON_中期0 :=  IF(中期涨幅>75,   CURRBARSCOUNT<20  AND  中期涨幅_H20>75,   CURRBARSCOUNT<50  AND  中期涨幅_H50>75)     AND     CURRBARSCOUNT-1<=中期_H_DAY;
+
+
+CON_中期  :=  CURRBARSCOUNT-1<=中期_H_DAY     AND     中期_H_DAY<=70;
+
+
+NOTEXT_中期_H :  IF(CON_中期,   中期_H,   DRAWNULL)   COLORRED;
+NOTEXT_中期_L :  IF(CON_中期,   中期_L,   DRAWNULL)   COLORCYAN;
+
+
+NOTEXT_1 :  IF(CON_中期,   杯柄_2_3,   DRAWNULL)   COLORMAGENTA;
+NOTEXT_2 :  IF(CON_中期,   杯柄_1_2,   DRAWNULL)   COLORWHITE;
+NOTEXT_3 :  IF(CON_中期,   杯柄_1_3,   DRAWNULL)   COLORGREEN;
+
+
+
+{
+NOTEXT_1 :  IF(CURRBARSCOUNT<50  AND  中期涨幅_H20 > 50,   CONST(HHV(C,20)) * 0.9,   DRAWNULL),   COLORWHITE;
+NOTEXT_2 :  IF(CURRBARSCOUNT<50  AND  中期涨幅_H20 > 50,   CONST(HHV(H,20)) * 0.8,   DRAWNULL),   COLORCYAN;
+};
+
+
+
+{ ------------------------ 中期调整 - 左侧抄底 / 极限抄底 / 右侧抄底 / 右侧加仓   -   左侧- 破位止损 };
+
+
+赶早抄底        :=  REF(上MA(20), 1)    AND   下MA(20)    AND   CON_中期     COLORWHITE;          { 中期调整 - C 首次下MA20 }
+赶早抄底_L      :=  REF(L,  BARSLAST(赶早抄底))                              COLORWHITE;
+NOTEXT_赶早抄底 :   IF(CON_中期,   赶早抄底_L,   DRAWNULL)           DOTLINE COLORWHITE;          { 赶早抄底 - 买入 1成     }
+
+
+
+左侧抄底        :=  REF(MA向上(20), 1)  AND  MA向下(20)   AND   CON_中期     COLORGREEN;          { 中期调整 - MA20首次↓   }
+左侧抄底_L      :=  REF(L,  BARSLAST(左侧抄底))                              COLORGREEN;
+NOTEXT_左侧抄底 :   IF(CON_中期,   左侧抄底_L,   DRAWNULL)           DOTLINE COLORGREEN;          { 左侧抄底 - 买入 1.5成   }
+
+
+
+极限抄底        :=  REF(上MA(50), 1)    AND   下MA(50)    AND   CON_中期     COLORCYAN;           { 中期调整 - C 首次下MA50 }
+极限抄底_L      :=  REF((C+L)/2,  BARSLAST(极限抄底))                        COLORCYAN;
+NOTEXT_极限抄底 :   IF(CON_中期,   极限抄底_L,   DRAWNULL)           DOTLINE COLORCYAN;           { 极限抄底 - 买入 2成     }
+
+
+
+
+平均成本       :=  ( 赶早抄底_L + IF(左侧抄底_L=DRAWNULL,0,左侧抄底_L)      + IF(极限抄底_L=DRAWNULL,0,极限抄底_L)    )  /  (  ABS(赶早抄底_L!=DRAWNULL)  +  ABS(左侧抄底_L!=DRAWNULL)      +  ABS(极限抄底_L!=DRAWNULL)    )   COLOR0080FF;
+平均成本_系数    :=   ( 赶早抄底_L + IF(左侧抄底_L=DRAWNULL,0,左侧抄底_L) *1.5 + IF(极限抄底_L=DRAWNULL,0,极限抄底_L) *2 )  /  (  ABS(赶早抄底_L!=DRAWNULL)  +  ABS(左侧抄底_L!=DRAWNULL)*1.5  +  ABS(极限抄底_L!=DRAWNULL)*2  )   COLOR0080FF;
+平均成本_系数3 :=  ( 赶早抄底_L + IF(左侧抄底_L=DRAWNULL,0,左侧抄底_L) *2 + IF(极限抄底_L=DRAWNULL,0,极限抄底_L) *3 )  /  (  ABS(赶早抄底_L!=DRAWNULL)  +  ABS(左侧抄底_L!=DRAWNULL)*2  +  ABS(极限抄底_L!=DRAWNULL)*3  )   COLOR0080FF;
+
+平均成本_回调  :=  平均成本/中期_H *100-100   COLOR0080FF;
+平均成本_回调2   :=   平均成本_系数/中期_H *100-100   COLOR0080FF;
+平均成本_回调3 :=  平均成本_系数3/中期_H *100-100   COLOR0080FF;
