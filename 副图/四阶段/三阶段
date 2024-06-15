@@ -1,0 +1,33 @@
+MA5  :=MA(C, 5);
+MA10 :=MA(C,10);
+MA20 :=MA(C,20);
+MA50 :=IF(MA(C, 50)=DRAWNULL, 0, MA(C, 50));
+MA100:=IF(MA(C,100)=DRAWNULL, 0, MA(C,100));
+MA120:=IF(MA(C,120)=DRAWNULL, 0, MA(C,120));
+MA150:=IF(MA(C,150)=DRAWNULL, 0, MA(C,150));
+MA200:=IF(MA(C,200)=DRAWNULL, 0, MA(C,200));
+MA250:=IF(MA(C,250)=DRAWNULL, 0, MA(C,250));
+
+
+
+
+
+三阶段1  :=   大均线多头.大均线多头; 
+
+
+
+三阶段2  :=   MA空(10) AND 下MA(20)   AND   ( MA走平(50)  || C<MA50  )   AND   MA多(100) AND MA多(200)                AND   MA50>MA100 AND MA50>MA200;          { 中期顶部  -   MA50走平（已经 出现向↓）   +   MA100继续向上（直至向↓） }
+
+三阶段3  :=   MA空(20) AND 下MA(50)   AND   ( MA走平(100) || C<MA100 )   AND   EXIST(MA多(250),  15)                  AND   ( MA向上(200) || MA向上(250) );     {   大顶部  -  MA100走平（已经 出现向↓）   +   MA250继续向上（直至向↓） }
+
+
+
+三阶段4  :=   MA空(5)  AND 下MA(10) AND MA5<MA10
+
+              AND   ( MA走平(20)  || C<MA20  )   AND   MA多(50) AND MA多(100) AND MA多(200)   AND   MA20>MA50 AND (MA50>MA100 || MA50>MA120) AND MA100>MA200;          { 中期顶部  -   MA20走平（已经 出现向↓）   +   MA50继续向上（直至向↓） }
+
+
+
+
+
+三阶段   :   ( 三阶段1  ||  三阶段2  ||  三阶段3   ||  三阶段4 )     AND     NOT(二阶段 || 四阶段)     AND     ( RPS一线红(95)   ||   INBLOCK('中期信号') );
