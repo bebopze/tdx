@@ -1,0 +1,117 @@
+MA5  :=MA(C,  5);
+MA10 :=MA(C, 10);
+MA20 :=MA(C, 20);
+MA50 :=MA(C, 50);
+MA100:=MA(C,100);
+MA200:=MA(C,200);
+
+
+
+
+
+
+{ ------ 0 - 慢趋势（周线）}
+
+{ TODO   -   海尔智家 }
+
+CON_X1 :    COUNT(C>MA5#WEEK,   11*5)>=9*5
+
+      AND   COUNT(C>MA5#WEEK AND MA5#WEEK > MA10#WEEK,   7*5)>=5*5   
+
+      AND   COUNT(C>MA10#WEEK  AND  MA5#WEEK > MA10#WEEK  AND  MA10#WEEK > MA20#WEEK,   5*5)>=4*5     NODRAW;
+
+
+
+
+
+{ ------ 1 - 快趋势（动量）}
+
+CON_A1 :  RPS一线红(95) || RPS双线红(90) || RPS三线红(85)   ||   EVERY(RPS一线红(90), 10)     NODRAW COLORWHITE;
+
+CON_A2 :  月多 || 均线萌出   ||   ( COUNT(N日新高(100), 5)  AND  C>MA10 )                     NODRAW COLORWHITE;
+
+CON_A3 :  COUNT(C>MA10  AND  MA5>MA10 AND MA10>MA20,   11) >= 10                              NODRAW COLORWHITE;
+
+CON_A4 :  C>MA10 AND MA10>MA20 AND MA20>MA50 AND  MA20>MA100 AND MA20>MA200     AND     MA20>=REF(MA20,1) AND MA50>=REF(MA50,1) AND MA100>=REF(MA100,1) AND MA200>=REF(MA200,1)     NODRAW COLORWHITE;   { 双线火车轨 }
+
+
+
+CON_A  :  CON_A1 AND CON_A2 AND CON_A3 AND CON_A4                NODRAW COLORYELLOW;      { 快趋势（动量） }
+
+
+
+
+
+{ ------ 2 - 慢趋势 }
+
+CON_B1 : RPS一线红(96) || RPS双线红(91) || RPS三线红(86)   ||   EVERY(RPS一线红(90), 15)     NODRAW COLORWHITE;
+
+CON_B2 : 月多 || 均线萌出   ||   ( COUNT(N日新高(100), 5)  AND  C>MA10 )                     NODRAW COLORWHITE;
+
+CON_B3 : COUNT(C>=MA20,   30) >= 25     NODRAW COLORWHITE;
+
+CON_B4 : EVERY(MA20>MA50  AND  MA20>=REF(MA20,1) AND MA50>=REF(MA50,1),     25)              NODRAW COLORWHITE;
+
+CON_B5 : C>MA20 AND MA20>MA50 AND MA50>MA100 AND MA50>MA200     AND     MA20>=REF(MA20,1) AND MA50>=REF(MA50,1) AND MA100>=REF(MA100,1) AND MA200>=REF(MA200,1)     NODRAW COLORWHITE;
+
+
+
+CON_B  :  CON_B1 AND CON_B2 AND CON_B3 AND CON_B4 AND CON_B5     NODRAW COLORMAGENTA;     { 慢趋势         }
+
+
+
+
+
+{ ------ 3 - 强RPS + 慢趋势（中期调整-结束起步） }
+
+CON_C1 :  COUNT(CON_A || CON_B,   20)     NODRAW COLORWHITE;
+
+CON_C2 :  RPS一线红(97) || RPS双线红(92) || RPS三线红(89)   ||   EVERY(RPS一线红(90), 15)     NODRAW COLORWHITE;
+
+CON_C3 :  月多   ||   ( COUNT(N日新高(100), 5)  AND  C>MA10 )                                 NODRAW COLORWHITE;
+
+CON_C4 :  C>MA20 AND MA20>MA50 AND MA50>MA100 AND MA100>MA200     NODRAW COLORWHITE;
+
+
+CON_C5 :          均线萌出
+ 
+          ||   (  COUNT(C>MA10  AND  MA5>MA10 AND MA10>MA20,   11) >= 10  )    
+
+          ||   (  COUNT(C>MA50 AND C>MA100 AND C>MA200   AND   MA50>=REF(MA50,1) AND MA100>=REF(MA100,1) AND MA200>=REF(MA200,1),   25) >= 20  )     NODRAW COLORWHITE;
+
+
+
+CON_C  :  CON_C1 AND CON_C2 AND CON_C3 AND CON_C4 AND CON_C5                NODRAW COLORGREEN;       { 强RPS + 慢趋势（中期调整-结束起步） }
+
+
+
+
+
+{ ---------- }
+
+趋势股 :  (  CON_A   ||   CON_B   ||   CON_C  )     { AND     NOT(动量股 || 慢牛股) }     COLORWHITE;
+
+
+
+趋势股_B :  COUNT(趋势股,  20)     AND     (  
+
+                 (   L/MA10<=1.01 AND L/MA20<=1.05 AND MA20>=REF(MA20,1)   )
+
+
+            ||   (   L/MA5#WEEK <=1.01 )   )     NODRAW COLORMAGENTA;
+
+
+
+{趋势股_B:  COUNT(趋势股,  20)   AND   回踩MA(20)     COLORMAGENTA;}
+
+趋势股_S :  COUNT(趋势股,  20)   AND   (  MA向下(20)  ||  ( 中期天数N(20)>=25 AND MA向下(10) )  )     NODRAW COLORCYAN;
+
+
+
+
+
+天数 :  IF(趋势股,   BARSLAST(趋势股=0)-1,                      0)     NODRAW COLORRED;
+涨幅 :  IF(趋势股,   C/REF(C,BARSLAST(趋势股=0)-1)  *100-100,   0)     NODRAW COLORRED;
+
+
+NUM : INBLOCK('动量股') + INBLOCK('趋势股') + INBLOCK('慢牛股')        NODRAW COLORYELLOW;
