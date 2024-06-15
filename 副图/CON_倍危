@@ -1,0 +1,12 @@
+H新高    :  SUMBARS((REF(H,1)-H),H*0.0001)     COLORGREEN NODRAW;
+
+
+中期涨幅 :  中期涨幅.中期涨幅              COLORMAGENTA NODRAW;
+MA20多   :  COUNT(MA多(20),  10)>=8     NODRAW;
+
+
+
+
+
+倍 :  MA20多   AND   IF(TOOLS_RPS.板块,   H新高>=30 AND 中期涨幅>=35,   H新高>=40 AND 中期涨幅>=80)     COLORRED;
+危 :  MA20多   AND   IF(TOOLS_RPS.板块,   H新高>=35 AND 中期涨幅>=45,   H新高>=45 AND 中期涨幅>=95)     COLORCYAN;
