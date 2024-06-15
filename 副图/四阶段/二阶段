@@ -1,1 +1,1 @@
-二阶段 :  CON_一二阶段.二阶段     AND     ( RPS一线红(90)   ||   INBLOCK('中期信号') );
+二阶段 :  CON_一二阶段.二阶段     AND     ( RPS一线红(90)   ||   TOOLS_RPS.RPS10=0 { 非RPS类 } );
