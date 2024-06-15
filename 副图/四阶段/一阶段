@@ -1,0 +1,34 @@
+MA5  :=MA(C, 5);
+MA10 :=MA(C,10);
+MA20 :=MA(C,20);
+MA50 :=IF(MA(C, 50)=DRAWNULL, 0, MA(C, 50));
+MA100:=IF(MA(C,100)=DRAWNULL, 0, MA(C,100));
+MA120:=IF(MA(C,120)=DRAWNULL, 0, MA(C,120));
+MA150:=IF(MA(C,150)=DRAWNULL, 0, MA(C,150));
+MA200:=IF(MA(C,200)=DRAWNULL, 0, MA(C,200));
+MA250:=IF(MA(C,250)=DRAWNULL, 0, MA(C,250));
+
+
+
+
+
+MA小多头  :=   (C>MA5 AND MA5>MA10 AND MA5>MA20  AND  C>MA50)   AND   ( MA5>REF(MA5,1) AND MA10>REF(MA10,1) AND MA20>REF(MA20,1) );
+
+
+
+一阶段1  :=   EXIST(MA小多头,  5)                                AND     EVERY(MA多(100) AND MA100>MA200,   20);          { 慢牛股 - 中期调整 - 右侧杯柄  -  MA100 + MA200多头（一直 向↑） }
+
+
+
+一阶段2  :=   EXIST(MA小多头,  5)                                AND     上MA(50)     AND   ( MA空(100) || MA空(200) || MA空(250) );          { 底部  -  MA50多头（已经 向↑）   +   MA200继续向下（直至 向↑） }
+
+一阶段3  :=   EXIST(MA多(10) AND MA多(20) AND MA多(50),  30)     AND     MA向上(50)   AND   ( MA空(100) || MA空(200) || MA空(250) );          { 底部  -  MA50多头（已经 向↑）   +   MA200继续向下（直至 向↑） }
+
+
+一阶段4  :=   CON_一二阶段.一二阶段; 
+
+
+
+
+
+一阶段   :   (一阶段1  ||  一阶段2  ||  一阶段3  ||  一阶段4)     AND     NOT(二阶段 || 四阶段)     AND     ( RPS一线红(88)  ||  TOOLS_RPS.大盘 );
