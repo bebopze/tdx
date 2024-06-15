@@ -1,0 +1,12 @@
+MA20 :=  IF(MA(C,N)=DRAWNULL,   MA(C, BARSCOUNT(C)+1),   MA(C,N));
+
+
+中期涨幅  :  H / LLV(L, BARSLAST(C<MA20) + 10)  *100 - 100     COLORMAGENTA;
+中期天数  :  LLVBARS(L, BARSLAST(C<MA20) + 10);
+
+
+
+
+
+IF(中期涨幅>=80 AND 中期涨幅<95,  中期涨幅,  DRAWNULL)   LINETHICK2 COLORRED;
+IF(中期涨幅>=95,                 中期涨幅,  DRAWNULL)   LINETHICK2 COLORCYAN;
