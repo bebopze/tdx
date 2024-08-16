@@ -1,15 +1,3 @@
-{ ------------------------------------------------------------------------------------  一票否决权  }
-{一票否决 :  一票否决.一票否决     NODRAW;}
-
-
-
-
-
-
-
-
-
-
 { ------------------------------------------------------------------------------------ }
 MA50占比    :  MA50占比.MA50占比           NODRAW;     {  MA50占比 [5, 80]     -     权重：30%  }
 
@@ -23,14 +11,6 @@ MA50占比    :  MA50占比.MA50占比           NODRAW;     {  MA50占比 [5, 8
 
 
 { ------------------------------------------------------------------------------------ }
-{
-  右侧买_NUM :=  板块量化.右侧买_NUM       NODRAW;
-强势卖出_NUM :=  板块量化.强势卖出_NUM     NODRAW;
- ALL板块_NUM :=  板块量化.ALL板块_NUM      NODRAW;
-}
-
-
-
   右侧买_占比 :  板块量化.右侧买_占比       COLORMAGENTA NODRAW;
 强势卖出_占比 :  板块量化.强势卖出_占比     COLORRED     NODRAW;
 
@@ -47,22 +27,23 @@ MA50占比    :  MA50占比.MA50占比           NODRAW;     {  MA50占比 [5, 8
 
 
 
-{ ------------------------------------------------------------------------------------ }
-
-中期涨幅0        :  中期涨幅.中期涨幅            NODRAW;     {  中期涨幅   -   [0, 35]  }
-
-
-中期涨幅_占比    :  IF(中期涨幅0>0,     中期涨幅0/35,     1)   *100         NODRAW;     { 权重：30%  }
+{ ------------------------------------------------------------------------------------ 中期涨幅 / 中期调整幅度 }
+SSF_MA20多 :=  SSF多  AND  MA多(20)       COLORMAGENTA NODRAW;
 
 
 
+中期涨幅       :   中期涨幅.中期涨幅                                                    COLORMAGENTA NODRAW;     {  中期涨幅       -   [0, 35]       }
+
+中期调整幅度   :   100   -   C / HHV(H,   BARSLAST(SSF_MA20多)  + 10)     *100          COLORCYAN    NODRAW;     {  中期调整幅度   -   [0, 35 ~ 50]  }
 
 
-{
-倍危_STATUS :  TOOLS.倍危_STATUS     NODRAW;
-倍          :  倍危_STATUS = 1       NODRAW;
-危          :  倍危_STATUS = 2       NODRAW;
-}
+
+
+
+中期涨幅_占比  :   IF(SSF_MA20多  AND  中期涨幅>0,       中期涨幅/35,       IF(中期调整幅度 >15,   (35-中期调整幅度)/35,   1))   *100       COLORMAGENTA NODRAW;          { 权重：30% }
+
+
+
 
 
 
@@ -161,10 +142,6 @@ BS状态_占比    :   BS状态_转换 / 8   *100     NODRAW;
 
 
 
-{
-仓位 :=   IF(一票否决,   0,   仓位1)     COLORWHITE;
-}
-
 
 
 
@@ -184,14 +161,6 @@ NOTEXT_仓位_6 :  IF(仓位>=80,  仓位,  DRAWNULL)     COLORCYAN;
 NOTEXT_1 :  75, COLORRED     LINETHICK1;
 NOTEXT_2 :  50, COLORWHITE   LINETHICK1;
 NOTEXT_3 :  25, COLORCYAN    LINETHICK1;
-
-
-{
-NOTEXT_11 :  IF(一票否决,  75,  DRAWNULL)     COLORCYAN   LINETHICK1;
-NOTEXT_22 :  IF(一票否决,  50,  DRAWNULL)     COLORCYAN   LINETHICK1;
-NOTEXT_33 :  IF(一票否决,  25,  DRAWNULL)     COLORCYAN   LINETHICK1;
-
-};
 
 
 
