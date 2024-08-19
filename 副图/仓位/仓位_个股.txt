@@ -32,8 +32,8 @@ BS状态   :=  BS状态.BS状态;
 
 
 
-  右侧买_占比 :  右侧买_天数 /10       COLORMAGENTA NODRAW;
-强势卖出_占比 :  强势卖出    /10       COLORRED     NODRAW;
+  右侧买_占比 :    右侧买_天数  / 10       COLORMAGENTA NODRAW;
+强势卖出_占比 :  强势卖出_天数  / 10       COLORRED     NODRAW;
 
 
 
