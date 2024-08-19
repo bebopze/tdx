@@ -44,27 +44,15 @@ BS状态   :=  BS状态.BS状态;
 
 
 { ------------------------------------------------------------------------------ }
-
-细分行业  :  细分行业.细分行业      NODRAW;
-行业CODE  :  细分行业.行业CODE      NODRAW;
-
+细分行业  :=  细分行业.细分行业      NODRAW;
+行业CODE  :=  细分行业.行业CODE      NODRAW;
 
 
-STR_拼接 :  STRCAT(HYZSCODE,   '$中期涨幅.中期涨幅')                NODRAW;
-拼接     :  DRAWTEXT(1,   H,   CONST(STR_拼接))          COLORWHITE NODRAW;
+STR_拼接 :=  STRCAT(HYZSCODE,   '$中期涨幅.中期涨幅')     COLORWHITE NODRAW;
+拼接     :=  DRAWTEXT(1,   H,   CONST(STR_拼接))          COLORWHITE NODRAW;
 
-
-
-
-
-BK_中期涨幅    :  'STR_拼接'     NODRAW;
-
-
+BK_中期涨幅    :=  'STR_拼接'                     COLORMAGENTA NODRAW;
 板块_中期涨幅  :   "880492$中期涨幅.中期涨幅"     COLORMAGENTA NODRAW;
-
-{
-板块_中期涨幅2 : "HYZSCODE$中期涨幅.中期涨幅"     COLORMAGENTA NODRAW;
-}
 
 
 
