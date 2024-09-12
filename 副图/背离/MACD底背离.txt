@@ -1,6 +1,6 @@
 中期调整幅度 :=  中期调整幅度;
 中期调整天数 :=  中期调整天数;
-板块         :=  TOOLS_RPS.板块   ||   TOOLS_RPS.大盘;
+板块        :=  TOOLS_RPS.板块   ||   TOOLS_RPS.大盘;
 
 
 
@@ -9,28 +9,32 @@ N :  IF(中期调整天数>=100   ||   MA空(200),     150,     IF(N1<100,  N1, 
 
 
 
-     L_DAY :  LLVBARS(       C,  N)     NODRAW;     {  个股新低 天数  }
-MACD_L_DAY :  LLVBARS(MACD.DIF,  N)     NODRAW;     {  MACD新低 天数  }
+
+{ ------------------------------------------------------------------------------------- }
+     L_DAY :   LLVBARS(       C,  N)     NODRAW;     {  个股新低 天数  }
+MACD_L_DAY :   LLVBARS(MACD.DIF,  N)     NODRAW;     {  MACD新低 天数  }
 
 
-   C_比率  :         C / LLV(       C,  N)  *100     NODRAW;
-MACD_比率  :  MACD.DIF / LLV(MACD.DIF,  N)  *100     NODRAW;
-
-
-{
-中期_ZF1 :=  IF(板块,   30,  90)   NODRAW;
-中期_ZF2 :=  IF(板块,   20,  60)   NODRAW;
-中期_ZF3 :=  IF(板块,   23,  65)   NODRAW;
-}
-中期_FD  :=  IF(板块,  -12, -25)   NODRAW;
+   C_比率  :          C / LLV(       C,  N)  *100     NODRAW;
+MACD_比率  :   MACD.DIF / LLV(MACD.DIF,  N)  *100     NODRAW;
 
 
 
+中期_FD    :=  IF(板块,  -12, -25)     NODRAW;
 
 
 
-上0轴_距今天数 :  BARSLAST(MACD.DIF>0   AND   MACD.DEA>0)     NODRAW;
+{ ----------- }
 
+上0轴_距今天数 :   BARSLAST(MACD.DIF>0   AND   MACD.DEA>0)     NODRAW;
+
+
+
+
+
+
+
+{ ------------------------------------------------------------------------------------- }
 
 
 CON_1  :   上0轴_距今天数 > MACD_L_DAY   ||   上0轴_距今天数 > 50    NODRAW;     { MACD线  全程   在 0轴以下     （中途 ：  不能上0轴    再下0轴）  }
@@ -95,4 +99,4 @@ CON_7 :  底背离1 || 底背离2   {|| 底背离1 || 底背离2 || 底背离3 |
 
 
 
-MACD底背离 :  CON_1  AND  CON_2 AND CON_3 AND CON_4 AND CON_5 AND CON_6 AND CON_7     COLORWHITE;   
+MACD底背离 :   CON_1  AND  CON_2 AND CON_3 AND CON_4 AND CON_5 AND CON_6 AND CON_7     COLORWHITE;   
