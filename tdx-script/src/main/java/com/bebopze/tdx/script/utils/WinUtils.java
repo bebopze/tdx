@@ -395,9 +395,9 @@ public class WinUtils {
     /**
      * 键盘输入
      *
-     * @param list [按键] 列表
+     * @param keyList [按键] 列表
      */
-    public static void keyPress(ArrayList<Integer> list) {
+    public static void keyPress(ArrayList<Integer> keyList) {
 
 
         try {
@@ -406,10 +406,10 @@ public class WinUtils {
 
 
             // .902
-            for (Integer key : list) {
+            for (Integer key : keyList) {
                 robot.keyPress(key);
 
-                Thread.sleep(50);
+                sleep(50);
             }
 
 
@@ -417,17 +417,11 @@ public class WinUtils {
             robot.keyPress(KeyEvent.VK_ENTER);
 
 
-            Thread.sleep(5000);
-
-
-            log.info("键盘输入  :  [.902]     ->     suc   ------------------------------");
-
-
-            Thread.sleep(5000);
+            log.info("键盘输入  :  [.902]     ->     suc");
 
 
         } catch (Exception e) {
-            log.error("键盘输入  :  [.902]     ->     异常 : {}", e.getMessage());
+            log.error("键盘输入  :  [.902]     ->     fail : {}", e.getMessage());
         }
 
     }

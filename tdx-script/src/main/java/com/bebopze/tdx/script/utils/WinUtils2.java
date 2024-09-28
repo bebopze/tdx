@@ -48,6 +48,11 @@ public class WinUtils2 {
     // 窗口类名: #32770
 
     // ----------
+    // 窗口句柄: native@0x8607de
+    // 窗口标题: TdxW
+    // 窗口类名: #32770
+
+    // ----------
     // 窗口句柄: native@0x210870
     // 窗口标题: 自动选股设置
     // 窗口类名: #32770
@@ -73,7 +78,6 @@ public class WinUtils2 {
     }
 
     public static void listAllWindows() {
-
 
 
         // 枚举所有窗口
