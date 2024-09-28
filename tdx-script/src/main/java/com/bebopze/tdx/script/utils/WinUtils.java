@@ -296,7 +296,8 @@ public class WinUtils {
              *
              * ------ https://learn.microsoft.com/zh-cn/windows/win32/inputdev/mouse-input-notifications
              * ------ https://zhiyong.wang/archives/131#0x04-%E4%BD%BF%E7%94%A8%E5%8F%A5%E6%9F%84%E6%93%8D%E4%BD%9C%E7%AA%97%E5%8F%A3
-             * ------ https://www.cnblogs.com/code1992/p/11239881.html
+             * ------ https://www.cnblogs.com/co.902
+             * de1992/p/11239881.html
              *
              * --
              * -- https://stackoverflow.com/questions/5713730/c-sharp-press-a-button-from-a-window-using-user32-dll
@@ -307,19 +308,19 @@ public class WinUtils {
             // WinDef.WPARAM wparam = new WinDef.WPARAM(MK_LBUTTON);
 
 
-            Thread.sleep(100);
+            sleep(100);
 
 
             // 点击 [按钮]
-            User32.INSTANCE.SendMessage(hwnd, WM_LBUTTONDOWN, null, null);
+            User32.INSTANCE.SendMessageTimeout(hwnd, WM_LBUTTONDOWN, null, null, WinUser.SMTO_ABORTIFHUNG, 50, null);
             System.out.println("鼠标左键 - 点击 [按钮]");
 
 
-            Thread.sleep(50);
+            sleep(50);
 
 
             // 松开 [按钮]
-            User32.INSTANCE.SendMessage(hwnd, WM_LBUTTONUP, null, null);
+            User32.INSTANCE.SendMessageTimeout(hwnd, WM_LBUTTONUP, null, null, WinUser.SMTO_ABORTIFHUNG, 50, null);
             System.out.println("鼠标左键 - 松开 [按钮]");
 
 
@@ -379,7 +380,7 @@ public class WinUtils {
 
 
             // 等待10s
-            process.waitFor(10, TimeUnit.SECONDS);
+            process.waitFor(5, TimeUnit.SECONDS);
 
 
             log.info("---------------------------- 打开App [{}]", appPath);
@@ -402,14 +403,11 @@ public class WinUtils {
 
         try {
             Robot robot = new Robot();
-            robot.delay(1000);
-
 
             // .902
             for (Integer key : keyList) {
                 robot.keyPress(key);
-
-                sleep(50);
+                sleep(100);
             }
 
 
@@ -417,13 +415,15 @@ public class WinUtils {
             robot.keyPress(KeyEvent.VK_ENTER);
 
 
-            log.info("键盘输入  :  [.902]     ->     suc");
+            log.info("键盘输入  :  [{}]     ->     suc", keyList);
 
 
         } catch (Exception e) {
-            log.error("键盘输入  :  [.902]     ->     fail : {}", e.getMessage());
+            log.error("键盘输入  :  [{}]     ->     fail : {}", keyList, e.getMessage());
         }
 
+
+        sleep(500);
     }
 
 

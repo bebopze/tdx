@@ -33,6 +33,10 @@ public class TdxScript {
         _902(); // TOOD 是/否
 
 
+        // .921   -   [自动选股]
+        _921();
+
+
         // close [通达信]
         closeTdx();
 
@@ -42,9 +46,36 @@ public class TdxScript {
 
 
     /**
+     * 关闭 [开屏广告]
+     */
+    private static void closeTdxAds() {
+
+        String lpClassName = "#32770";
+        String lpWindowName = "通达信信息";
+
+
+        // 获取 [开屏广告-窗口]
+        WinDef.HWND window = WinUtils2.findWindow(lpClassName, lpWindowName);
+        // 窗口切换
+        WinUtils2.windowSwitcher(window);
+        // 关闭 [窗口]
+        WinUtils.closeWindow(window);
+        log.info("---------------------------- 点击 [开屏广告 - 关闭]");
+
+
+        sleep(500);
+    }
+
+
+    /**
      * .902   -   扩展数据管理器
      */
     private static void _902() {
+
+
+        // 切换 [tdx-主界面]   ->   选中[通达信]
+        switchTdxWindow();
+
 
         // 键盘输入   ->   [.902]   -   打开 [扩展数据管理器]
         ArrayList<Integer> keyList = Lists.newArrayList(VK_PERIOD, VK_9, VK_0, VK_2);
@@ -69,14 +100,69 @@ public class TdxScript {
         log.info("---------------------------- 点击 [扩展数据管理器 - 全部刷新]");
 
 
-        // ---------- [是] 按钮
+        sleep(500);
+
+
+        // ---------- [多路并行-是/否] 按钮
         // 获取 [按钮]
-        WinDef.HWND button2 = WinUtils.getWindowsButton(lpClassName2, lpWindowName2, "否");
+        WinDef.HWND button2 = WinUtils.getWindowsButton(lpClassName2, lpWindowName2, "取消");
         // 窗口切换
         WinUtils2.windowSwitcher(button2);
         // 点击 [按钮]
         WinUtils.clickMouseLeft(button2);
-        log.info("---------------------------- 点击 [扩展数据管理器 - 全部刷新 - 是]");
+        log.info("---------------------------- 点击 [扩展数据管理器 - 全部刷新  -  多路并行-是(Y)]");
+
+
+        sleep(1000);
+    }
+
+
+    /**
+     * .921   -   自动选股
+     */
+    private static void _921() {
+
+        // 切换 [tdx-主界面]   ->   选中[通达信]
+        switchTdxWindow();
+
+
+        // 键盘输入   ->   [.921]   -   打开 [自动选股]
+        ArrayList<Integer> keyList = Lists.newArrayList(VK_PERIOD, VK_9, VK_2, VK_1);
+        WinUtils.keyPress(keyList);
+        log.info("---------------------------- 键盘输入 [.921]     >>>     打开 [自动选股设置]");
+
+
+        sleep(500);
+
+
+        String lpClassName = "#32770";
+        String lpWindowName = "自动选股设置";
+
+
+        // ---------- [一键选股] 按钮
+        // 获取 [按钮]
+        WinDef.HWND button1 = WinUtils.getWindowsButton(lpClassName, lpWindowName, "一键选股");
+        // 窗口切换
+        WinUtils2.windowSwitcher(button1);
+        // 点击 [按钮]
+        WinUtils.clickMouseLeft(button1);
+        log.info("---------------------------- 点击 [自动选股设置 - 一键选股]");
+
+
+        sleep(7000);
+    }
+
+
+    /**
+     * 切换 [tdx-主界面]   ->   选中[通达信]
+     */
+    private static void switchTdxWindow() {
+
+        String lpClassName = "TdxW_MainFrame_Class";
+        String lpWindowName = "通达信金融终端V7.65 - [行情报价-中期信号]";
+
+
+        WinUtils2.windowSwitcher(lpClassName, lpWindowName);
     }
 
 
@@ -152,28 +238,5 @@ public class TdxScript {
         WinUtils.clickMouseLeft(button2);
         log.info("---------------------------- 点击 [主界面 - 关闭 - 退出]");
     }
-
-
-    /**
-     * 关闭 [开屏广告]
-     */
-    private static void closeTdxAds() {
-
-        String lpClassName = "#32770";
-        String lpWindowName = "通达信信息";
-
-
-        // 获取 [开屏广告-窗口]
-        WinDef.HWND window = WinUtils2.findWindow(lpClassName, lpWindowName);
-        // 窗口切换
-        WinUtils2.windowSwitcher(window);
-        // 关闭 [窗口]
-        WinUtils.closeWindow(window);
-        log.info("---------------------------- 点击 [开屏广告 - 关闭]");
-
-
-        sleep(500);
-    }
-
 
 }
