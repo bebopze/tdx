@@ -15,4 +15,22 @@ public class SleepUtils {
             log.error(ex.getMessage(), ex);
         }
     }
+
+
+    /**
+     * win系统 反应时间
+     */
+    public static void winSleep() {
+        sleep(1000);
+    }
+
+    /**
+     * win系统 反应时间
+     *
+     * @param millis
+     */
+    public static void winSleep(long millis) {
+        sleep(millis);
+    }
+
 }
