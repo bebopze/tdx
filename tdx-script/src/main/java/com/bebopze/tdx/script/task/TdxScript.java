@@ -1,4 +1,4 @@
-package com.bebopze.tdx.script;
+package com.bebopze.tdx.script.task;
 
 import com.bebopze.tdx.script.utils.WinUtils;
 import com.google.common.collect.Lists;
@@ -19,15 +19,48 @@ public class TdxScript {
     public static void main(String[] args) {
 
 
+        // .933   -   [盘后数据下载]
+        task_933();
+
+
+        winSleep(3000);
+
+
         // .902   -   [扩展数据管理器]
-        task_902();
+        // task_902();
 
 
-        winSleep(5000);
+        // winSleep(3000);
 
 
         // .921   -   [自动选股]
-        task_921();
+        // task_921();
+    }
+
+
+    /**
+     * 执行task     ==>     .933   -   [盘后数据下载]
+     */
+    public static void task_933() {
+
+
+        // open [通达信]
+        openTdx();
+
+
+        // close [开屏广告]
+        closeTdxAds();
+
+
+        // .933   -   [盘后数据下载]
+        _933();
+
+
+        // close [通达信]
+        closeTdx();
+
+
+        // WinUtils.killApp("tdxw.exe");
     }
 
 
@@ -112,7 +145,57 @@ public class TdxScript {
 
 
     /**
-     * .902   -   扩展数据管理器
+     * .933   -   [盘后数据下载]
+     */
+    private static void _933() {
+
+
+        // 切换 [tdx-主界面]   ->   选中[通达信]
+        switchTdxWindow();
+
+
+        // 键盘输入   ->   [.933]   -   打开 [盘后数据下载]
+        ArrayList<Integer> keyList = Lists.newArrayList(VK_PERIOD, VK_9, VK_3, VK_3);
+        WinUtils.keyPress(keyList);
+        log.info("---------------------------- 键盘输入 [.933]     >>>     打开 [盘后数据下载]");
+
+
+        winSleep();
+
+
+        String lpClassName1 = "#32770";
+        String lpWindowName1 = "盘后数据下载";
+
+
+        // ---------- [沪深京日线] 按钮
+        // 获取 [按钮]
+        WinDef.HWND button1 = WinUtils.findWindowsButton(lpClassName1, lpWindowName1, "沪深京日线");
+        // 窗口切换
+        WinUtils.windowSwitcher(button1);
+        // 点击 [按钮]
+        WinUtils.clickMouseLeft(button1);
+        log.info("---------------------------- 点击 [盘后数据下载 - 沪深京日线]");
+
+
+        winSleep();
+
+
+        // ---------- [开始下载] 按钮
+        // 获取 [按钮]
+        WinDef.HWND button2 = WinUtils.findWindowsButton(lpClassName1, lpWindowName1, "开始下载");
+        // 窗口切换
+        WinUtils.windowSwitcher(button2);
+        // 点击 [按钮]
+        WinUtils.clickMouseLeft(button2);
+        log.info("---------------------------- 点击 [盘后数据下载 - 沪深京日线 - 开始下载]");
+
+
+        winSleep();
+    }
+
+
+    /**
+     * .902   -   [扩展数据管理器]
      */
     private static void _902() {
 
@@ -166,7 +249,7 @@ public class TdxScript {
 
 
     /**
-     * .921   -   自动选股
+     * .921   -   [自动选股]
      */
     private static void _921() {
 
@@ -290,6 +373,9 @@ public class TdxScript {
         // 点击 [按钮]
         WinUtils.clickMouseLeft(button2);
         log.info("---------------------------- 点击 [主界面 - 关闭 - 退出]");
+
+
+        winSleep(5000);
     }
 
 }

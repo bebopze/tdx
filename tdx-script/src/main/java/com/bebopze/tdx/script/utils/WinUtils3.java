@@ -44,6 +44,11 @@ public class WinUtils3 {
 
 
     // ----------
+    // 窗口句柄: native@0xac058a
+    // 窗口标题: 盘后数据下载
+    // 窗口类名: #32770
+
+    // ----------
     // 窗口句柄: native@0x2707a0
     // 窗口标题: 扩展数据管理器
     // 窗口类名: #32770
@@ -72,10 +77,13 @@ public class WinUtils3 {
 
     public static void main(String[] args) {
 
-        List<HWND> hwndList = listAllWindows();
+        // List<HWND> hwndList = listAllWindows();
 
 
-        WinUtils.windowSwitcher("TdxW_MainFrame_Class", null);
+        List<HWND> buttonList = listAllWindowButton("#32770", "盘后数据下载");
+
+
+        // WinUtils.windowSwitcher("TdxW_MainFrame_Class", null);
         // windowSwitcher("TdxW_MainFrame_Class", "通达信金融终端V7.65 - [行情报价-月多]");
     }
 
@@ -135,12 +143,18 @@ public class WinUtils3 {
 
     /**
      * Java 获取  指定软件窗口 的 某个按钮       - chatgpt
+     *
+     * @param lpClassName  窗口 - 类名
+     * @param lpWindowName 窗口 - 标题
      */
-    public static void getWindowsButton() {
+    public static List<HWND> listAllWindowButton(String lpClassName, String lpWindowName) {
+
+
+        List<HWND> buttonList = Lists.newArrayList();
 
 
         // 查找指定窗口
-        HWND hwnd = User32.INSTANCE.FindWindow("TdxW_MainFrame_Class", null);
+        HWND hwnd = User32.INSTANCE.FindWindow(lpClassName, lpWindowName);
 
 
         if (hwnd != null) {
@@ -156,25 +170,30 @@ public class WinUtils3 {
 
 
                     char[] windowText = new char[512];
+                    char[] className = new char[512];
 
-                    User32.INSTANCE.GetWindowText(hwndChild, windowText, 512);
+
+                    // 获取窗口标题
+                    User32.INSTANCE.GetWindowText(hwnd, windowText, 512);
                     String wText = Native.toString(windowText);
 
-
-                    if (wText.contains("功能")) {
-                        System.out.println("找到按钮: " + wText);
-
-
-                        // 模拟 [点击按钮]
-                        WinUtils.clickMouseLeft(hwndChild);
-
-                        //User32.INSTANCE.PostMessage(hwndChild, WinUser.BM_CLICK, null, null);
-                        // User32.INSTANCE.PostMessage(hwndChild, 1, null, null);
+                    // 获取窗口类名
+                    User32.INSTANCE.GetClassName(hwnd, className, 512);
+                    String wClassName = Native.toString(className);
 
 
-                        // 找到后  终止枚举
-                        return false;
+                    // 过滤 没有标题的窗口
+                    if (!wText.isEmpty()) {
+
+                        System.out.println("窗口句柄: " + hwnd);
+                        System.out.println("窗口标题: " + wText);
+                        System.out.println("窗口类名: " + wClassName);
+
+                        System.out.println("----------");
                     }
+
+
+                    buttonList.add(hwndChild);
 
 
                     // 继续查找 子窗口
@@ -186,7 +205,7 @@ public class WinUtils3 {
         }
 
 
-        System.out.println("未找到指定窗口");
+        return buttonList;
     }
 
 
