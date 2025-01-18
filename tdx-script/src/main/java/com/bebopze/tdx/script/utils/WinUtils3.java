@@ -77,10 +77,13 @@ public class WinUtils3 {
 
     public static void main(String[] args) {
 
-        // List<HWND> hwndList = listAllWindows();
+        List<HWND> hwndList = listAllWindows();
 
 
-        List<HWND> buttonList = listAllWindowButton("#32770", "盘后数据下载");
+        // listAllWindowButton2();
+
+        // List<HWND> buttonList = listAllWindowButton("#32770", "盘后数据下载");
+        // List<HWND> buttonList = listAllWindowButton("#32770", "自动选股设置");
 
 
         // WinUtils.windowSwitcher("TdxW_MainFrame_Class", null);
@@ -124,6 +127,11 @@ public class WinUtils3 {
                     System.out.println("窗口标题: " + wText);
                     System.out.println("窗口类名: " + wClassName);
 
+
+                    // 获取窗口的所有子控件并遍历它们
+                    List<HWND> hwndChildButtonList = listAllChildButton(hwnd);
+
+
                     System.out.println("----------");
                 }
 
@@ -134,6 +142,8 @@ public class WinUtils3 {
                 // 返回 true 继续枚举下一个窗口
                 return true;
             }
+
+
         }, null);
 
 
@@ -209,47 +219,127 @@ public class WinUtils3 {
     }
 
 
-//    /**
-//     * 无效     -   todo   DEL
-//     */
-//    @Deprecated
-//    public static void windowSwitcher2() {
-//
-//
-//        // 获取当前活跃的窗口   ->   无效   -   windows 为null
-//        Window[] windows = Window.getWindows();
-//        for (Window window : windows) {
-//            if (window.isActive()) {
-//
-//                // System.out.println("当前活跃的窗口: " + window.getTitle());
-//                // 将当前窗口置于非活跃状态
-//                window.dispose(); // 或者 window.setExtendedState(Frame.ICONIFIED);
-//            }
-//        }
-//
-//
-//        // 假设我们知道微信窗口的标题，我们可以通过标题来找到并激活微信窗口
-//        // 注意：这里的标题需要根据实际情况进行调整
-//        String wechatTitle = "微信"; // 假设这是微信窗口的标题
-//        try {
-//            // 等待微信窗口出现
-//            Thread.sleep(2000);
-//            // 遍历所有窗口，找到微信窗口并使其活跃
-//            for (Window window : windows) {
-//
-//                System.out.println(JSON.toJSONString(window));
-//
-////                if (wechatTitle.equals(window.getTitle())) {
-////                    window.toFront(); // 将窗口带到前台
-////                    window.requestFocus(); // 请求焦点
-////                    window.setState(Frame.NORMAL); // 确保窗口是正常状态
-////                    System.out.println("已切换到微信窗口");
-////                    break;
-//            }
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    // 获取窗口句柄 (根据窗口标题来查找)
+    public static HWND findWindow(String windowTitle) {
+        User32 user32 = User32.INSTANCE;
+        HWND hwnd = user32.FindWindow(null, windowTitle);
+        if (hwnd == null) {
+            System.out.println("窗口未找到");
+        } else {
+            System.out.println("窗口句柄: " + hwnd);
+        }
+        return hwnd;
+    }
 
+
+    /**
+     * 枚举窗口的所有子控件
+     *
+     * @param hwnd -   指定窗口
+     * @return
+     */
+    public static List<HWND> listAllChildButton(HWND hwnd) {
+
+        List<HWND> hwndChildList = Lists.newArrayList();
+
+
+        User32 user32 = User32.INSTANCE;
+        user32.EnumChildWindows(hwnd, new User32.WNDENUMPROC() {
+
+
+            @Override
+            public boolean callback(HWND hwndChild, Pointer arg) {
+
+
+                // 获取每个子控件的文本
+                String controlText = printControlText(hwndChild);
+
+
+                // 如果是按钮控件，获取按钮 - 文本/类名/句柄
+                if (controlText != null && !controlText.isEmpty()) {
+                    String className = getControlClassName(hwndChild);
+                    if ("Button".equals(className)) {
+                        // System.out.println("按钮文本: " + controlText);
+                        // System.out.println("按钮类名: " + className);
+                        // System.out.println("按钮句柄: " + hwndChild);
+
+                        hwndChildList.add(hwndChild);
+                    }
+                }
+
+
+                System.out.println("---");
+
+
+                // 继续枚举
+                return true;
+            }
+
+
+        }, null);
+
+
+        return hwndChildList;
+    }
+
+
+    /**
+     * 获取窗口控件的文本
+     *
+     * @param hwnd
+     * @return
+     */
+    public static String printControlText(HWND hwnd) {
+
+//        User32 user32 = User32.INSTANCE;
+//        int length = user32.GetWindowTextLength(hwnd);
+//        if (length > 0) {
+//            char[] buffer = new char[length + 1];
+//            user32.GetWindowText(hwnd, buffer, length + 1);
+//            String text = Native.toString(buffer);
+//            System.out.println("控件文本: " + text);
+//        }
+
+        // 获取按钮的文字内容
+        String controlText = getControlText(hwnd);
+        if (controlText != null && !controlText.isEmpty()) {
+            System.out.println("按钮文本: " + controlText);
+        }
+
+        return controlText;
+    }
+
+
+    /**
+     * 获取控件的类名
+     *
+     * @param hwnd
+     * @return
+     */
+    public static String getControlClassName(HWND hwnd) {
+        char[] buffer = new char[256];
+        User32.INSTANCE.GetClassName(hwnd, buffer, buffer.length);
+        String className = Native.toString(buffer).trim();
+
+        System.out.println("按钮类名: " + className);
+        return className;
+    }
+
+
+    /**
+     * 获取控件的文本（适用于按钮和其他文本控件）
+     *
+     * @param hwnd
+     * @return
+     */
+    public static String getControlText(HWND hwnd) {
+        User32 user32 = User32.INSTANCE;
+        char[] buffer = new char[512];
+        int result = user32.GetWindowText(hwnd, buffer, buffer.length);
+        if (result > 0) {
+            return Native.toString(buffer);
+        }
+        return null;
+    }
 
 }

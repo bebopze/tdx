@@ -52,11 +52,11 @@ public class WinUtils {
 
 
         // 获取窗口标题
-        User32.INSTANCE.GetWindowText(hwnd, windowText, 512);
+        User32.INSTANCE.GetWindowText(hwnd, windowText, windowText.length);
         String wText = Native.toString(windowText);
 
         // 获取窗口类名
-        User32.INSTANCE.GetClassName(hwnd, className, 512);
+        User32.INSTANCE.GetClassName(hwnd, className, className.length);
         String wClassName = Native.toString(className);
 
 
@@ -92,17 +92,21 @@ public class WinUtils {
 
             HWND hButton = User32.INSTANCE.FindWindowEx(hWnd, null, null, buttonTitle);
             if (hButton != null) {
-                System.out.println("找到按钮：[" + buttonTitle + "]");
+                System.out.println("找到按钮：[" + lpWindowName + "-" + buttonTitle + "]");
 
+                System.out.println("---");
                 return hButton;
             }
 
 
-            System.out.println("未找到按钮");
+            System.out.println("未找到按钮：[" + lpWindowName + "-" + buttonTitle + "]");
+            System.out.println("---");
+            return null;
         }
 
 
-        System.out.println("未找到窗口");
+        System.out.println("未找到窗口：[" + lpWindowName + "]");
+        System.out.println("---");
         return null;
     }
 
