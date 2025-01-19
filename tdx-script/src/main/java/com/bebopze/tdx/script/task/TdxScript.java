@@ -25,17 +25,17 @@ public class TdxScript {
 
 
         // .933   -   [盘后数据下载]
-        // task_933();
+        task_933();
 
 
-        // winSleep(3000);
+        winSleep(3000);
 
 
         // .902   -   [扩展数据管理器]
-        // task_902();
+        task_902();
 
 
-        // winSleep(3000);
+        winSleep(3000);
 
 
         // .921   -   [自动选股设置]
