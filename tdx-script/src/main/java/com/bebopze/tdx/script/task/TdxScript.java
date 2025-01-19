@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.bebopze.tdx.script.utils.DateUtils.formatMillis;
 import static com.bebopze.tdx.script.utils.SleepUtils.winSleep;
 import static java.awt.event.KeyEvent.*;
-import static java.awt.event.KeyEvent.VK_2;
 
 
 @Slf4j
@@ -31,14 +31,14 @@ public class TdxScript {
 
 
         // .902   -   [扩展数据管理器]
-        task_902();
+        // task_902();
 
 
         // winSleep(3000);
 
 
         // .921   -   [自动选股]
-        // task_921();
+        task_921();
     }
 
 
@@ -351,7 +351,11 @@ public class TdxScript {
      */
     private static void check_902() {
 
-        // 下载完成
+        long startTime = System.currentTimeMillis();
+        double MAX_LIMIT_TIME = 60 * 60 * 2.5;
+
+
+        // 扩展数据 - 刷新完成
         boolean taskEnd = false;
 
 
@@ -495,14 +499,24 @@ public class TdxScript {
                     }
 
 
-                }
-
-                /** else {
+                }/** else {
 
 
                  taskEnd = true;
                  log.info("[扩展数据管理器]   ->   err     -     {} , {}", parentWinText, buttonText);
                  }*/
+
+
+                // ------------------------------------ time limit
+
+
+                long endTime = System.currentTimeMillis();
+                long totalTime = endTime - startTime;
+
+                if (totalTime > MAX_LIMIT_TIME) {
+                    taskEnd = true;
+                    log.info("[扩展数据管理器]   ->   err : [task_902 - 超时]     -     startTime : {} , endTime : {} , totalTime : {} , maxTime : {}", formatMillis(startTime), formatMillis(endTime), formatMillis(totalTime), formatMillis((long) MAX_LIMIT_TIME));
+                }
 
 
                 // ------------------------------------ taskEnd
