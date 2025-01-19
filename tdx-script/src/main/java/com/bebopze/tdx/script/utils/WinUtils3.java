@@ -8,8 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinUser.WNDENUMPROC;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -80,14 +82,52 @@ public class WinUtils3 {
         List<HWND> hwndList = listAllWindows();
 
 
-        // listAllWindowButton2();
+        // List<HWND> buttonList = listAllChildButton("#32770", "盘后数据下载");
+        // List<HWND> buttonList = listAllChildButton("#32770", "扩展数据管理器");
+        // List<HWND> buttonList = listAllChildButton("#32770", "自动选股设置");
 
-        // List<HWND> buttonList = listAllWindowButton("#32770", "盘后数据下载");
-        // List<HWND> buttonList = listAllWindowButton("#32770", "自动选股设置");
+
+        List<HWND> buttonList = listAllChildButton("#32770", null);
+        // List<HWND> buttonList = listAllChildButton(null, "TdxW");
 
 
         // WinUtils.windowSwitcher("TdxW_MainFrame_Class", null);
         // windowSwitcher("TdxW_MainFrame_Class", "通达信金融终端V7.65 - [行情报价-月多]");
+    }
+
+
+    public static List<HWND> findWindowList(String lpClassName, String lpWindowName) {
+
+        List<HWND> windowList = Lists.newArrayList();
+
+
+        // 使用 EnumWindows 枚举所有窗口
+        User32.INSTANCE.EnumWindows(new WNDENUMPROC() {
+
+
+            @Override
+            public boolean callback(HWND hwnd, Pointer arg) {
+
+
+                // 获取每个窗口的 标题/类名
+                String windowText = getWindowText(hwnd);
+                String className = getClassName(hwnd);
+
+                // 如果窗口的类名符合目标类名，则加入到列表
+                if ((className != null && Objects.equals(className, lpClassName)) || (windowText != null && Objects.equals(windowText, lpWindowName))) {
+                    windowList.add(hwnd);
+                    System.out.println("找到 窗口标题: [" + lpWindowName + "]   窗口类名: [" + className + "]");
+                }
+
+
+                // 继续枚举下一个窗口
+                return true;
+            }
+
+        }, null);
+
+
+        return windowList;
     }
 
 
@@ -112,11 +152,11 @@ public class WinUtils3 {
 
 
                 // 获取窗口标题
-                User32.INSTANCE.GetWindowText(hwnd, windowText, 512);
+                User32.INSTANCE.GetWindowText(hwnd, windowText, windowText.length);
                 String wText = Native.toString(windowText);
 
                 // 获取窗口类名
-                User32.INSTANCE.GetClassName(hwnd, className, 512);
+                User32.INSTANCE.GetClassName(hwnd, className, className.length);
                 String wClassName = Native.toString(className);
 
 
@@ -152,83 +192,99 @@ public class WinUtils3 {
 
 
     /**
+     * 获取 All[窗口]   的   All [按钮]
+     *
+     * @return
+     */
+    public static List<HWND> listAllWinChildButton() {
+
+        // List<HWND> allWinList = Lists.newArrayList();
+        List<HWND> allWinChildButtonList = Lists.newArrayList();
+
+
+        // 枚举所有窗口
+        User32.INSTANCE.EnumWindows(new WNDENUMPROC() {
+
+
+            @Override
+            public boolean callback(HWND hwnd, Pointer pointer) {
+
+
+                char[] windowText = new char[512];
+                char[] className = new char[512];
+
+
+                // 获取窗口标题
+                User32.INSTANCE.GetWindowText(hwnd, windowText, windowText.length);
+                String wText = Native.toString(windowText);
+
+                // 获取窗口类名
+                User32.INSTANCE.GetClassName(hwnd, className, className.length);
+                String wClassName = Native.toString(className);
+
+
+                // 过滤 没有标题的窗口
+                if (!wText.isEmpty()) {
+
+                    System.out.println("窗口句柄: " + hwnd);
+                    System.out.println("窗口标题: " + wText);
+                    System.out.println("窗口类名: " + wClassName);
+
+
+                    // 获取窗口的所有子控件并遍历它们
+                    List<HWND> hwndChildButtonList = listAllChildButton(hwnd);
+                    allWinChildButtonList.addAll(hwndChildButtonList);
+
+
+                    System.out.println("----------");
+                }
+
+
+                // allWinList.add(hwnd);
+
+
+                // 返回 true 继续枚举下一个窗口
+                return true;
+            }
+
+
+        }, null);
+
+
+        return allWinChildButtonList;
+    }
+
+
+    public static List<HWND> listAllChildButton(List<HWND> windowList) {
+
+        List<HWND> hwndChildList = Lists.newArrayList();
+
+
+        for (HWND win : windowList) {
+            List<HWND> childButtonList = listAllChildButton(win);
+            if (!CollectionUtils.isEmpty(childButtonList)) {
+                hwndChildList.addAll(childButtonList);
+            }
+        }
+
+        return hwndChildList;
+    }
+
+
+    /**
      * Java 获取  指定软件窗口 的 某个按钮       - chatgpt
      *
      * @param lpClassName  窗口 - 类名
      * @param lpWindowName 窗口 - 标题
      */
-    public static List<HWND> listAllWindowButton(String lpClassName, String lpWindowName) {
-
-
-        List<HWND> buttonList = Lists.newArrayList();
-
+    public static List<HWND> listAllChildButton(String lpClassName, String lpWindowName) {
 
         // 查找指定窗口
         HWND hwnd = User32.INSTANCE.FindWindow(lpClassName, lpWindowName);
 
 
-        if (hwnd != null) {
-            System.out.println("找到窗口句柄: " + hwnd);
-
-
-            // 枚举窗口中的  子窗口（如按钮）
-            User32.INSTANCE.EnumChildWindows(hwnd, new WNDENUMPROC() {
-
-
-                @Override
-                public boolean callback(HWND hwndChild, Pointer arg1) {
-
-
-                    char[] windowText = new char[512];
-                    char[] className = new char[512];
-
-
-                    // 获取窗口标题
-                    User32.INSTANCE.GetWindowText(hwnd, windowText, 512);
-                    String wText = Native.toString(windowText);
-
-                    // 获取窗口类名
-                    User32.INSTANCE.GetClassName(hwnd, className, 512);
-                    String wClassName = Native.toString(className);
-
-
-                    // 过滤 没有标题的窗口
-                    if (!wText.isEmpty()) {
-
-                        System.out.println("窗口句柄: " + hwnd);
-                        System.out.println("窗口标题: " + wText);
-                        System.out.println("窗口类名: " + wClassName);
-
-                        System.out.println("----------");
-                    }
-
-
-                    buttonList.add(hwndChild);
-
-
-                    // 继续查找 子窗口
-                    return true;
-                }
-
-
-            }, null);
-        }
-
-
-        return buttonList;
-    }
-
-
-    // 获取窗口句柄 (根据窗口标题来查找)
-    public static HWND findWindow(String windowTitle) {
-        User32 user32 = User32.INSTANCE;
-        HWND hwnd = user32.FindWindow(null, windowTitle);
-        if (hwnd == null) {
-            System.out.println("窗口未找到");
-        } else {
-            System.out.println("窗口句柄: " + hwnd);
-        }
-        return hwnd;
+        // 枚举窗口的所有子控件
+        return listAllChildButton(hwnd);
     }
 
 
@@ -243,21 +299,22 @@ public class WinUtils3 {
         List<HWND> hwndChildList = Lists.newArrayList();
 
 
-        User32 user32 = User32.INSTANCE;
-        user32.EnumChildWindows(hwnd, new User32.WNDENUMPROC() {
+        User32.INSTANCE.EnumChildWindows(hwnd, new WNDENUMPROC() {
 
 
             @Override
             public boolean callback(HWND hwndChild, Pointer arg) {
 
 
+                System.out.println("---");
+
                 // 获取每个子控件的文本
-                String controlText = printControlText(hwndChild);
+                String controlText = getWindowText(hwndChild);
 
 
                 // 如果是按钮控件，获取按钮 - 文本/类名/句柄
                 if (controlText != null && !controlText.isEmpty()) {
-                    String className = getControlClassName(hwndChild);
+                    String className = getClassName(hwndChild);
                     if ("Button".equals(className)) {
                         // System.out.println("按钮文本: " + controlText);
                         // System.out.println("按钮类名: " + className);
@@ -284,29 +341,23 @@ public class WinUtils3 {
 
 
     /**
-     * 获取窗口控件的文本
+     * 获取控件的文本（适用于按钮和其他文本控件）
      *
      * @param hwnd
      * @return
      */
-    public static String printControlText(HWND hwnd) {
+    public static String getWindowText(HWND hwnd) {
+        char[] buffer = new char[512];
+        int result = User32.INSTANCE.GetWindowText(hwnd, buffer, buffer.length);
 
-//        User32 user32 = User32.INSTANCE;
-//        int length = user32.GetWindowTextLength(hwnd);
-//        if (length > 0) {
-//            char[] buffer = new char[length + 1];
-//            user32.GetWindowText(hwnd, buffer, length + 1);
-//            String text = Native.toString(buffer);
-//            System.out.println("控件文本: " + text);
-//        }
+        if (result > 0) {
+            String windowText = Native.toString(buffer);
+            System.out.println("按钮文本: " + windowText);
 
-        // 获取按钮的文字内容
-        String controlText = getControlText(hwnd);
-        if (controlText != null && !controlText.isEmpty()) {
-            System.out.println("按钮文本: " + controlText);
+            return windowText;
         }
 
-        return controlText;
+        return null;
     }
 
 
@@ -316,7 +367,7 @@ public class WinUtils3 {
      * @param hwnd
      * @return
      */
-    public static String getControlClassName(HWND hwnd) {
+    public static String getClassName(HWND hwnd) {
         char[] buffer = new char[256];
         User32.INSTANCE.GetClassName(hwnd, buffer, buffer.length);
         String className = Native.toString(buffer).trim();
@@ -327,19 +378,31 @@ public class WinUtils3 {
 
 
     /**
-     * 获取控件的文本（适用于按钮和其他文本控件）
+     * 获取 - 父级窗口
      *
-     * @param hwnd
+     * @param hwndChild 子按钮
      * @return
      */
-    public static String getControlText(HWND hwnd) {
+    public static HWND getParentWindow(HWND hwndChild) {
+        return User32.INSTANCE.GetParent(hwndChild);
+    }
+
+
+    /**
+     * 获取窗口句柄 (根据窗口标题来查找)
+     *
+     * @param windowTitle
+     * @return
+     */
+    public static HWND findWindow(String windowTitle) {
         User32 user32 = User32.INSTANCE;
-        char[] buffer = new char[512];
-        int result = user32.GetWindowText(hwnd, buffer, buffer.length);
-        if (result > 0) {
-            return Native.toString(buffer);
+        HWND hwnd = user32.FindWindow(null, windowTitle);
+        if (hwnd == null) {
+            System.out.println("窗口未找到");
+        } else {
+            System.out.println("窗口句柄: " + hwnd);
         }
-        return null;
+        return hwnd;
     }
 
 }

@@ -2,14 +2,14 @@ package com.bebopze.tdx.script.task;
 
 import com.bebopze.tdx.script.utils.WinUtils;
 import com.bebopze.tdx.script.utils.WinUtils3;
-import com.bebopze.tdx.script.utils.WindowTextReader;
 import com.google.common.collect.Lists;
-import com.sun.jna.Native;
 import com.sun.jna.platform.win32.WinDef;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.bebopze.tdx.script.utils.SleepUtils.winSleep;
 import static java.awt.event.KeyEvent.*;
@@ -24,16 +24,14 @@ public class TdxScript {
 
 
         // .933   -   [盘后数据下载]
-        task_933();
+        // task_933();
 
 
-        winSleep(3000);
-        // check
-        // check_933();
+        // winSleep(3000);
 
 
         // .902   -   [扩展数据管理器]
-        // task_902();
+        task_902();
 
 
         // winSleep(3000);
@@ -73,117 +71,6 @@ public class TdxScript {
     }
 
 
-    public static void check_933() {
-
-
-        // 下载完成
-        boolean taskEnd = false;
-
-
-        while (true) {
-
-
-            // 切换 [tdx-主界面]   ->   选中[通达信]
-            switchTdxWindow();
-
-
-//            // 键盘输入   ->   [.933]   -   打开 [盘后数据下载]
-//            ArrayList<Integer> keyList = Lists.newArrayList(VK_PERIOD, VK_9, VK_3, VK_3);
-//            WinUtils.keyPress(keyList);
-//            log.info("---------------------------- 键盘输入 [.933]     >>>     打开 [盘后数据下载]");
-//
-//
-//            winSleep();
-
-
-            String lpClassName1 = "#32770";
-            String lpWindowName1 = "盘后数据下载";
-
-
-            // ---------- [沪深京日线] 按钮
-            // 获取 [按钮]
-            // WinDef.HWND button1 = WinUtils.findWindowsButton(lpClassName1, lpWindowName1, "沪深京日线*");
-            // 开始下载  ->  取消下载（下载中）  ->  开始下载（下载完毕）
-            WinDef.HWND button_取消下载 = WinUtils.findWindowsButton(lpClassName1, lpWindowName1, "取消下载");
-            WinDef.HWND button_开始下载 = WinUtils.findWindowsButton(lpClassName1, lpWindowName1, "开始下载");
-            // 窗口切换
-            // WinUtils.windowSwitcher(button_取消下载);
-            // 点击 [按钮]
-//            WinUtils.clickMouseLeft(button1);
-//            log.info("---------------------------- 点击 [盘后数据下载 - 沪深京日线]");
-
-
-            // winSleep();
-
-
-            // 获取 [task-窗口]   -   [内容]
-
-
-//            // 获取当前活动窗口的句柄
-//            // WinDef.HWND hwnd = WindowTextReader.User32Ex.INSTANCE.GetForegroundWindow();
-//            WinDef.HWND hwnd = button_取消下载 != null ? button_取消下载 : button_开始下载;
-//
-//
-//            // 读取窗口标题
-//            byte[] windowText = new byte[512];
-//            WindowTextReader.User32Ex.INSTANCE.GetWindowTextA(hwnd, windowText, 512);
-//            System.out.println("Window Title: " + Native.toString(windowText));
-//
-//
-//            // 通过 FindWindowEx 查找窗口中的控件，假设你知道  按钮的类名和名称
-//            WinDef.HWND buttonHwnd = WindowTextReader.User32Ex.INSTANCE.FindWindowEx(hwnd, null, lpClassName1, lpWindowName1);
-//            if (buttonHwnd != null) {
-//                byte[] buttonText = new byte[512];
-//                WindowTextReader.User32Ex.INSTANCE.GetWindowTextA(buttonHwnd, buttonText, 512);
-//                System.out.println("Button Text: " + Native.toString(buttonText));
-//            } else {
-//                System.out.println("Button not found");
-//            }
-
-
-            if (button_取消下载 != null) {
-                // 下载中
-                taskEnd = false;
-                // System.out.println("[盘后数据]   ->   ing");
-                log.info("[盘后数据]   ->   ing");
-
-                winSleep(30000);
-
-
-            } else if (button_开始下载 != null) {
-                // 下载完成
-                taskEnd = true;
-                // System.out.println("[盘后数据]   ->   end");
-                log.info("[盘后数据]   ->   end");
-            } else {
-
-                taskEnd = true;
-
-                log.info("[盘后数据]   ->   error");
-            }
-
-
-            if (taskEnd) {
-
-                // 关闭窗口 - [盘后收据下载]
-
-
-                // ---------- [沪深京日线] 按钮
-                // 获取 [按钮]
-                WinDef.HWND button_关闭 = WinUtils.findWindowsButton(lpClassName1, lpWindowName1, "关闭");
-                // 窗口切换
-                WinUtils.windowSwitcher(button_关闭);
-                // 点击 [按钮]
-                WinUtils.clickMouseLeft(button_关闭);
-                log.info("---------------------------- 点击 [盘后数据下载 - 关闭]");
-
-
-                return;
-            }
-        }
-    }
-
-
     /**
      * 执行task     ==>     .902   -   [扩展数据管理器]
      */
@@ -199,14 +86,14 @@ public class TdxScript {
 
 
         // .902   -   [扩展数据管理器]
-        _902(); // TOOD 是/否
+        _902();
+
+        // check
+        check_902();
 
 
         // close [通达信]
         closeTdx();
-
-
-        // killTdx();
     }
 
 
@@ -234,42 +121,6 @@ public class TdxScript {
 
 
     /**
-     * 打开 - [通达信]
-     */
-    private static void openTdx() {
-
-        // tdx
-        String appPath = "C:\\soft\\通达信\\v_2024\\new_tdx\\tdxw.exe";
-        // tdx - 中信证券
-        // String appPath2 = "C:\\soft\\通达信\\中信证券\\zd_zxzq_gm\\TdxW.exe";
-
-        WinUtils.openApp(appPath);
-    }
-
-
-    /**
-     * 关闭 - [开屏广告]
-     */
-    private static void closeTdxAds() {
-
-        String lpClassName = "#32770";
-        String lpWindowName = "通达信信息";
-
-
-        // 获取 [开屏广告-窗口]
-        WinDef.HWND window = WinUtils.findWindow(lpClassName, lpWindowName);
-        // 窗口切换
-        WinUtils.windowSwitcher(window);
-        // 关闭 [窗口]
-        WinUtils.closeWindow(window);
-        log.info("---------------------------- 点击 [开屏广告 - 关闭]");
-
-
-        winSleep();
-    }
-
-
-    /**
      * .933   -   [盘后数据下载]
      */
     private static void _933() {
@@ -292,19 +143,8 @@ public class TdxScript {
         String lpWindowName = "盘后数据下载";
 
 
-        // ---------- [沪深京日线] 按钮
-//        // 获取 [按钮]
-//        WinDef.HWND button1 = WinUtils.findWindowsButton(lpClassName, lpWindowName, "沪深京日线*");
-//        // 窗口切换
-//        WinUtils.windowSwitcher(button1);
-//        // 点击 [按钮]
-//        WinUtils.clickMouseLeft(button1);
-//        log.info("---------------------------- 点击 [盘后数据下载 - 沪深京日线]");
-
-
         // 获取 [盘后数据下载]窗口   -   所有 [按钮]
-        WinDef.HWND window = WinUtils.findWindow(lpClassName, lpWindowName);
-        List<WinDef.HWND> hwndChildButtonList = WinUtils3.listAllChildButton(window);
+        List<WinDef.HWND> hwndChildButtonList = WinUtils3.listAllChildButton(lpClassName, lpWindowName);
 
 
         // 遍历 [按钮]列表
@@ -316,8 +156,8 @@ public class TdxScript {
         // 沪深京分钟线            -   1分钟线数据 / 5分钟线数据             /     下载所有AB股类品种的日线数据
         //
         // 沪深京分时图            -   当日分时图数据(仅供当天脱机分析使用)     /     添加品种 / 移出品种 / 清空品种
-        // 扩展市场行情日线         -   日线数据                            /     添加品种 / 移出品种 / 清空品种
-        // 扩展市场行情分钟线       -   1分钟线数据 / 5分钟线数据              /     添加品种 / 移出品种 / 清空品种
+        // 扩展市场行情日线         -   日线数据                            /     添加品种 / 移出品种 / 清空品种     /     下载所有港股品种日线数据 / 下载所有美股品种日线数据
+        // 扩展市场行情分钟线       -   1分钟线数据 / 5分钟线数据              /     添加品种 / 移出品种 / 清空品种     /     下载所有港股品种日线数据 / 下载所有美股品种日线数据
         //
         //
         // 开始下载 / 关闭
@@ -326,8 +166,8 @@ public class TdxScript {
         for (WinDef.HWND childButton : hwndChildButtonList) {
 
             // [按钮] - 文本
-            String buttonText = WinUtils3.printControlText(childButton);
-            // 沪深京日线   -   日线和实时行情数据   -   开始下载
+            String buttonText = WinUtils3.getWindowText(childButton);
+            // 沪深京日线   -   日线和实时行情数据
             if ("日线和实时行情数据".equals(buttonText)) {
 
                 // 窗口切换
@@ -343,7 +183,7 @@ public class TdxScript {
                 for (WinDef.HWND childButton2 : hwndChildButtonList) {
 
                     // [按钮] - 文本
-                    String buttonText2 = WinUtils3.printControlText(childButton2);
+                    String buttonText2 = WinUtils3.getWindowText(childButton2);
                     // 沪深京日线   -   日线和实时行情数据   -   开始下载
                     if ("开始下载".equals(buttonText2)) {
 
@@ -359,41 +199,97 @@ public class TdxScript {
                 }
             }
         }
+
+
+        // .902 - 扩展数据管理器   -   全部刷新 / 刷新 / 删除 / 修改 / 关闭
+
+
         // .921 - 自动选股模式   -   一键全部选股 / 每板块单独选股 / 添加方案 / 修改方案 / 删除方案 / 前移 / 后移 / 执行方案 / 一键选股 / 打开板块 / 关闭
+
 
         // .933 - 盘后数据下载
         //
-        // 沪深京日线              -   日线和实时行情数据                         （native@0x5d0582）   /   下载所有AB股类品种的日线数据（native@0x120984）
-        // 沪深京分钟线            -   1分钟线数据（native@0x1208a8） / 5分钟线数据（native@0x150a02）    /   ~
+        // 沪深京日线              -   日线和实时行情数据                   /     下载所有AB股类品种的日线数据
+        // 沪深京分钟线            -   1分钟线数据 / 5分钟线数据             /     下载所有AB股类品种的日线数据
         //
-        // 沪深京分时图            -   当日分时图数据(仅供当天脱机分析使用)          （native@0x2a09c0）    /   添加品种（native@0x2c0314） / 移出品种（native@0x1e06ca） / 清空品种（native@0x5e008e）
-        // 扩展市场行情日线         -   日线数据                                 （native@0x120a1e）    /   ~
-        // 扩展市场行情分钟线       -   1分钟线数据（native@0x1309f2） / 5分钟线数据（native@0x1209f4）    /   ~
+        // 沪深京分时图            -   当日分时图数据(仅供当天脱机分析使用)     /     添加品种 / 移出品种 / 清空品种
+        // 扩展市场行情日线         -   日线数据                            /     添加品种 / 移出品种 / 清空品种     /     下载所有港股品种日线数据 / 下载所有美股品种日线数据
+        // 扩展市场行情分钟线       -   1分钟线数据 / 5分钟线数据              /     添加品种 / 移出品种 / 清空品种     /     下载所有港股品种日线数据 / 下载所有美股品种日线数据
         //
         //
-        // 沪深京日线/沪深京分钟线                       -   下载所有AB股类品种的日线数据（native@0x120984）
-        // 沪深京分时图/扩展市场行情日线/扩展市场行情分钟线   -   添加品种（native@0x2c0314） / 移出品种（native@0x1e06ca） / 清空品种（native@0x5e008e）
-
-        //  下载所有港股品种日线数据 / 下载所有美股品种日线数据（native@0x130a1e）
-        //
-        // 开始下载（native@0x6f0022） / 关闭（native@0x906ea）
-
-
-//        winSleep();
-//
-//
-//        // ---------- [开始下载] 按钮
-//        // 获取 [按钮].933
-//
-//        WinDef.HWND button2 = WinUtils.findWindowsButton(lpClassName, lpWindowName, "开始下载");
-//        // 窗口切换
-//        WinUtils.windowSwitcher(button2);
-//        // 点击 [按钮]
-//        WinUtils.clickMouseLeft(button2);
-//        log.info("---------------------------- 点击 [盘后数据下载 - 沪深京日线 - 开始下载]");
+        // 开始下载 / 关闭
 
 
         winSleep();
+    }
+
+    /**
+     * check .933   -   [盘后数据下载]
+     */
+    private static void check_933() {
+
+        // 下载完成
+        boolean taskEnd = false;
+
+
+        while (true) {
+
+
+            // 切换 [tdx-主界面]   ->   选中[通达信]
+            switchTdxWindow();
+
+
+            String lpClassName1 = "#32770";
+            String lpWindowName1 = "盘后数据下载";
+
+
+            // ---------- [沪深京日线] 按钮
+            // 获取 [按钮]
+            // 开始下载（初始状态）  ->  取消下载（下载中）  ->  开始下载（下载完毕）
+            WinDef.HWND button_取消下载 = WinUtils.findWindowsButton(lpClassName1, lpWindowName1, "取消下载");
+            WinDef.HWND button_开始下载 = WinUtils.findWindowsButton(lpClassName1, lpWindowName1, "开始下载");
+
+
+            if (button_取消下载 != null) {
+                // 下载中
+                taskEnd = false;
+                log.info("[盘后数据]   ->   ing");
+
+
+                // check频率  -  1次/30s
+                winSleep(30000);
+
+
+            } else if (button_开始下载 != null) {
+                // 下载完成
+                taskEnd = true;
+                log.info("[盘后数据]   ->   end");
+
+            } else {
+
+                taskEnd = true;
+                log.info("[盘后数据]   ->   error");
+            }
+
+
+            if (taskEnd) {
+
+                // 关闭窗口 - [盘后收据下载]
+
+
+                // ---------- [沪深京日线] 按钮
+                // 获取 [按钮]
+                WinDef.HWND button_关闭 = WinUtils.findWindowsButton(lpClassName1, lpWindowName1, "关闭");
+                // 窗口切换
+                WinUtils.windowSwitcher(button_关闭);
+                // 点击 [按钮]
+                WinUtils.clickMouseLeft(button_关闭);
+                log.info("---------------------------- 点击 [盘后数据下载 - 关闭]");
+
+
+                return;
+            }
+        }
     }
 
 
@@ -437,9 +333,9 @@ public class TdxScript {
         winSleep();
 
 
-        // ---------- [多路并行-是/否] 按钮
+        // ---------- [多路并行 - 是(&Y)/否(&N)/取消] 按钮
         // 获取 [按钮]
-        WinDef.HWND button2 = WinUtils.findWindowsButton(lpClassName2, lpWindowName2, "取消");
+        WinDef.HWND button2 = WinUtils.findWindowsButton(lpClassName2, lpWindowName2, "是(&Y)");
         // 窗口切换
         WinUtils.windowSwitcher(button2);
         // 点击 [按钮]
@@ -448,6 +344,243 @@ public class TdxScript {
 
 
         winSleep();
+    }
+
+    /**
+     * check .902   -   [扩展数据管理器]
+     */
+    private static void check_902() {
+
+        // 下载完成
+        boolean taskEnd = false;
+
+
+        winSleep();
+
+
+        while (true) {
+
+
+            String lpClassName = "#32770";
+            // String lpWindowName = "扩展数据管理器";
+
+
+            // 获取 [#32770] - 所有 [窗口]   -   所有 [按钮]
+            List<WinDef.HWND> windowList = WinUtils3.findWindowList(lpClassName, null);
+            List<WinDef.HWND> allWinChildButtonList = WinUtils3.listAllChildButton(windowList);
+
+            // 当前系统  全部[按钮]
+            // List<WinDef.HWND> allWinChildButtonList = WinUtils3.listAllWinChildButton();
+
+
+            // 遍历 [按钮]列表
+            // --------------------------------------------------
+
+
+            for (WinDef.HWND childButton : allWinChildButtonList) {
+
+
+                // button  ->  父[窗口]
+
+                WinDef.HWND parentWindow = null;
+                String childButtonClassName = WinUtils3.getClassName(childButton);
+                if ("Button".equals(childButtonClassName)) {
+                    parentWindow = WinUtils3.getParentWindow(childButton);
+                }
+
+
+                if (parentWindow == null) {
+                    break;
+                }
+
+                String parentWinClassName = WinUtils3.getClassName(parentWindow);
+                String parentWinText = WinUtils3.getWindowText(parentWindow);
+
+
+                // ---------------------------------
+
+
+                // [按钮] - 文本
+                String buttonText = WinUtils3.getWindowText(childButton);
+//                if (StringUtils.isEmpty(buttonText)) {
+//
+//                    taskEnd = true;
+//                    log.info("[扩展数据管理器]   ->   err     -     {} , {}", parentWinText, buttonText);
+//                    // break;
+//                }
+
+
+                // 异常中断 - 弹窗
+                boolean refreshBreakWin = "#32770".equals(parentWinClassName) && "TdxW".equals(parentWinText);
+                if (refreshBreakWin && !StringUtils.isEmpty(buttonText) && (buttonText.contains("取消扩展数据刷新可能导致该数据异常，是否取消？") || buttonText.contains("是(&Y)") || buttonText.contains("否(&N))"))) {
+
+
+                    // 中断 -> [否]
+                    WinDef.HWND button = findButton(allWinChildButtonList, "TdxW", "#32770", "否(&N)");
+
+                    // ----------
+                    // 窗口句柄: native@0x730592
+                    // 窗口标题: TdxW
+                    // 窗口类名: #32770
+                    // 按钮文本: 是(&Y)
+                    // 按钮类名: Button
+                    // ---
+                    // 按钮文本: 否(&N)
+                    // 按钮类名: Button
+                    // ---
+                    // 按钮文本: 取消扩展数据刷新可能导致该数据异常，是否取消？
+                    // 按钮类名: Static
+                    // ---
+                    // ----------
+
+
+                    // 异常中断
+                    taskEnd = false;
+
+                    // 窗口切换
+                    WinUtils.windowSwitcher(button);
+                    // 点击 [按钮]
+                    WinUtils.clickMouseLeft(button);
+                    log.info("---------------------------- 点击 [取消扩展数据刷新可能导致该数据异常，是否取消？ - 否]");
+                    log.info("[扩展数据管理器]   ->   ing     -     {}", parentWinText);
+                }
+
+
+                // 正在刷新当前行情   /   正在计算/正在排名/正在存盘
+                else if (Objects.requireNonNull(parentWinText).contains("路并行") || (!StringUtils.isEmpty(buttonText) && (buttonText.contains("正在刷新当前行情") || buttonText.contains("正在计算") || buttonText.contains("正在排名") || buttonText.contains("正在存盘")))) {
+
+
+                    // ----------
+                    // 窗口句柄: native@0x450314
+                    // 窗口标题: 刷新数据
+                    // 窗口类名: #32770
+                    // 按钮文本: 正在刷新当前行情...[16%]
+                    // 按钮类名: Static
+                    // ----------
+
+                    // ----------
+                    // 窗口句柄: native@0x2406ea
+                    // 窗口标题: 3路并行 1-3     /     2路并行 4-5     /     1路并行 6-6
+                    // 窗口类名: #32770
+                    // 按钮文本: 正在计算(4426/5312) 嵘泰股份   /   正在排名(583/1763) 20230216   /   正在存盘(4693/5307) 芯导科技
+                    // 按钮类名: Static
+                    // ----------
+
+
+                    // ing
+                    taskEnd = false;
+                    log.info("[扩展数据管理器]   ->   ing     -     {}", parentWinText);
+
+
+                    // --------------------------------------
+
+                    // 超过 - 最大任务 num     ->     任务[结束]
+
+
+                    // 1路并行 101-101     /     3路并行 111-113
+                    if (!StringUtils.isEmpty(parentWinText) && parentWinText.contains("路并行")) {
+
+                        // 任务编号
+                        String numStr = parentWinText.split("路并行")[1].trim().split("-")[0];
+                        Integer num = Integer.valueOf(numStr);
+
+
+                        // 任务编号 >= 101     ->     [end]
+                        if (num >= 101) {
+                            taskEnd = true;
+                            log.info("[扩展数据管理器]   ->   end     -     {} , {}", parentWinText, buttonText);
+
+                            // break;
+                        }
+                    }
+
+
+                }
+
+                /** else {
+
+
+                 taskEnd = true;
+                 log.info("[扩展数据管理器]   ->   err     -     {} , {}", parentWinText, buttonText);
+                 }*/
+
+
+                // ------------------------------------ taskEnd
+
+
+                if (taskEnd) {
+
+
+                    // 关闭窗口 - [扩展数据管理器]
+
+
+                    // ----------
+                    // 窗口句柄: native@0x72098c
+                    // 窗口标题: 3路并行 114-116
+                    // 窗口类名: #32770
+                    // 按钮文本: 正在计算(1/1) 上证指数
+                    // 按钮类名: Static
+                    // ---
+                    // 按钮文本: 取消
+                    // 按钮类名: Button
+                    // ---
+                    // ----------
+
+
+                    // ---------- [扩展数据管理器 - 取消]
+
+                    // 获取 [按钮]
+                    WinDef.HWND button_取消 = WinUtils.findWindowsButton(lpClassName, parentWinText, "取消");
+                    // 窗口切换
+                    WinUtils.windowSwitcher(button_取消);
+                    // 点击 [按钮]
+                    WinUtils.clickMouseLeft(button_取消);
+                    log.info("---------------------------- 点击 [扩展数据管理器 - 取消]");
+
+
+                    winSleep(3000);
+
+
+                    // ----------
+                    // 窗口句柄: native@0x8f042c
+                    // 窗口标题: TdxW
+                    // 窗口类名: #32770
+                    // 按钮文本: 是(&Y)
+                    // 按钮类名: Button
+                    // ---
+                    // 按钮文本: 否(&N)
+                    // 按钮类名: Button
+                    // ---
+                    // ---
+                    // 按钮文本: 取消扩展数据刷新可能导致该数据异常，是否取消？
+                    //
+                    //
+                    //
+                    // 按钮类名: Static
+                    // ---
+                    // ----------
+
+
+                    // ---------- [扩展数据管理器 - 取消 - 是(&Y) / 否(&N)]
+
+
+                    // 获取 [按钮]
+                    WinDef.HWND button_取消_是 = WinUtils.findWindowsButton(lpClassName, "TdxW", "是(&Y)");
+                    // 窗口切换
+                    WinUtils.windowSwitcher(button_取消_是);
+                    // 点击 [按钮]
+                    WinUtils.clickMouseLeft(button_取消_是);
+                    log.info("---------------------------- 点击 [扩展数据管理器 - 取消 - 是]");
+
+
+                    return;
+                }
+            }
+
+
+            // TODO   check频率  -  1次/2min
+            winSleep(60000 * 2 / 20);
+        }
     }
 
 
@@ -484,6 +617,87 @@ public class TdxScript {
 
 
         winSleep(5000);
+    }
+
+    /**
+     * check .921   -   [自动选股]
+     */
+    private static void check_921() {
+
+    }
+
+
+    /**
+     * 遍历 buttonList   -   根据 buttonText  ->  查找 button
+     *
+     * @param hwndChildButtonList
+     * @param winText             父级窗口 - 标题
+     * @param winClassName        父级窗口 - 类名
+     * @param buttonText          按钮 - 类名
+     * @return
+     */
+    private static WinDef.HWND findButton(List<WinDef.HWND> hwndChildButtonList, String winText, String winClassName, String buttonText) {
+
+        for (WinDef.HWND childButton : hwndChildButtonList) {
+
+
+            WinDef.HWND parentWin = WinUtils3.getParentWindow(childButton);
+            if (null == parentWin) {
+                return null;
+            }
+
+
+            String parentWindowText = WinUtils3.getWindowText(parentWin);
+            String parentClassName = WinUtils3.getClassName(parentWin);
+
+
+            String childButtonText = WinUtils3.getWindowText(childButton);
+            String className = WinUtils3.getClassName(childButton);
+
+
+            if (Objects.equals(parentWindowText, winText) && Objects.equals(parentClassName, winClassName) && Objects.equals(childButtonText, buttonText)) {
+
+                return childButton;
+            }
+        }
+
+        return null;
+    }
+
+
+    /**
+     * 打开 - [通达信]
+     */
+    private static void openTdx() {
+
+        // tdx
+        String appPath = "C:\\soft\\通达信\\v_2024\\new_tdx\\tdxw.exe";
+        // tdx - 中信证券
+        // String appPath2 = "C:\\soft\\通达信\\中信证券\\zd_zxzq_gm\\TdxW.exe";
+
+        WinUtils.openApp(appPath);
+    }
+
+
+    /**
+     * 关闭 - [开屏广告]
+     */
+    private static void closeTdxAds() {
+
+        String lpClassName = "#32770";
+        String lpWindowName = "通达信信息";
+
+
+        // 获取 [开屏广告-窗口]
+        WinDef.HWND window = WinUtils.findWindow(lpClassName, lpWindowName);
+        // 窗口切换
+        WinUtils.windowSwitcher(window);
+        // 关闭 [窗口]
+        WinUtils.closeWindow(window);
+        log.info("---------------------------- 点击 [开屏广告 - 关闭]");
+
+
+        winSleep();
     }
 
 

@@ -30,6 +30,7 @@ public class SleepUtils {
      * @param millis
      */
     public static void winSleep(long millis) {
+        log.info("sleep : {}s", millis / 1000);
         sleep(millis);
     }
 
