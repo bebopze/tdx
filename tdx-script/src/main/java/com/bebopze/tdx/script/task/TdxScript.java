@@ -352,7 +352,8 @@ public class TdxScript {
     private static void check_902() {
 
         long startTime = System.currentTimeMillis();
-        double MAX_LIMIT_TIME = 60 * 60 * 2.5;
+        // 2.5h
+        double MAX_LIMIT_TIME = 2.5 * 60 * 60 * 1000;
 
 
         // 扩展数据 - 刷新完成
