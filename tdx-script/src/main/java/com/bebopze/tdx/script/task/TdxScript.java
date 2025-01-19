@@ -579,7 +579,7 @@ public class TdxScript {
 
 
             // TODO   check频率  -  1次/2min
-            winSleep(60000 * 2 / 20);
+            winSleep(60000 * 2);
         }
     }
 
