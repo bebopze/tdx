@@ -1,0 +1,127 @@
+{
+RPS10_A   :   IF(EXTDATA_USER(1, 0)/10!=DRAWNULL,     EXTDATA_USER(1, 2)/10,          IF(EXTDATA_USER(101, 0)/10!=DRAWNULL,     EXTDATA_USER(101, 2)/10,     EXTDATA_USER(171, 2)/10))     NODRAW;
+RPS20_A   :   IF(EXTDATA_USER(2, 0)/10!=DRAWNULL,     EXTDATA_USER(2, 2)/10,          IF(EXTDATA_USER(102, 0)/10!=DRAWNULL,     EXTDATA_USER(102, 2)/10,     EXTDATA_USER(172, 2)/10))     NODRAW;
+RPS50_A   :   IF(EXTDATA_USER(3, 0)/10!=DRAWNULL,     EXTDATA_USER(3, 2)/10,          IF(EXTDATA_USER(103, 0)/10!=DRAWNULL,     EXTDATA_USER(103, 2)/10,     EXTDATA_USER(173, 2)/10))     NODRAW;
+RPS120_A  :   IF(EXTDATA_USER(4, 0)/10!=DRAWNULL,     EXTDATA_USER(4, 2)/10,          IF(EXTDATA_USER(104, 0)/10!=DRAWNULL,     EXTDATA_USER(104, 2)/10,     EXTDATA_USER(174, 2)/10))     NODRAW;
+RPS250_A  :   IF(EXTDATA_USER(5, 0)/10!=DRAWNULL,     EXTDATA_USER(5, 2)/10,          IF(EXTDATA_USER(105, 0)/10!=DRAWNULL,     EXTDATA_USER(105, 2)/10,     EXTDATA_USER(175, 2)/10))     NODRAW;
+}
+RPS10_A   :   IF(EXTDATA_USER(1, 0)/10!=DRAWNULL,     EXTDATA_USER(1, 2)/10,          EXTDATA_USER(101, 2)/10)     NODRAW;
+RPS20_A   :   IF(EXTDATA_USER(2, 0)/10!=DRAWNULL,     EXTDATA_USER(2, 2)/10,          EXTDATA_USER(102, 2)/10)     NODRAW;
+RPS50_A   :   IF(EXTDATA_USER(3, 0)/10!=DRAWNULL,     EXTDATA_USER(3, 2)/10,          EXTDATA_USER(103, 2)/10)     NODRAW;
+RPS120_A  :   IF(EXTDATA_USER(4, 0)/10!=DRAWNULL,     EXTDATA_USER(4, 2)/10,          EXTDATA_USER(104, 2)/10)     NODRAW;
+RPS250_A  :   IF(EXTDATA_USER(5, 0)/10!=DRAWNULL,     EXTDATA_USER(5, 2)/10,          EXTDATA_USER(105, 2)/10)     NODRAW;
+
+
+RPS10_HK  :=   EXTDATA_USER(71,1)/10     NODRAW;
+RPS20_HK  :=   EXTDATA_USER(72,1)/10     NODRAW;
+RPS50_HK  :=   EXTDATA_USER(73,1)/10     NODRAW;
+RPS120_HK :=   EXTDATA_USER(74,1)/10     NODRAW;
+RPS250_HK :=   EXTDATA_USER(75,1)/10     NODRAW;
+
+
+RPS10_US  :=   EXTDATA_USER(76,1)/10     NODRAW;
+RPS20_US  :=   EXTDATA_USER(77,1)/10     NODRAW;
+RPS50_US  :=   EXTDATA_USER(78,1)/10     NODRAW;
+RPS120_US :=   EXTDATA_USER(79,1)/10     NODRAW;
+RPS250_US :=   EXTDATA_USER(80,1)/10     NODRAW;
+
+
+RPS5_BK   :    IF(EXTDATA_USER(6, 0)/10!=DRAWNULL,     EXTDATA_USER(6, 2)/10,          EXTDATA_USER(106, 2)/10)     NODRAW;
+RPS10_BK  :    IF(EXTDATA_USER(7, 0)/10!=DRAWNULL,     EXTDATA_USER(7, 2)/10,          EXTDATA_USER(107, 2)/10)     NODRAW;
+RPS15_BK  :    IF(EXTDATA_USER(8, 0)/10!=DRAWNULL,     EXTDATA_USER(8, 2)/10,          EXTDATA_USER(108, 2)/10)     NODRAW;
+RPS20_BK  :    IF(EXTDATA_USER(9, 0)/10!=DRAWNULL,     EXTDATA_USER(9, 2)/10,          EXTDATA_USER(109, 2)/10)     NODRAW;
+RPS50_BK  :    IF(EXTDATA_USER(10,0)/10!=DRAWNULL,     EXTDATA_USER(10,2)/10,          EXTDATA_USER(110, 2)/10)     NODRAW;
+
+
+
+
+
+{ ------------------------------------------------------------------------------------------------ }
+
+市场类型 :   SETCODE     NODRAW;           {市场类型     0:深圳 1:上海 2:北京
+
+
+                                                                  12-美股指数；     74-美股；
+
+
+                                                                  47:中金所期货 28:郑州商品 29:大连商品 30:上海商品,
+
+
+                                                                  27-香港指数；    31-香港主板； 48-香港创业板；
+
+                                                                 ... }
+
+
+
+{ ------------------------------------------------ }
+深沪品种类型  :  FINANCE(3);                       { 0-指数/板块；   1-A股主板；2-中小板（83/87北交所）；3-创业板（30）；4-三板（688科创）；   5-B股；6-债券；7-基金；8-权证；9-其它；10-非沪深品种（港/美）  }
+
+A股  :   BETWEEN(深沪品种类型,     1, 4);
+
+
+
+
+
+{ ------------------------------------------------ }
+{A股 :   INBLOCK('上市一年以上');
+
+港股 :   INBLOCK('港股');
+美股 :   INBLOCK('美股');
+}
+
+
+
+港股 :   市场类型=27   ||   市场类型=31   ||   市场类型=48;
+美股 :   市场类型=12   ||   市场类型=74;
+
+
+
+板块 :   INBLOCK('板块指数RPS');
+大盘 :   INBLOCK('中期信号')      AND   深沪品种类型=0;
+
+
+
+
+
+个股 :   A股 || 港股 || 美股     NODRAW;
+
+
+
+
+
+
+
+{ ------------------------------------------------ }
+{
+CODE_NUM := STR2CON(CODE);
+
+
+A股: (   CODELIKE('00000') AND CODE_NUM>=1      AND CODE_NUM<=9      )
+||   (   CODELIKE('0000' ) AND CODE_NUM>=10     AND CODE_NUM<=99     )
+||   (   CODELIKE('000'  ) AND CODE_NUM>=100    AND CODE_NUM<=999    )
+||   (   CODELIKE('00'   ) AND CODE_NUM>=1000   AND CODE_NUM<=9999   )
+||   (   CODELIKE('0'    ) AND CODE_NUM>=10000  AND CODE_NUM<=99999  )
+||   (                         CODE_NUM>=100000                      )
+;
+
+港股: NOT(A股)  AND  (
+      (   CODELIKE('0000' ) AND CODE_NUM>=1     AND CODE_NUM<=9      )
+||    (   CODELIKE('000'  ) AND CODE_NUM>=10    AND CODE_NUM<=99     )
+||    (   CODELIKE('00'   ) AND CODE_NUM>=100   AND CODE_NUM<=999    )
+||    (   CODELIKE('0'    ) AND CODE_NUM>=1000  AND CODE_NUM<=9999   )
+||    (                         CODE_NUM>=10000                      )
+);
+
+美股: NOT(A股) AND NOT(港股);
+}
+
+
+
+
+
+{ ------------------------------------------------ }
+RPS10  :   IF(A股, RPS10_A,    IF(港股, RPS10_HK,    IF(美股, RPS10_US,    IF(板块, RPS5_BK,   0))))     NODRAW;
+RPS20  :   IF(A股, RPS20_A,    IF(港股, RPS20_HK,    IF(美股, RPS20_US,    IF(板块, RPS10_BK,  0))))     NODRAW;
+RPS50  :   IF(A股, RPS50_A,    IF(港股, RPS50_HK,    IF(美股, RPS50_US,    IF(板块, RPS15_BK,  0))))     NODRAW;
+RPS120 :   IF(A股, RPS120_A,   IF(港股, RPS120_HK,   IF(美股, RPS120_US,   IF(板块, RPS20_BK,  0))))     NODRAW;
+RPS250 :   IF(A股, RPS250_A,   IF(港股, RPS250_HK,   IF(美股, RPS250_US,   IF(板块, RPS50_BK,  0))))     NODRAW;

@@ -1,0 +1,181 @@
+MA5 :=MA(C, 5)   COLORWHITE;
+MA10: MA(C,M1)   COLORYELLOW;
+MA20: MA(C,M2)   COLORMAGENTA;
+MA30: MA(C,M3)   COLORLIRED;
+MA50: MA(C,M4)   COLORGREEN;
+MA60: MA(C,60)   COLORLIGREEN;
+MA100:MA(C,M5)   COLORLIGRAY;
+MA200:MA(C,M6)   COLORBLUE;
+MA250:MA(C,250)  COLORCYAN;
+
+
+
+DRAWTEXT_FIX(ISLASTBAR AND X,0.01,0.05,0,HYBLOCK),COLORYELLOW;
+DRAWTEXT_FIX(ISLASTBAR AND X,0.01,0.10,0,GNBLOCK),COLORYELLOW;
+DRAWTEXT_FIX(ISLASTBAR AND X,0.01,0.15,0,ZDBLOCK),COLORWHITE;
+
+
+
+周期     :=  PERIOD             NODRAW COLORWHITE;
+日       :=  周期 = 5           NODRAW COLORWHITE;
+
+距今天数 :=  CURRBARSCOUNT      NODRAW COLORWHITE;
+
+
+
+月多     :=  TOOLS.月多         NODRAW COLORYELLOW ;
+一二阶段 :=  TOOLS.一二阶段     NODRAW COLORMAGENTA;
+
+多头     :=  TOOLS.多头   ||   INBLOCK('中期观察')   ||   INBLOCK('中期池子')       NODRAW COLORMAGENTA;
+
+
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------- }
+中期调整_N :=  IF( (MA多(100) || MA多(200))  AND  PERIOD>=5{日K},     100,     200);
+
+
+_H    :=  HHV(H,     中期调整_N);
+H_DAY :=  HHVBARS(H, 中期调整_N)  +1;
+
+_L    :=  LLV(L,     H_DAY);
+L_DAY :=  LLVBARS(L, H_DAY)  +1;
+
+
+调整幅度  :   _L/_H *100 -100     COLORCYAN NODRAW;
+调整天数  :   H_DAY - L_DAY       COLORCYAN NODRAW;
+调整幅度2 :   L/_H *100 -100      COLORCYAN NODRAW;
+调整天数2 :   H_DAY -1            COLORCYAN NODRAW;
+
+{
+DRAWNUMBER(CURRBARSCOUNT=CONST(L_DAY),   _L      ,   调整幅度)   COLORCYAN;
+DRAWNUMBER(CURRBARSCOUNT=CONST(L_DAY),   _L *0.95,   调整天数)   COLORCYAN;
+}
+DRAWTEXT   (距今天数=CONST(L_DAY),   0.99*L      ,   STRCAT(   STRCAT( VAR2STR(调整幅度,0),   '&' ),   VAR2STR(调整天数,0) ) )       COLORCYAN;
+
+
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------- }
+中期VOL占比 :   中期VOL占比.中期VOL占比       COLORMAGENTA NODRAW;
+
+
+
+极限缩量 :=  中期VOL占比<15;
+
+
+缩量 :   MA多(250)   AND   NOT(跌停)          AND     多头          AND        (C<MA5 || C<MA10 || C<MA20  || C<MA50)       AND       LLV(AMO,10)=AMO
+
+                                AND     (
+                                                 ( 距今天数<200     AND     调整幅度<-25     AND     中期VOL占比<33 )
+                                          ||     ( 距今天数<100     AND     调整幅度<-20     AND     中期VOL占比<20 )
+                                          ||     ( 距今天数< 50     AND     调整幅度<-14     AND     中期VOL占比<30 )
+
+                                        )       NODRAW;
+
+DRAWICON(缩量     AND     (极限缩量   ||   MOD(BARSLAST(缩量=0),  3)=1),       0.98*L,       44);
+
+
+
+
+
+{ ----------------------------------------------------------------- 最小VOL }
+VOL占比_L     :   LLV(中期VOL占比,   H_DAY)                 NODRAW;
+VOL占比_L_DAY :   BARSLAST(VOL占比_L = 中期VOL占比)  +1     NODRAW;
+
+DRAWTEXT(距今天数=CONST(VOL占比_L_DAY)   AND   缩量,       0.93*L,   STRCAT(   STRCAT( VAR2STR( REF(中期VOL占比,VOL占比_L_DAY-1), 0),   '&' ),   VAR2STR(REF(调整天数2, VOL占比_L_DAY-1),0) ) )       COLORGREEN;
+
+DRAWICON(距今天数=CONST(VOL占比_L_DAY)   AND   缩量,            L,        7);
+
+
+
+
+
+{ ----------------------------------------------------------------- 最小VOL }
+MACD底背离 :   MACD底背离.MACD底背离         COLORGREEN NODRAW;
+
+DRAWTEXT(日 AND MACD底背离,     0.995*L,     '底背离')     COLORGREEN;
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------- }
+C_MA200跌幅 :   C_MA跌幅.C_MA跌幅(200)       COLORCYAN NODRAW;
+C_MA250跌幅 :   C_MA跌幅.C_MA跌幅(250)       COLORCYAN NODRAW;
+
+
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------- }
+中期涨幅 :   中期涨幅N(20)     COLORRED NODRAW;
+中期天数 :   中期天数N(20)     COLORRED NODRAW;
+
+
+
+
+
+{----------------------}
+C新高 :   SUMBARS(REF(C,1)-C,   C*0.0001)     COLORGREEN NODRAW;
+H新高 :   SUMBARS(REF(H,1)-H,   H*0.0001)     COLORGREEN NODRAW;
+
+
+
+
+
+
+
+{ ----------------------------------- 6、口袋支点 ------------------------------------- }
+口袋支点 :   TOOLS.口袋支点       COLORYELLOW NODRAW;
+DRAWICON(口袋支点,   0.98*LOW,   15);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{----------------------}
+左侧卖 :                  (  C< MA100  AND  MA100<REF(MA100,1)  )   ||   (  C< MA200  AND  MA200<REF(MA200,1)  )     COLORBLUE NODRAW;
+右侧卖 :   左侧卖   AND   (  C< MA100  AND  MA100<REF(MA100,1)  )   AND  (  C< MA200  AND  MA200<REF(MA200,1)  )     COLORCYAN NODRAW;
+
+
+
+左侧买 :                  COUNT(右侧卖, 100)>50     AND     (  C>=MA100  AND  MA100>REF(MA100,1)  )   ||   (  C>=MA200  AND  MA200>REF(MA200,1)  )     COLORGREEN   NODRAW;
+右侧买 :   左侧买   AND   COUNT(左侧买, 100)>50     AND     (  C>=MA100  AND  MA100>REF(MA100,1)  )   AND  (  C>=MA200  AND  MA200>REF(MA200,1)  )     COLORMAGENTA NODRAW;
+
+
+
+
+
+STICKLINE(BARSSINCEN(左侧买,    150)=0,   LLV(L,200)*0.7, 2*HHV(H,200)   ,0,-1)     COLORGREEN  ;
+STICKLINE(BARSSINCEN(右侧买,    150)=0,   LLV(L,200)*0.7, 2*HHV(H,200)   ,0,-1)     COLORMAGENTA;
+
+STICKLINE(BARSSINCEN(左侧卖,    150)=0,   LLV(L,200)*0.7, 2*HHV(H,200)   ,0,-1)     COLORBLUE   ;
+STICKLINE(BARSSINCEN(右侧卖,    150)=0,   LLV(L,200)*0.7, 2*HHV(H,200)   ,0,-1)     COLORCYAN   ;
+
+

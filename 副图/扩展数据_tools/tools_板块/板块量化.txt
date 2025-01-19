@@ -1,0 +1,105 @@
+{ 880515 - 通达信88 }
+
+
+左侧试仓_NUM :   "880515$TOOLS_板块.左侧试仓_NUM"     COLORWHITE   NODRAW;
+  左侧买_NUM :   "880515$TOOLS_板块.左侧买_NUM  "     COLORGREEN   NODRAW;
+  右侧买_NUM :   "880515$TOOLS_板块.右侧买_NUM  "     COLORMAGENTA NODRAW;
+
+强势卖出_NUM :   "880515$TOOLS_板块.强势卖出_NUM"     COLORRED     NODRAW;
+  左侧卖_NUM :   "880515$TOOLS_板块.左侧卖_NUM  "     COLORBLUE    NODRAW;
+  右侧卖_NUM :   "880515$TOOLS_板块.右侧卖_NUM  "     COLORCYAN    NODRAW;
+
+
+
+
+
+{ ------------------------------------------------------------------------------- }
+ALL板块_NUM_ :=   "880515$TOOLS_板块.ALL板块_NUM "     COLORWHITE   NODRAW;
+
+
+ALL板块_NUM  :   MAX(左侧试仓_NUM + 左侧买_NUM + 右侧买_NUM + 强势卖出_NUM + 左侧卖_NUM + 右侧卖_NUM,     100)       COLORWHITE NODRAW;       {  ALL_NUM   ->  应该 以此为准  }
+
+
+
+
+
+{ ------------------------------------------------------------------------------- 板块占比 }
+左侧试仓_占比  :   左侧试仓_NUM / ALL板块_NUM   * 100     COLORWHITE   ;
+  左侧买_占比  :     左侧买_NUM / ALL板块_NUM   * 100     COLORGREEN   ;
+  右侧买_占比  :     右侧买_NUM / ALL板块_NUM   * 100     COLORMAGENTA ;
+
+强势卖出_占比  :   强势卖出_NUM / ALL板块_NUM   * 100     COLORRED     ;
+  左侧卖_占比  :     左侧卖_NUM / ALL板块_NUM   * 100     COLORBLUE    ;
+  右侧卖_占比  :     右侧卖_NUM / ALL板块_NUM   * 100     COLORCYAN    ;
+
+
+
+
+
+{ ------------------------------------------------------------------------------- }
+板块月多_NUM :   "880515$TOOLS_板块.月多_NUM "           COLORYELLOW  NODRAW;
+
+月多占比     :   板块月多_NUM / ALL板块_NUM   * 100      COLORYELLOW;
+
+
+
+
+
+
+
+
+
+{
+IF(右侧买_占比>=65,   右侧买_占比,   DRAWNULL)   COLORRED     LINETHICK3;
+IF(右侧买_占比>=75,   右侧买_占比,   DRAWNULL)   COLORYELLOW  LINETHICK3;
+IF(右侧买_占比<=25,   右侧买_占比,   DRAWNULL)   COLORGREEN   LINETHICK3;
+IF(右侧买_占比<=15,   右侧买_占比,   DRAWNULL)   COLORCYAN    LINETHICK3;
+}
+
+
+
+85, COLORYELLOW  LINETHICK1;
+75, COLORRED     LINETHICK1;
+25, COLORGREEN   LINETHICK1;
+15, COLORCYAN    LINETHICK1;
+
+
+
+{ ---------------------------------------------- 大盘_倍/危        强势卖出_占比  -   倍：>40    危：> 50 }
+
+大盘_预倍 :   右侧买_占比  >95     NODRAW;
+
+大盘_预空 :   COUNT(右侧买_占比>70, 10)   AND   右侧买_占比<50   AND   强势卖出_占比<5     NODRAW;   { 预多->空 }
+
+
+
+大盘_倍   :   强势卖出_占比>40     NODRAW;   { 预多->多 }
+大盘_危   :   强势卖出_占比>50     NODRAW;
+
+
+大盘_空   :   COUNT(大盘_预倍, 25)   AND   COUNT(大盘_倍, 10)   AND   COUNT(大盘_危, 5)     AND     (左侧卖_占比>50 || 右侧卖_占比>50)     NODRAW;   { 多->空 }
+
+
+
+{ ----- 回调幅度 -88% }
+
+DRAWTEXT(BARSSINCEN(大盘_预倍, 5),     80,     '大盘_预倍')       COLORMAGENTA;
+DRAWTEXT(BARSSINCEN(大盘_预空, 5),     50,     '大盘_预空')       COLORBLUE;
+
+DRAWTEXT(BARSSINCEN(大盘_倍  , 5),     30,       '大盘_倍')       COLORRED;
+DRAWTEXT(BARSSINCEN(大盘_危  , 5),     40,       '大盘_危')       COLORCYAN;
+
+DRAWTEXT(BARSSINCEN(大盘_空  , 5),     50,       '大盘_空')       COLORCYAN;
+
+
+
+
+{
+DRAWNUMBER(BARSSINCEN(调整幅度2<-88, 5),     55,     调整幅度2)       COLORBLUE;
+DRAWNUMBER(BARSSINCEN(调整幅度2<-88, 5),     45,     调整天数2)       COLORBLUE;
+};
+
+
+
+
+

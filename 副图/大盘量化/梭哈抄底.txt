@@ -1,0 +1,95 @@
+{ -------------------------------------------------- 大盘 - 牛/熊 }
+牛熊状态 :    大盘量化.牛熊状态     NODRAW;
+
+牛       :=   牛熊状态=4  AND  SSF_MA20预多;
+牛市中继 :=   牛熊状态=3  AND  SSF_MA20预多;
+熊       :=   牛熊状态=2;
+熊市中继 :=   牛熊状态=1;
+
+
+
+
+
+{ ------------------------------------ }
+MA50占比        :=   大盘量化.MA50占比;
+
+MA50_调整幅度   :=   MA50占比.调整幅度;
+MA50_调整幅度2  :=   MA50占比.调整幅度2;
+MA50_调整天数2  :=   MA50占比.调整天数2;
+
+
+
+{ ------------------------------------ }
+月多占比        :=   月多占比.月多占比;
+
+月多_调整幅度   :=   月多占比.调整幅度;
+月多_调整幅度2  :=   月多占比.调整幅度2;
+月多_调整天数2  :=   月多占比.调整天数2;
+
+
+
+{ ------------------------------------ }
+新低       :=   新高_新低.新低;
+新低占比   :=   新高_新低.新低占比;
+
+新低天数   :=   新高_新低.新低天数;
+
+
+
+{ ------------------------------------ }
+右侧卖占比 :=   板块量化.右侧卖_占比;
+
+
+
+
+
+{ ------------------------------------------------ }
+CON_1_1 :   MA50占比<15                COLORWHITE NODRAW;
+CON_1_2 :   月多占比<5                 COLORWHITE NODRAW;
+CON_1   :   CON_1_1   ||   CON_1_2     COLORBLUE  DOTLINE;
+
+
+CON_2_1 :   新低    >=1000             COLORWHITE NODRAW;
+CON_2_2 :   新低占比>=15               COLORWHITE NODRAW;
+CON_2_3 :   新低占比>=15               COLORWHITE NODRAW;
+CON_2   :   CON_2_1   ||   CON_2_2     COLORGREEN DOTLINE;
+
+
+CON_3_1 :   右侧卖占比     >=  93      COLORWHITE NODRAW;
+CON_3_2 :   MA50_调整幅度2 <  -90      COLORWHITE NODRAW;
+CON_3_3 :   月多_调整幅度2 <  -85      COLORWHITE NODRAW;
+CON_3   :   CON_3_1   ||   CON_3_2   ||   CON_3_3     COLORCYAN DOTLINE;
+
+
+CON_4_1 :   CON_1  AND  新低天数       >  50      COLORWHITE NODRAW;
+CON_4_2 :   CON_1  AND  MA50_调整天数2 > 100      COLORWHITE NODRAW;
+CON_4_3 :   CON_1  AND  月多_调整天数2 >  70      COLORWHITE NODRAW;
+CON_4   :   CON_4_1   ||   CON_4_2   ||   CON_4_3     COLORBROWN DOTLINE;
+
+
+
+CON_NUM :   CON_1 + CON_2 + CON_3 + CON_4     NODRAW;
+
+
+{
+梭哈抄底 :   IF(牛||牛市中继,     CON_NUM>=1,     CON_NUM>=3)       COLORYELLOW;}
+
+梭哈抄底 :
+IF(      牛,     CON_NUM>=1,
+IF(牛市中继,     CON_NUM>=2,
+IF(熊市中继,     CON_NUM>=3,
+                 CON_NUM>=4)))       COLORYELLOW;
+
+
+DRAWTEXT(BARSSINCEN(CON_NUM>=1,  10),     0.5,     '板块-月多')     COLORMAGENTA;
+
+
+
+
+{
+梭哈抄底_ :=  ( MA50占比<1 )
+         ||   ( MA50占比<5   AND  (新低>=1000 || 新低占比>=10)   AND  右侧卖占比>85)
+         ||   ( MA50占比>15  AND  月多占比<4                     AND  右侧卖占比>85)
+         ||   ( MA50占比<15  AND  月多占比<5                     AND  右侧卖占比>85   AND   (新低>=1000 || 新低占比>=10) )     COLORYELLOW;
+
+};

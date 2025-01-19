@@ -1,0 +1,32 @@
+新高     :   大盘量化.新高数量     COLORRED   NODRAW;
+新低     :   大盘量化.新低数量     COLORGREEN NODRAW;
+
+全A      :   大盘量化.全A数量      COLORWHITE NODRAW;
+
+
+
+
+
+差值     :  新高 - 新低            COLORGREEN LINETHICK2;
+IF(差值>0,  差值,  DRAWNULL)       COLORRED   LINETHICK2;
+
+
+
+
+
+新高占比 :   IF(差值<0,   0,   新高/全A *100)                                               COLORRED   NODRAW;
+新高天数 :   IF(差值>0,   COUNT(差值>0,   BARSLAST( EVERY(差值<0, 10) ) ),       0)         COLORRED   NODRAW;
+
+新低占比 :   IF(差值>0,   0,   新低/全A *100)                                               COLORGREEN NODRAW;
+新低天数 :   IF(差值<0,   COUNT(差值<0,   BARSLAST( EVERY(差值>0, 10) ) ),       0)         COLORGREEN NODRAW;
+
+
+
+
+
+
+
+0,COLORBLUE,LINETHICK2;
+
+STICKLINE(差值>0,差值,0,1,0)     COLORRED;
+STICKLINE(差值<0,差值,0,1,0)     COLORGREEN;

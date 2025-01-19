@@ -1,0 +1,120 @@
+月多数量 :   大盘量化.月多数量      COLORWHITE NODRAW;
+基北数量 :   大盘量化.基北数量      COLORWHITE NODRAW;
+
+
+
+月多占比 :   月多数量 / 基北数量 * 100     COLORGREEN  NODRAW;
+{ ------------------------------------------------------------------------------- }
+板块月多数量 :   板块量化.板块月多_NUM     COLORYELLOW   NODRAW;
+    板块数量 :   板块量化.ALL板块_NUM      COLORYELLOW   NODRAW;
+
+板块月多占比     :   板块月多数量 / 板块数量   * 100      COLORWHITE;
+
+
+
+
+
+NOTEXT_月多占比 :   月多占比     COLORWHITE  LINETHICK2;
+
+
+IF(月多占比>=15,   月多占比,   DRAWNULL)     COLORRED     LINETHICK3;
+IF(月多占比>=20,   月多占比,   DRAWNULL)     COLORYELLOW  LINETHICK3;
+IF(月多占比<=10,   月多占比,   DRAWNULL)     COLORGREEN   LINETHICK3;
+IF(月多占比<= 5,   月多占比,   DRAWNULL)     COLORCYAN    LINETHICK3;
+
+
+
+
+
+NOTEXT_1 :  20, COLORYELLOW  LINETHICK1;
+NOTEXT_2 :  15, COLORRED     LINETHICK1;
+NOTEXT_3 :  10, COLORGREEN   LINETHICK1;
+NOTEXT_4 :   5, COLORCYAN    LINETHICK1;
+
+
+
+
+
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------- }
+{仓位_大盘 :  仓位_大盘.仓位_平均数     COLOR008080;}
+{仓位      :  仓位.仓位                 COLOR008080;}
+
+
+{
+状态 : 1;
+TESTSKIP( 状态 = 状态);
+}
+
+
+
+
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------- }
+牛熊状态 :=  大盘量化.牛熊状态;
+
+牛 :  牛熊状态 = 4     NODRAW;
+熊 :  牛熊状态 = 2     NODRAW;
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------- }
+
+中期调整_N0 :   BARSLAST(月多占比>=20 AND SSF_MA20多)   +   35       COLORWHITE NODRAW;
+中期调整_N  :   MIN(中期调整_N0,     200)                            COLORWHITE NODRAW;
+
+
+
+_H    :        HHV(月多占比,   中期调整_N)        NODRAW;
+H_DAY :    HHVBARS(月多占比,   中期调整_N)   +1   NODRAW;
+
+_L    :=        LLV(月多占比,   H_DAY);
+L_DAY :=   BARSLAST(月多占比  =    _L)  +1;
+
+
+调整幅度  :          _L/_H   *100 -100     COLORCYAN NODRAW;
+调整天数  :   H_DAY - L_DAY                COLORCYAN NODRAW;
+
+调整幅度2 :    月多占比/_H   *100 -100     COLORCYAN NODRAW;
+调整天数2 :   H_DAY - 1                    COLORCYAN NODRAW;
+
+
+
+DRAWTEXT(CURRBARSCOUNT=CONST(L_DAY),       12,     VAR2STR(调整幅度,0))        COLORCYAN;
+DRAWTEXT(CURRBARSCOUNT=CONST(L_DAY),        7,     VAR2STR(调整天数,0))        COLORCYAN;
+
+
+
+{ ----- 回调幅度 -80% }
+DRAWTEXT(BARSSINCEN(调整幅度2<-80, 5),     22,     VAR2STR(调整幅度2,0))       COLORBLUE;
+DRAWTEXT(BARSSINCEN(调整幅度2<-80, 5),     17,     VAR2STR(调整天数2,0))       COLORBLUE;
+
+{ ----- 回调幅度 -90% }
+DRAWTEXT(BARSSINCEN(调整幅度2<-90, 5),     12,     VAR2STR(调整幅度2,0))       COLORCYAN;
+DRAWTEXT(BARSSINCEN(调整幅度2<-90, 5),      7,     VAR2STR(调整天数2,0))       COLORCYAN;
+
+
+
+
+
+
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------- 间隔线 1年 }
+
+间隔1年 :=   MONTH=1   AND   DAY<10 ,NODRAW;
+
+STICKLINE(间隔1年  ,0,1  ,0,2)       COLOR808080;

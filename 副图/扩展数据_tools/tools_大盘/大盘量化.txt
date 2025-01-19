@@ -1,0 +1,72 @@
+上MA50数量 :   "999999$TOOLS_大盘.上MA50数量"     COLORWHITE NODRAW;
+   全A数量 :   "999999$TOOLS_大盘.全A数量"        COLORWHITE NODRAW;
+
+
+新高数量   :   "999999$TOOLS_大盘.新高数量"       COLORRED   NODRAW;
+新低数量   :   "999999$TOOLS_大盘.新低数量"       COLORGREEN NODRAW;
+
+
+二阶段数量 :   "999999$TOOLS_大盘.二阶段数量"     COLORMAGENTA NODRAW;
+强势股数量 :   "999999$TOOLS_大盘.强势股数量"     COLORYELLOW  NODRAW;
+
+
+
+{ ----------------------------------------------------------- 月多     }
+月多数量     :   "999999$TOOLS_大盘.月多数量"     COLORRED   NODRAW;
+基北数量     :   "999999$TOOLS_大盘.基北数量"     COLORWHITE NODRAW;
+
+{基北数量_DEL :=   BLOCKSETNUM('基金北向')          COLORWHITE NODRAW;}
+
+
+
+
+
+{ ----------------------------------------------------------- 牛熊状态 }
+牛熊状态   :   "880003$TOOLS_大盘.牛熊状态"     NODRAW;                            { 880003 - 平均股价 }
+
+
+
+牛         :   牛熊状态 = 4     NODRAW;
+牛市中继   :   牛熊状态 = 3     NODRAW;
+
+熊         :   牛熊状态 = 2     NODRAW;
+熊市中继   :   牛熊状态 = 1     NODRAW;
+
+
+
+
+
+{ ----------------------------------------------------------- 大盘跌 DEL }
+{大盘跌   :   "880003$TOOLS_大盘.大盘跌"     COLORCYAN NODRAW;}
+
+
+
+
+
+
+
+{ ----------------------------------------------------------- 占比 }
+
+MA50占比  :     上MA50数量 / 全A数量   *100          COLORGREEN    NODRAW;
+
+
+
+{ ------------- }
+二阶段占比  :   二阶段数量 / 全A数量   *100          COLORMAGENTA LINETHICK2;
+强势股占比  :   强势股数量 / 全A数量   *100          COLORYELLOW  LINETHICK2;
+
+
+
+{ ------------- }
+月多占比    :   月多数量   / IF(月多数量=0,   0,   基北数量)   *100     COLORRED     NODRAW;
+
+
+
+
+
+
+
+2,  COLORCYAN   LINETHICK1;
+5,  COLORGREEN  LINETHICK1;
+15, COLORRED    LINETHICK1;
+20, COLORYELLOW LINETHICK1;

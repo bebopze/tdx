@@ -1,0 +1,262 @@
+MA20 := MA(C,20);
+{MA50 := MA(C,50);}
+
+
+
+{
+_20CM :  _20CM._20CM     NODRAW;
+}
+
+{
+中期涨幅_MA20   :=  H / LLV(L, BARSLAST(C<MA20) + 10)  *100 - 100;
+中期涨幅_MA50   :=  H / LLV(L, BARSLAST(C<MA50) + 10)  *100 - 100;
+
+中期涨幅_MAX    :=   MAX(中期涨幅_MA20, 中期涨幅_MA50);
+
+中期涨幅   :=  中期涨幅_MA20;
+中期涨幅_H :=  HHV(中期涨幅, 10);
+
+中期天数   :=  LLVBARS(L, BARSLAST(C<MA20) + 10);
+}
+
+
+
+
+
+
+
+{ ------------------------------------------------ }
+
+大盘 :   TOOLS_RPS.大盘     NODRAW;
+板块 :   TOOLS_RPS.板块     NODRAW;
+个股 :   TOOLS_RPS.个股     NODRAW;
+
+
+ A股 :  TOOLS_RPS.A股       NODRAW;
+港股 :  TOOLS_RPS.港股      NODRAW;
+美股 :  TOOLS_RPS.美股      NODRAW;
+
+
+
+
+
+
+
+{ ------------------------------------------------ }
+周期 :   PERIOD     COLORWHITE NODRAW;
+
+日 :   周期=5     NODRAW;
+周 :   周期=6     NODRAW;
+月 :   周期=7     NODRAW;
+
+
+
+
+
+
+
+{ ------------------------------------------------ 上影/大阴 }
+
+{上影大阴 :   上影大阴.上影大阴   COLORCYAN  NODRAW;   { 收盘价 位于振幅 下1/3}
+
+
+
+
+
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------- 月多 }
+月多_A股  :   IF(EXTDATA_USER(11,0)!=DRAWNULL,   EXTDATA_USER(11,0),          IF(EXTDATA_USER(111,0)!=DRAWNULL,   EXTDATA_USER(111,0),   EXTDATA_USER(1111,2)))       NODRAW;
+月多_板块 :   IF(EXTDATA_USER(12,0)!=DRAWNULL,   EXTDATA_USER(12,0),          IF(EXTDATA_USER(112,0)!=DRAWNULL,   EXTDATA_USER(112,0),   EXTDATA_USER(1112,2)))       NODRAW;
+
+{ -------------- 港/美 }
+月多_HK   :   IF(EXTDATA_USER(81,0)!=DRAWNULL,   EXTDATA_USER(81,0),          IF(EXTDATA_USER(181,0)!=DRAWNULL,   EXTDATA_USER(181,0),   EXTDATA_USER(1181,2)))       NODRAW;
+月多_US   :   IF(EXTDATA_USER(87,0)!=DRAWNULL,   EXTDATA_USER(87,0),          IF(EXTDATA_USER(187,0)!=DRAWNULL,   EXTDATA_USER(187,0),   EXTDATA_USER(1187,2)))       NODRAW;
+
+
+
+月多 :
+
+IF(大盘,   月多_板块,
+IF(板块,   月多_板块,
+IF( A股,   月多_A股 ,
+
+IF(港股,   月多_HK,
+IF(美股,   月多_US,
+
+           0
+)))))      NODRAW;
+
+
+
+
+
+周多 :   IF(EXTDATA_USER(29,0)!=DRAWNULL,   EXTDATA_USER(29,0),          IF(EXTDATA_USER(129,0)!=DRAWNULL,   EXTDATA_USER(129,0),   EXTDATA_USER(1129,2)))       NODRAW;
+
+
+
+
+
+{ ------------------------------------------------ 卡顿BUG（前置排除80%） }
+前置过滤 :   月多   AND   C>=MA20       NODRAW;
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------- AMO_BL  }
+AMO_BL  :   IF(EXTDATA_USER(30,0)!=DRAWNULL,   EXTDATA_USER(30,0),          IF(EXTDATA_USER(130,0)!=DRAWNULL,   EXTDATA_USER(130,0),   EXTDATA_USER(1130,2)))       NODRAW;
+AMO_BL2 :   IF(EXTDATA_USER(31,0)!=DRAWNULL,   EXTDATA_USER(31,0),          IF(EXTDATA_USER(131,0)!=DRAWNULL,   EXTDATA_USER(131,0),   EXTDATA_USER(1131,2)))       NODRAW;
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------- XZZB  }
+XZZB涨  :   IF(EXTDATA_USER(32,0)!=DRAWNULL,   EXTDATA_USER(32,0),          IF(EXTDATA_USER(132,0)!=DRAWNULL,   EXTDATA_USER(132,0),   EXTDATA_USER(1132,2)))       NODRAW;
+
+
+
+{ ----------------------------------------------------------------------------------------------- SSFMA }
+SSF1    :   IF(EXTDATA_USER(33,0)!=DRAWNULL,   EXTDATA_USER(33,0),          IF(EXTDATA_USER(133,0)!=DRAWNULL,   EXTDATA_USER(133,0),   EXTDATA_USER(1133,2)))       NODRAW;
+SSF多   :   IF(EXTDATA_USER(34,0)!=DRAWNULL,   EXTDATA_USER(34,0),          IF(EXTDATA_USER(134,0)!=DRAWNULL,   EXTDATA_USER(134,0),   EXTDATA_USER(1134,2)))       NODRAW;
+
+
+
+{ -----------------  均线萌出  ----------------- }
+均线萌出 :   IF(EXTDATA_USER(35,0)!=DRAWNULL,   EXTDATA_USER(35,0),          IF(EXTDATA_USER(135,0)!=DRAWNULL,   EXTDATA_USER(135,0),   EXTDATA_USER(1135,2)))       NODRAW;
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------- 月线反转 }
+{ -------------------- 一阶段：月线反转5/6.5 --------------------------- }
+月线反转 :   IF(EXTDATA_USER(36,0)!=DRAWNULL,   EXTDATA_USER(36,0),          IF(EXTDATA_USER(136,0)!=DRAWNULL,   EXTDATA_USER(136,0),   EXTDATA_USER(1136,2)))       NODRAW;
+
+
+距月线反转天数 :=  IF(BARSLAST(月线反转)=DRAWNULL, 999, BARSLAST(月线反转))   ,COLORC080FF NODRAW;
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------- 二阶段 };
+{ -------------------- 二阶段：     --------------------------- }
+二阶段   :   IF(EXTDATA_USER(37,0)!=DRAWNULL,   EXTDATA_USER(37,0),          IF(EXTDATA_USER(137,0)!=DRAWNULL,   EXTDATA_USER(137,0),   EXTDATA_USER(1137,2)))       NODRAW;
+
+
+{距二阶段天数 := IF(BARSLAST(二阶段)=DRAWNULL, 999, BARSLAST(二阶段))   ,COLORC080FF NODRAW;}
+
+
+一二阶段 :   IF(EXTDATA_USER(38,0)!=DRAWNULL,   EXTDATA_USER(38,0),          IF(EXTDATA_USER(138,0)!=DRAWNULL,   EXTDATA_USER(138,0),   EXTDATA_USER(1138,2)))       NODRAW;
+
+
+
+
+
+{ ----------------------------------- 6、口袋支点 ------------------------------------- }
+口袋支点 :   IF(EXTDATA_USER(39,0)!=DRAWNULL,   EXTDATA_USER(39,0),          IF(EXTDATA_USER(139,0)!=DRAWNULL,   EXTDATA_USER(139,0),   EXTDATA_USER(1139,2)))       NODRAW;
+
+
+
+
+
+
+
+{------------------------------- 口袋突破 }
+口袋突破 :   前置过滤   AND   口袋支点  AND  H=HHV(H,60)       NODRAW;     { 口袋支点 + 60新高（突破）}
+
+
+
+
+
+
+
+{ ----------------------------------- BS状态 ------------------------------------- }
+
+BS大盘 :   IF(EXTDATA_USER(40,0)!=DRAWNULL,   EXTDATA_USER(40,0),          IF(EXTDATA_USER(140,0)!=DRAWNULL,   EXTDATA_USER(140,0),   EXTDATA_USER(1140,2)))       NODRAW;
+BS板块 :   IF(EXTDATA_USER(41,0)!=DRAWNULL,   EXTDATA_USER(41,0),          IF(EXTDATA_USER(141,0)!=DRAWNULL,   EXTDATA_USER(141,0),   EXTDATA_USER(1141,2)))       NODRAW;
+BS个股 :   IF(EXTDATA_USER(42,0)!=DRAWNULL,   EXTDATA_USER(42,0),          IF(EXTDATA_USER(142,0)!=DRAWNULL,   EXTDATA_USER(142,0),   EXTDATA_USER(1142,2)))       NODRAW;
+
+
+
+BS状态 :
+
+IF(大盘,   BS大盘,
+IF(板块,   BS板块,
+IF(个股,   BS个股,
+
+           0
+)))        NODRAW;
+
+
+
+
+
+{ ----------------------------------- 动量/趋势/慢牛（自动识别：日/周/月） ------------------------------------- }
+
+动量股_D :   IF(EXTDATA_USER(43,0)!=DRAWNULL,   EXTDATA_USER(43,0),          IF(EXTDATA_USER(143,0)!=DRAWNULL,   EXTDATA_USER(143,0),   EXTDATA_USER(1143,2)))       NODRAW;
+趋势股_D :   IF(EXTDATA_USER(44,0)!=DRAWNULL,   EXTDATA_USER(44,0),          IF(EXTDATA_USER(144,0)!=DRAWNULL,   EXTDATA_USER(144,0),   EXTDATA_USER(1144,2)))       NODRAW;
+慢牛股_D :   IF(EXTDATA_USER(45,0)!=DRAWNULL,   EXTDATA_USER(45,0),          IF(EXTDATA_USER(145,0)!=DRAWNULL,   EXTDATA_USER(145,0),   EXTDATA_USER(1145,2)))       NODRAW;
+
+
+动量股_W :   IF(EXTDATA_USER(46,0)!=DRAWNULL,   EXTDATA_USER(46,0),          IF(EXTDATA_USER(146,0)!=DRAWNULL,   EXTDATA_USER(146,0),   EXTDATA_USER(1146,2)))       NODRAW;
+趋势股_W :   IF(EXTDATA_USER(47,0)!=DRAWNULL,   EXTDATA_USER(47,0),          IF(EXTDATA_USER(147,0)!=DRAWNULL,   EXTDATA_USER(147,0),   EXTDATA_USER(1147,2)))       NODRAW;
+慢牛股_W :   IF(EXTDATA_USER(48,0)!=DRAWNULL,   EXTDATA_USER(48,0),          IF(EXTDATA_USER(148,0)!=DRAWNULL,   EXTDATA_USER(148,0),   EXTDATA_USER(1148,2)))       NODRAW;
+
+
+动量股_M :   IF(EXTDATA_USER(49,0)!=DRAWNULL,   EXTDATA_USER(49,0),          IF(EXTDATA_USER(149,0)!=DRAWNULL,   EXTDATA_USER(149,0),   EXTDATA_USER(1149,2)))       NODRAW;
+趋势股_M :   IF(EXTDATA_USER(50,0)!=DRAWNULL,   EXTDATA_USER(50,0),          IF(EXTDATA_USER(150,0)!=DRAWNULL,   EXTDATA_USER(150,0),   EXTDATA_USER(1150,2)))       NODRAW;
+慢牛股_M :   IF(EXTDATA_USER(51,0)!=DRAWNULL,   EXTDATA_USER(51,0),          IF(EXTDATA_USER(151,0)!=DRAWNULL,   EXTDATA_USER(151,0),   EXTDATA_USER(1151,2)))       NODRAW;
+
+
+
+动量股 :   IF(日,  动量股_D,     IF(周,  动量股_W,     IF(月,  动量股_M,     0)))       NODRAW;
+趋势股 :   IF(日,  趋势股_D,     IF(周,  趋势股_W,     IF(月,  趋势股_M,     0)))       NODRAW;
+慢牛股 :   IF(日,  慢牛股_D,     IF(周,  慢牛股_W,     IF(月,  慢牛股_M,     0)))       NODRAW;
+
+
+
+
+
+{ ---------------------------------------- 倍/危 （必须融合：日+周+月  [ 任一周期 满足 -> 全周期 满足 ] ）------------------------------------------ }
+{
+倍危_STATUS :  IF(EXTDATA_USER(41,0)!=DRAWNULL,   EXTDATA_USER(41,0),   EXTDATA_USER(101,2));
+
+倍 :  倍危_STATUS = 1   ||   倍危_STATUS = 2;
+危 :  倍危_STATUS = 2;
+}
+
+
+
+
+
+倍危_个股 :   IF(EXTDATA_USER(59,0)!=DRAWNULL,   EXTDATA_USER(59,0),          IF(EXTDATA_USER(159,0)!=DRAWNULL,   EXTDATA_USER(159,0),   EXTDATA_USER(1159,2)))       NODRAW;
+倍危_板块 :   IF(EXTDATA_USER(60,0)!=DRAWNULL,   EXTDATA_USER(60,0),          IF(EXTDATA_USER(160,0)!=DRAWNULL,   EXTDATA_USER(160,0),   EXTDATA_USER(1160,2)))       NODRAW;
+
+
+
+倍危_STATUS :   IF(个股,    倍危_个股,     倍危_板块)       NODRAW;
+
+
+倍 :   倍危_STATUS = 1   ||   倍危_STATUS = 2       NODRAW;
+危 :   倍危_STATUS = 2                              NODRAW;
+
+
+{
+倍 :  IF(个股,     倍危_个股 = 1  ||  倍危_个股 = 2,     倍危_板块 = 1  ||  倍危_板块 = 2);
+危 :  IF(个股,                        倍危_个股 = 2,                        倍危_板块 = 2);
+};
+
+
+
+
+
+{ ----------------------------------- 多头区间（基础股池） ------------------------------------- }
+{IN基础股池 :   INBLOCK('自选股')   ||   INBLOCK('大均线多头');}
+
+多头 :   月多 || 周多 || 均线萌出 || 一二阶段     ||     动量股 || 趋势股     {||     IN基础股池}     {||     RPS一线红(90)}       NODRAW;     { - DEL   影响性能 };

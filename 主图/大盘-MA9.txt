@@ -1,0 +1,627 @@
+MA5  : MA(C,5)    COLORWHITE;
+MA10 : MA(C,10)   COLORYELLOW;
+MA20 : MA(C,20)   COLORMAGENTA;
+MA50 : IF(MA(C, 50)=DRAWNULL,  DRAWNULL,  MA(C, 50))   COLORGREEN ;
+MA100: IF(MA(C,100)=DRAWNULL,  DRAWNULL,  MA(C,100))   COLORLIGRAY;
+MA200: IF(MA(C,250)=DRAWNULL,  DRAWNULL,  MA(C,250))   COLORBLUE  ;
+MA250:=IF(MA(C,250)=DRAWNULL,  DRAWNULL,  MA(C,250));
+
+
+{NOTEXT_MA20:IF(C <MA20 || MA20 <REF(MA20,1),MA20,DRAWNULL),COLORCYAN,LINETHICK3;        {如果 C < MA20 || MA20↓， 就画出20日均线，否则不画，画出的均线颜色为 绿色}
+BS状态  :  BS状态.BS状态     COLORMAGENTA NODRAW;
+{BS状态 :  BS大盘.BS状态     COLORMAGENTA NODRAW;}
+
+
+
+
+
+
+
+NOTEXT_MA10_1  : IF(C < MA10                ,MA10,  DRAWNULL)  ,COLORFF0080  ,LINETHICK2;
+NOTEXT_MA10_2  : IF(MA10 < REF(MA10,1)      ,MA10,  DRAWNULL)  ,COLORCYAN    ,LINETHICK2;
+
+NOTEXT_MA20_1  : IF(C < MA20                ,MA20,  DRAWNULL)  ,COLORFF0080  ,LINETHICK3;
+NOTEXT_MA20_2  : IF(MA20 < REF(MA20,1)      ,MA20,  DRAWNULL)  ,COLORCYAN    ,LINETHICK3;
+
+NOTEXT_MA50_1  : IF(C < MA50                ,MA50,  DRAWNULL)  ,COLORFF0080  ,LINETHICK4;
+NOTEXT_MA50_2  : IF(MA50 < REF(MA50,1)      ,MA50,  DRAWNULL)  ,COLORCYAN    ,LINETHICK4;
+
+NOTEXT_MA100_1 : IF(C < MA100               ,MA100, DRAWNULL)  ,COLORFF0080  ,LINETHICK5;
+NOTEXT_MA100_2 : IF(MA100 < REF(MA100,1)    ,MA100, DRAWNULL)  ,COLORCYAN    ,LINETHICK5;
+
+NOTEXT_MA200_1 : IF(C <  MA200              ,MA200, DRAWNULL)  ,COLORFF0080  ,LINETHICK6;
+NOTEXT_MA200_2 : IF(MA200 < REF(MA200,1)    ,MA200, DRAWNULL)  ,COLORCYAN    ,LINETHICK6;
+
+
+
+
+
+
+
+{ 昨日收盘-下MA，今日收盘-站上MA }
+{CON_1:= REF(C,1) < REF(MA20,1)    AND   C >= MA20;
+DRAWICON(CON_1, 0.997*LOW, 42);
+
+{ 昨日收盘-上MA，今日收盘-下MA }
+{CON_2:= REF(C,1) >= REF(MA20,1)   AND   C <  MA20;
+DRAWICON(CON_2, 1.035*H, 43);}
+
+
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------- }
+
+中期调整_N := IF(MA多(100) || MA多(200),   100,   200);
+
+
+_H    :=  HHV(H,     中期调整_N);
+H_DAY :=  HHVBARS(H, 中期调整_N)   +1;
+
+_L    :=  LLV(L, H_DAY);
+L_DAY :=  BARSLAST(L=_L)  +1;
+
+
+调整幅度  : _L/_H *100 -100     COLORCYAN NODRAW;
+调整天数  : H_DAY - L_DAY       COLORCYAN NODRAW;
+调整幅度2 :  L/_H *100 -100     COLORCYAN NODRAW;
+调整天数2 : H_DAY -1            COLORCYAN NODRAW;
+
+
+DRAWNUMBER(CURRBARSCOUNT=CONST(L_DAY),   _L      ,   调整幅度)   COLORCYAN;
+DRAWNUMBER(CURRBARSCOUNT=CONST(L_DAY),   _L *0.97,   调整天数)   COLORCYAN;
+
+
+
+
+
+
+
+{ -----------------------------------------------------------------------------------------------  DEL }
+
+
+MA20_ZF_5   :=  MA50         / REF(MA50, 5)  -1;
+MA20_ZF_10  :=  REF(MA50, 5) / REF(MA50,10)  -1;
+
+_CON_1 :=  MA20_ZF_5 < MA20_ZF_10 NODRAW;                { 上涨乏力   -   上涨变慢 / 滞涨 }
+
+_CON_2 :=  C/MA50   NODRAW;            { 贴近  -  收盘价 }
+
+_CON_3 :=  HHV(C/MA50, 20) NODRAW;
+_CON_4 :=  (C/MA50-1) / (HHV(C/MA50, 20)-1) NODRAW;
+
+
+
+
+
+{ ------------------------------------------------------------------------------------------------------------------  卡顿 耗时  TODO   待优化 }
+{ -------------------------------------------------------------- 四阶段（2024-5-5）}
+{MA50走平 :   MA走平(50)   NODRAW;     - DEL }
+
+
+{ 考虑用  BS状态 平替 }
+
+{
+一阶段 : 一阶段   COLORWHITE   NODRAW;
+二阶段 : 二阶段   COLORMAGENTA NODRAW;
+三阶段 : 三阶段   COLORBLUE    NODRAW;
+四阶段 : 四阶段   COLORCYAN    NODRAW;
+
+
+阶段_STATUS_0  :  IF(四阶段, 4,   IF(三阶段, 3,   IF(二阶段, 2,   IF(一阶段, 1,   0))))                         COLORWHITE   NODRAW;
+阶段_STATUS    :  IF(阶段_STATUS_0>0,   阶段_STATUS_0,   REF(阶段_STATUS_0,  BARSLAST(阶段_STATUS_0 > 0))   )   COLORMAGENTA NODRAW;
+
+
+
+STICKLINE(BARSSINCEN(阶段_STATUS=1,    1)=0,   LLV(L,200)*0.7, 0.9*L   ,0,-1) COLORWHITE  ;
+STICKLINE(BARSSINCEN(阶段_STATUS=2,    1)=0,   LLV(L,200)*0.7, 0.9*L   ,0,-1) COLORMAGENTA;
+STICKLINE(BARSSINCEN(阶段_STATUS=3,    1)=0,   LLV(L,200)*0.7, 0.9*L   ,0,-1) COLORBLUE   ;
+STICKLINE(BARSSINCEN(阶段_STATUS=4,    1)=0,   LLV(L,200)*0.7, 0.9*L   ,0,-1) COLORCYAN   ;
+}
+
+
+
+
+
+{ ------------------------------ 0、指标统计 输出 -------------------------------- }
+
+中期涨幅 :  中期涨幅N(20)     COLORRED NODRAW;
+中期天数 :  中期天数N(20)     COLORRED NODRAW;
+
+
+C新高 :  SUMBARS((REF(C,1)-C),C*0.0001)     COLORGREEN NODRAW;
+H新高 :  SUMBARS((REF(H,1)-H),H*0.0001)     COLORGREEN NODRAW;
+
+
+
+
+
+{ 日涨幅3.9% }
+CON_B:= C / REF(C,1) >= 1.039;
+DRAWICON(CON_B, 1*LOW,11);
+
+
+
+
+
+MA50占比 :=   大盘量化.MA50占比     COLORGREEN NODRAW;
+月多占比 :=   大盘量化.月多占比     COLORRED   NODRAW;
+
+
+
+
+
+
+
+{ -------------------------------------------------------------- 第1版（2024-4-17）}
+
+左侧试仓 :=  BS状态=1;
+左侧买   :=  BS状态=2   ||   BS状态=1.5;
+右侧买   :=  BS状态=3   ||   BS状态=2.5;
+强势卖出 :=  BS状态=4;
+左侧卖   :=  BS状态=5;
+右侧卖   :=  BS状态=6;
+
+
+{
+左侧试仓 :=  BS大盘.左侧试仓;
+左侧买   :=  BS大盘.左侧买;
+右侧买   :=  BS大盘.右侧买;
+强势卖出 :=  BS大盘.强势卖出;
+左侧卖   :=  BS大盘.左侧卖;
+右侧卖   :=  BS大盘.右侧卖;
+}
+
+
+
+
+{ ------------- TODO
+STICKLINE(BARSSINCEN(左侧试仓,    5)=0   ||   (  左侧试仓  AND  REF(左侧试仓,1)=0  ),       LLV(L,200)*0.7, 2*HHV(H,200)     ,0,-1)     COLORWHITE;
+STICKLINE(BARSSINCEN(左侧买  ,    5)=0   ||   (  左侧买    AND  REF(左侧买  ,1)=0  ),       LLV(L,200)*0.7, 2*HHV(H,200)     ,0,-1)     COLORGREEN;
+STICKLINE(BARSSINCEN(右侧买  ,    5)=0   ||   (  右侧买    AND  REF(右侧买  ,1)=0  ),       LLV(L,200)*0.7, 2*HHV(H,200)     ,0,-1)     COLORMAGENTA;
+
+
+STICKLINE(BARSSINCEN(强势卖出,    5)=0   ||   (  强势卖出  AND  REF(强势卖出,1)=0  ),       LLV(L,200)*0.7, 2*HHV(H,200)     ,0,-1)     COLORRED;
+
+
+
+S_DAY :  MIN(MAX(BARSLAST(强势卖出||右侧买||左侧买||左侧试仓),2), 10)     COLORCYAN NODRAW;
+
+
+显示_左侧卖  :   COUNT(左侧卖,  S_DAY)=1 AND 左侧卖     NODRAW;
+
+显示_右侧卖1 :   COUNT(右侧卖,  S_DAY)=1 AND 右侧卖     NODRAW;
+显示_右侧卖2 :   右侧卖  AND  COUNT(右侧卖   AND   BARSLAST(显示_右侧卖1) > BARSLAST(显示_左侧卖), 2)=1      NODRAW;
+显示_右侧卖  :=  显示_右侧卖1 || 显示_右侧卖2;
+
+
+STICKLINE(显示_左侧卖,     LLV(L,200)*0.7, 2*HHV(H,200)   ,0,-1) COLORBLUE;
+STICKLINE(显示_右侧卖,     LLV(L,200)*0.7, 2*HHV(H,200)   ,0,-1) COLORCYAN;
+}
+
+
+
+
+{
+STICKLINE(BS_STATUS=1,   LLV(L,200)*0.7, 2*HHV(H,200)   ,0,-1) COLORWHITE;
+STICKLINE(BS_STATUS=2,   LLV(L,200)*0.7, 2*HHV(H,200)   ,0,-1) COLORGREEN;
+STICKLINE(BS_STATUS=3,   LLV(L,200)*0.7, 2*HHV(H,200)   ,0,-1) COLORMAGENTA;
+
+
+S_DAY := MIN(MAX(BARSLAST(右侧买),5), 10)   COLORCYAN NODRAW;
+
+STICKLINE(BS_STATUS=4,   LLV(L,200)*0.7, 2*HHV(H,200)   ,0,-1) COLORBLUE;
+STICKLINE(BS_STATUS=5,   LLV(L,200)*0.7, 2*HHV(H,200)   ,0,-1) COLORCYAN;
+}
+
+
+
+
+{ --------------------------------------------------------------------------------------------------------------------------------------- 梭哈 抄底！！！ }
+新低       :=   新高_新低.新低;
+新低占比   :=   新高_新低.新低占比;
+
+右侧卖占比 :=   板块量化.右侧卖_占比;
+
+
+
+梭哈抄底 :=   ( MA50占比<1 )
+         ||   ( MA50占比<5   AND  (新低>=1000 || 新低占比>=10)   AND  右侧卖占比>85)
+         ||   ( MA50占比>15  AND  月多占比<4                     AND  右侧卖占比>85)
+         ||   ( MA50占比<15  AND  月多占比<5                     AND  右侧卖占比>85   AND   (新低>=1000 || 新低占比>=10) );
+
+
+STICKLINE(梭哈抄底,     LLV(L,200)*0.7, 2*HHV(H,200),     0,-1)       COLORYELLOW;
+
+
+
+
+
+
+
+
+
+
+
+
+{   ----- 1、CON_月多 -----   }
+
+{ MACD月多  -  月/周金叉  -  日上0轴 }
+MACD月_比率     :=  MIN(ABS(MACD.DEA#MONTH), ABS(MACD.DIF#MONTH)) / MAX(ABS(MACD.DEA#MONTH), ABS(MACD.DIF#MONTH));
+MACD月_接近金叉 :=  (BARSLASTCOUNT(MACD.DIF#MONTH >= REF(MACD.DIF#MONTH, 1 *20))>=1.2*20   AND   MACD月_比率>=0.9)   ||   (BARSLASTCOUNT(MACD.DIF#MONTH > REF(MACD.DIF#MONTH, 1 *20))>=1   AND   MACD月_比率>=0.95);
+MACD_月金叉     :=  MACD.MACD#MONTH>=0   ||   (MACD.MACD#MONTH = HHV(MACD.MACD#MONTH, 9 *20)   AND   MACD月_接近金叉),  COLORCYAN NODRAW;
+
+{MACD_月金叉 := MACD.MACD#MONTH>=0   ||   MACD.MACD#MONTH = HHV(MACD.MACD#MONTH, 10 *20);}
+
+
+MACD_周金叉  :=  MACD.MACD#WEEK >=0,  COLORCYAN NODRAW;
+
+
+{MACD_日上0轴:  (MACD.DIF>=0 AND MACD.DEA>=0)   OR   (MACD.DIF>=0 AND MACD.MACD>=0 AND MACD.MACD=HHV(MACD.MACD,10))  NODRAW;}
+MACD_日上0轴 :=  (MACD.DIF>=0 AND MACD.DEA>=0)   OR   (                MACD.MACD>=0 AND MACD.MACD=HHV(MACD.MACD,10))  ,  COLORCYAN NODRAW;
+
+
+
+
+
+MACD月多:= MACD_月金叉  AND  MACD_周金叉  AND  MACD_日上0轴,  COLORLIMAGENTA NODRAW;
+DRAWTEXT(BARSSINCEN(MACD月多,   15)=0 , 0.99*L,  'MACD多')    COLORYELLOW;
+DRAWTEXT(BARSSINCEN(MACD月多=0, 15)=0 , 1.01*H,  'MACD空')    COLORCYAN;
+
+
+
+{ SAR周多  -  C > SAR#周 }
+SAR周多:= C>=SAR.SAR#WEEK ,COLORMAGENTA NODRAW;
+DRAWTEXT(BARSSINCEN(SAR周多,   15)=0 , 0.98*L,  'SAR多') COLORYELLOW;
+DRAWTEXT(BARSSINCEN(SAR周多=0, 10)=0 , 1.02*H,  'SAR空') COLORCYAN;
+
+
+
+MACD日多 := MACD.MACD>=0;
+ SAR日多 := C>=SAR.SAR;
+
+
+CON_月多   :  MACD月多 AND SAR周多,  COLORYELLOW NODRAW;
+CON_月日_多:= CON_月多 AND SAR日多;
+
+
+STICKLINE(BARSSINCEN(CON_月多    , 2)=0   ,0,1  ,0,3) COLORGREEN;
+STICKLINE(BARSSINCEN(CON_月多=0  , 2)=0   ,0,1  ,1,3) COLORCYAN;
+
+STICKLINE(BARSSINCEN(CON_月日_多,   2)=0   ,0,1  ,0,3) COLORMAGENTA;
+STICKLINE(BARSSINCEN(CON_月日_多=0, 2)=0   ,0,1  ,0,3) COLORBLUE;
+
+
+{
+SX_L:=LLV(L,500);
+STICKLINE(COND_周_多  , SX_L*1.5,SX_L*1.65, 0,-1) COLORCYAN;
+STICKLINE(COND_日周_多, SX_L*1.5,SX_L*1.60, 0,1) COLORGREEN;
+}
+
+MACD周多 :=    MACD_周金叉  AND  MACD_日上0轴  AND  (MACD_月金叉  ||  (MA250=0 AND C>MA20 AND MA20>MA50)  ||  (C>MA100 AND C>MA250 AND (MA50>MA100 || MA50>MA250) AND (MA100>REF(MA100,1) || MA250>REF(MA250,1) )) ),   COLORYELLOW NODRAW;
+周多     :     MACD周多 AND SAR周多     COLORYELLOW NODRAW;
+
+
+
+
+
+{ -----------------  均线萌出  ----------------- }
+均线萌出  :   均线萌出.均线萌出     COLORWHITE NODRAW;
+STICKLINE(BARSSINCEN(均线萌出,   20)=0,   LLV(L,200), 2*HHV(H,200)   ,0,0) COLORWHITE;
+
+
+
+
+
+{ -----------------  月线反转  ----------------- }
+{月线反转 :   月线反转.月线反转     NODRAW;
+DRAWICON(BARSSINCEN(月线反转, 30)=0,     LOW,     34);}
+
+
+
+
+
+{ ---------------- 口袋支点 -----------------------}
+{口袋支点 :  口袋支点.口袋支点     NODRAW;
+
+DRAWICON(口袋支点,   0.99*LOW,   15);}
+
+
+
+
+
+
+
+
+{ ---------------------------------- 10、缩200日最小量 ------------------------------------ }
+{ 板块 无需考虑 涨跌停影响 }
+{CON_10:=   VOL!=0   AND   LLV(VOL, 200) = VOL;}
+CON_10 :=   AMO!=0   AND   LLV(AMO, 200) = AMO     {AND   TODO };
+DRAWICON(CON_10,   0.99*LOW,   44);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------------------------------------------------------------------- }
+
+中期涨幅_H :  HHV(中期涨幅,10)     NODRAW;
+
+
+
+
+
+
+{ ------------------------------ 1、20日均线  朝向/斜率 -------------------------------- }
+
+
+{ 上MA20 }
+CON_1:= REF(C,1) < REF(MA20,1)    AND   C >= MA20   AND   (月多 || 周多);
+DRAWICON(CON_1, 0.997*LOW, 42);
+
+{ 下MA20 }
+CON_2:= REF(C,1) >= REF(MA20,1)   AND   C <  MA20   AND   (月多 || 周多);
+DRAWICON(CON_2, 1.035*H, 43);
+
+
+
+
+
+
+
+
+{  最低点 转向 }
+CON2_1_1:=  REF(MA向下(20), 1)   AND   MA向上(20);
+
+{  最高点 转向 }
+CON2_2_1:=  REF(MA向上(20), 1)   AND   MA向下(20);
+
+
+
+{  最近50日  收盘价 跌幅  }
+CON2_DF:= 1 - LLV(C,10) / HHV(C,50);
+
+{  最近50日  收盘价 涨幅  }
+CON2_ZF:= HHV(C,10) / LLV(C,50) - 1;
+
+
+
+{  最低点  AND  跌幅 >= 20%  }
+CON2_1:= CON2_1_1 AND CON2_DF >= 0.2;
+
+{  最高点  AND  涨幅 >= 30%  }
+CON2_2:= CON2_2_1 AND CON2_ZF >= 0.3;
+
+
+
+DRAWICON(CON2_1,  0.93*LOW,  13);
+DRAWICON(CON2_2,  1.055*H ,  14);
+
+
+
+
+
+
+
+
+{ ---------------------------------- 2、放5/10/20/50倍量  ------------------------------------ 不适用大盘 }
+
+CON_3_BL_收阳 :=  C>=O  AND  C >= REF(C,1)  AND  C>MA20;   {  收阳线  }
+
+
+CON_3_BL_1_5:=  AMO_BL >=  4.5;
+CON_3_BL_1_10:= AMO_BL >=  8;
+CON_3_BL_1_20:= AMO_BL >= 17;
+CON_3_BL_1_30:= AMO_BL >= 27;
+CON_3_BL_1_40:= AMO_BL >= 37;
+CON_3_BL_1_50:= AMO_BL >= 47;
+
+
+
+CON_3_BL_50:= CON_3_BL_1_50 AND CON_3_BL_收阳;
+
+CON_3_BL_40:= CON_3_BL_1_40 AND CON_3_BL_收阳 AND CON_3_BL_50 = 0;
+CON_3_BL_30:= CON_3_BL_1_30 AND CON_3_BL_收阳 AND CON_3_BL_50 = 0 AND CON_3_BL_40 = 0;
+CON_3_BL_20:= CON_3_BL_1_20 AND CON_3_BL_收阳 AND CON_3_BL_50 = 0 AND CON_3_BL_40 = 0 AND CON_3_BL_30 = 0;
+CON_3_BL_10:= CON_3_BL_1_10 AND CON_3_BL_收阳 AND CON_3_BL_50 = 0 AND CON_3_BL_40 = 0 AND CON_3_BL_30 = 0 AND CON_3_BL_20 = 0;
+CON_3_BL_5:=  CON_3_BL_1_5  AND CON_3_BL_收阳 AND CON_3_BL_50 = 0 AND CON_3_BL_40 = 0 AND CON_3_BL_30 = 0 AND CON_3_BL_20 = 0 AND CON_3_BL_10 = 0;
+
+
+
+DRAWTEXT(BARSSINCEN(CON_3_BL_5 ,  2)=0,   H,   '5'     )COLORYELLOW;
+DRAWTEXT(BARSSINCEN(CON_3_BL_10,  2)=0,   H,   '10'    )COLORYELLOW;
+DRAWTEXT(BARSSINCEN(CON_3_BL_20,  2)=0,   H,   '20倍'  )COLORYELLOW;
+{
+DRAWTEXT(BARSSINCEN(CON_3_BL_30,  2)=0,   H,   '30倍'  )COLORYELLOW;
+DRAWTEXT(BARSSINCEN(CON_3_BL_40,  2)=0,   H,   '40倍'  )COLORYELLOW;
+DRAWTEXT(BARSSINCEN(CON_3_BL_50,  2)=0,   H,   '50倍量')COLORYELLOW;
+}
+
+
+{DRAWICON(BARSSINCEN(CON_3_BL_1_5 AND CON_3_BL_收阳,5)=0,  0.935*LOW, 7);}
+DRAWICON(CON_3_BL_1_5 AND CON_3_BL_收阳   AND   AMO_BL2>=2   AND   中期涨幅_H<=55,  0.935*LOW, 7);   {5倍量 + 收阳}
+
+
+
+
+
+{AMO倍量:AMO_BL,NODRAW COLORRED;}
+
+{ _AMO_R5_MA10_亿:REF(MA(AMO,10), 5) / 100000000,NODRAW COLORYELLOW; }
+
+
+
+
+
+
+
+
+{ ---------------------------------- 3、当日涨停  ------------------------------------ }
+DRAWICON(涨停,   0.995*LOW,   11);
+
+
+
+
+
+{ ---------------------------------- 4、月线反转（4阶段 --> 1阶段）  ------------------------------------ }
+月线反转 :=  月线反转.月线反转;
+DRAWICON(BARSSINCEN((月线反转),  30)=0,   LOW,   34);
+
+
+
+{ ---------------------------------- 5、三线开花  ------------------------------------ }
+三线开花 := 三线开花.三线开花;
+DRAWICON(三线开花,   0.96*LOW,   18);
+
+
+
+
+
+{ ----------------------------------- 6、口袋支点 ------------------------------------- }
+口袋支点 :  TOOLS.口袋支点       COLORYELLOW NODRAW;
+DRAWICON(口袋支点,   0.98*LOW,   15);
+
+
+
+
+
+
+
+
+
+
+{ ---------------------------------- 11、中期涨幅100% ------------------------------------ }
+
+
+倍危_STATUS  :   TOOLS.倍危_STATUS   {||   倍危.STATUS}     COLORCYAN NODRAW;
+倍           :=  倍危_STATUS = 1     ||   倍危_STATUS = 2;
+危           :=  倍危_STATUS = 2;
+
+{
+倍危_STATUS  :  倍危.STATUS         NODRAW;
+倍  :=  倍危_STATUS=1;
+危  :=  倍危_STATUS=2;
+}
+
+DRAWTEXT(倍 AND NOT(危),  1.015*H,  '倍')     COLORRED;
+DRAWTEXT(危            ,  1.015*H,  '危')     COLORCYAN;
+
+
+
+{ ------------------ 高位爆量 }
+
+AMO_MA5  :=  MA(AMO,  5);
+AMO_MA10 :=  MA(AMO, 10);
+
+
+高位爆量_1 :=  AMO/AMO_MA5>=1.9   AND   AMO/AMO_MA10>=2.1;
+
+高位爆量_2 :=  NOT(高位爆量_1)    AND   AMO / REF( HHV(AMO,10) ,1) >= 1.35     {AND     AMO_亿>=10};
+
+
+DRAWTEXT(  (倍  AND  (高位爆量_1  ||  高位爆量_2   ||   上影大阴)  )   OR   (中期涨幅>30 AND 上影大阴  AND  高位爆量_1),     0.985*H,     '高位-爆量/上影')   COLORCYAN;     { 趋势股 - 高位（倍/危）  -   爆巨量（2-3倍量） }
+
+
+
+
+
+
+
+
+
+
+{ 动量股 - 大双头        MACD 对 动量股 不敏感（特别是 A杀的 妖股）  }
+
+动量股_大双头 :=  动量股                                  AND   调整天数2 >=10   {AND   MACD.MACD<0 {死叉};
+趋势股_大双头 :=  趋势股   AND   HHV(中期涨幅, 50)>=200   AND   调整天数2 >=10   {AND   MACD.MACD<0 {死叉};
+
+
+CON_11  :=  倍 || 危   ||   动量股_大双头 || 趋势股_大双头;
+
+DRAWTEXT( CON_11   AND   MACD新高.MACD新高        ,  0.985*L,  'MACD新高'  ) COLORGREEN;
+DRAWTEXT( CON_11   AND   MACD顶背离.MACD顶背离    ,  1.035*H,  '线背离'    ) COLORCYAN;
+DRAWTEXT( CON_11   AND   MACD柱顶背离.MACD柱顶背离,  1.055*H,  '柱背离'    ) COLORBLUE;
+
+
+
+
+
+
+
+CON_11_底背离1 :=  MA多(10) || 上MA(20) || MA向上(50);
+CON_11_底背离22:=  MA空(200) AND MA空(100);
+CON_11_底背离2 :=  MA空(100) AND 下MA(200);
+
+CON_11_底背离3 :=  COUNT(MA多(200),  50)=0   ||   COUNT(MACD.DIF>0 || MACD.DEA>0,  50)=0;
+CON_11_底背离4 :=  {COUNT(RPS250<60 AND RPS120<50 AND RPS50<50,   20)>=18   ||}   调整幅度 < -49   ||   调整天数2 > 100;
+
+CON_11_底背离  :=  CON_11_底背离1 AND CON_11_底背离2 AND CON_11_底背离3 AND CON_11_底背离4;
+
+DRAWTEXT( CON_11_底背离   AND   MACD底背离.MACD底背离,  0.995*L,  '底背离'    ) COLORGREEN;
+
+
+
+
+
+
+
+
+
+
+{ ---------------------------------- 11-2、AMO_倍危 ------------------------------------ }
+
+大盘AMO_MA20 :=  MA("880003$AMO", 20) / 100000000;            { 亿 }
+个股AMO_MAX  :=  IF(大盘AMO_MA20 >= 9000,   90,   45);        {  大盘万亿 - 个股100亿     /     大盘无量 - 个股 50亿 }
+
+
+
+AMO_警戒线 :=  AMO  >=  个股AMO_MAX * 100000000;     { 100亿  /  50亿 }
+
+DRAWTEXT(TOOLS.日  AND   NOT(TOOLS_RPS.大盘)  AND   NOT(TOOLS_RPS.板块)   AND  (均线萌出||月多)   AND   AMO_警戒线,   0.995*H,   '50亿')     COLORCYAN;
+
+
+
+
+
+
+
+
+
+{ ---------------------------------- 12、H新高 ------------------------------------ }
+{ 最高价 - N日新高 }
+{H新高:= SUMBARS(REF(H,1)-H,   H*0.000001);}
+
+
+{ 20日内 - H新高 }
+CON_12_H60 := BARSSINCEN(H新高 >=  60 AND H新高 < 200,   20)=0;
+CON_12_H200:= BARSSINCEN(H新高 >= 200 AND H新高 < 400,   20)=0;
+CON_12_H400:= BARSSINCEN(H新高 >= 400,   20)=0;
+
+
+DRAWTEXT(CON_12_H60 , 1.01*H,  '60新高') COLORGREEN;
+DRAWTEXT(CON_12_H200, 1.01*H, '200新高') COLORGREEN;
+DRAWTEXT(CON_12_H400, 1.01*H, '400新高') COLORGREEN;
+
+
+
+
+
+

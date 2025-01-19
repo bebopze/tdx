@@ -1,0 +1,75 @@
+JCX  :=  (H+L+O+2*C)/5;
+MJ20 :=  EMA(JCX,39);       { 决策线 }
+MJ30 :=  EMA(JCX,99);       { 牛熊线 }
+
+
+
+
+
+
+
+MA200 :=  MA(C,200)      COLORBLUE;
+
+月多  :=  月多.月多      COLORYELLOW  NODRAW;
+
+
+
+
+
+MJ20向上 := MJ20>=REF(MJ20,1);
+MJ20向下 := MJ20< REF(MJ20,1);
+
+MJ30向上 := MJ30>=REF(MJ30,1);
+MJ30向下 := MJ30< REF(MJ30,1);
+
+
+
+
+
+
+
+{ ------------------------------------------------------------------------------------ 牛/熊 }
+
+牛   :       (   月多                 AND     MJ20向上                                        )
+        ||   (   COUNT(月多, 100)     AND     C>=MJ20   AND   MJ20>=MJ30   AND   MJ30>MA200   )       COLORRED     NODRAW;
+
+
+
+熊   :       (   MA空(200)            AND     MJ20向下    AND   MJ30向下    )
+
+       {||   (   MA空(200)            AND     MJ20<MA200  AND   MJ30<MA200  ) }                       COLORGREEN   NODRAW;
+
+
+
+牛市中继 :  NOT(牛)   AND   NOT(熊)     AND     MA向上(200)  AND  MJ20>MA200 AND MJ30>MA200           COLORMAGENTA NODRAW;
+
+熊市中继 :  NOT(牛)   AND   NOT(熊)     AND     MA向下(200)  AND  ( MJ20向上  ||  MJ30向上 )          COLORLICYAN  NODRAW;
+
+
+
+
+
+{ ------------------------------------------------------------------------------------ 牛/熊 - 状态 }
+牛熊状态 :
+
+IF(牛,             4,
+IF(牛市中继=1,     3,
+
+IF(熊,             2,
+IF(熊市中继=1,     1,
+
+
+                   0          { 0 - （牛/熊）转势点  100% 确立     ->     3-5年 大牛/熊市  来临 }
+))))     COLORWHITE;
+
+
+
+
+
+
+
+NOTEXT_1 :   IF(牛熊状态 = 1,   1,   DRAWNULL)     COLORLICYAN;
+NOTEXT_2 :   IF(牛熊状态 = 2,   2,   DRAWNULL)     COLORCYAN;
+NOTEXT_3 :   IF(牛熊状态 = 3,   3,   DRAWNULL)     COLORMAGENTA;
+NOTEXT_4 :   IF(牛熊状态 = 4,   4,   DRAWNULL)     COLORRED;
+
