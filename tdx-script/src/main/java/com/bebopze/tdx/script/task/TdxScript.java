@@ -5,6 +5,7 @@ import com.bebopze.tdx.script.utils.WinUtils3;
 import com.google.common.collect.Lists;
 import com.sun.jna.platform.win32.WinDef;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class TdxScript {
         // winSleep(3000);
 
 
-        // .921   -   [自动选股]
+        // .921   -   [自动选股设置]
         task_921();
     }
 
@@ -113,6 +114,9 @@ public class TdxScript {
 
         // .921   -   [自动选股]
         _921();
+
+        // check
+        check_921();
 
 
         // close [通达信]
@@ -593,16 +597,17 @@ public class TdxScript {
             }
 
 
-            // TODO   check频率  -  1次/2min
-            winSleep(60000 * 2);
+            // TODO   check频率  -  1次/3min
+            winSleep(60000 * 3);
         }
     }
 
 
     /**
-     * .921   -   [自动选股]
+     * .921   -   [自动选股设置]
      */
     private static void _921() {
+
 
         // 切换 [tdx-主界面]   ->   选中[通达信]
         switchTdxWindow();
@@ -635,10 +640,202 @@ public class TdxScript {
     }
 
     /**
-     * check .921   -   [自动选股]
+     * check .921   -   [自动选股设置]
      */
     private static void check_921() {
 
+        long startTime = System.currentTimeMillis();
+        // 2h
+        double MAX_LIMIT_TIME = 2 * 60 * 60 * 1000;
+
+
+        // 自动选股 完成
+        boolean taskEnd = false;
+
+
+        winSleep();
+
+
+        while (true) {
+
+
+            // String lpClassName = "#32770";
+            String lpWindowName = "自动选股";
+
+
+            // 获取 [#32770] - 所有 [窗口]   -   所有 [按钮]
+            List<WinDef.HWND> windowList = WinUtils3.findWindowList(null, lpWindowName);
+            List<WinDef.HWND> allWinChildWinList = WinUtils3.listAllChildWin(windowList);
+
+            List<WinDef.HWND> allWinChildWinList2 = WinUtils3.listAllChildButton(null, "刷新数据");
+            if (!CollectionUtils.isEmpty(allWinChildWinList2)) {
+                allWinChildWinList.addAll(allWinChildWinList2);
+            }
+
+
+            // 当前系统  全部[按钮]
+            // List<WinDef.HWND> allWinChildButtonList = WinUtils3.listAllWinChildButton();
+
+
+            // 遍历 [按钮]列表
+            // --------------------------------------------------
+
+
+            // ---
+            // 按钮文本: 正在刷新当前行情...[57%]
+            // 按钮类名: Static
+            // ---
+            // 按钮文本: 取消
+            // 按钮类名: Button
+            // ---
+
+
+            // ---
+            // 按钮文本: 正在选股->25 [月多],请稍等...
+            // 按钮类名: Static
+            // ---
+            // 按钮文本: 品种数
+            // 按钮类名: Static
+            // ---
+            // 按钮文本: 3408
+            // 按钮类名: Static
+            // ---
+            // 按钮文本: 选中数
+            // 按钮类名: Static
+            // ---
+            // 按钮文本: 6路并行: 103/3.0%
+            // 按钮类名: Static
+            // ---
+            // 按钮文本: 取消
+            // 按钮类名: Button
+            // ---
+
+
+            if (CollectionUtils.isEmpty(allWinChildWinList)) {
+                taskEnd = true;
+                log.info("[自动选股]   ->   err     -     [找不到窗口-按钮] : {} , {}", windowList.size(), allWinChildWinList.size());
+                return;
+            }
+
+
+            for (WinDef.HWND childButton : allWinChildWinList) {
+
+
+                // button  ->  父[窗口]
+
+                WinDef.HWND parentWindow = WinUtils3.getParentWindow(childButton);
+                String childButtonClassName = WinUtils3.getClassName(childButton);
+
+
+                if (parentWindow == null) {
+                    break;
+                }
+
+                String parentWinClassName = WinUtils3.getClassName(parentWindow);
+                String parentWinText = WinUtils3.getWindowText(parentWindow);
+
+
+                // ---------------------------------
+
+
+                // [按钮] - 文本
+                String buttonText = WinUtils3.getWindowText(childButton);
+
+
+                // 正在刷新当前行情...[57%]   /   正在选股->25 [月多],请稍等...   /   6路并行: 103/3.0%
+                if (Objects.requireNonNull(parentWinText).contains("自动选股") && (!StringUtils.isEmpty(buttonText) && (buttonText.contains("正在刷新当前行情...") || buttonText.contains("正在选股->") || buttonText.contains("],请稍等...") || buttonText.contains("路并行")))) {
+
+                    // ing
+                    taskEnd = false;
+                    log.info("[自动选股]   ->   ing     -     {} , {}", parentWinText, buttonText);
+
+
+                    // --------------------------------------
+
+                    // 超过 - 最大任务 num     ->     任务[结束]
+
+
+                    // 正在选股->150 [美股],请稍等...
+                    if (buttonText.contains("正在选股->")) {
+
+                        // 任务编号
+                        String numStr = buttonText.split("正在选股->")[1].trim().split(" \\[")[0].trim();
+                        Integer num = Integer.valueOf(numStr);
+
+
+                        // todo 任务编号 >= 145     ->     [end]
+                        if (num >= 145) {
+                            taskEnd = true;
+                            log.info("[自动选股]   ->   end     -     {} , {}", parentWinText, buttonText);
+
+                            // break;
+                        }
+                    }
+
+                }
+
+
+                // ------------------------------------ time limit
+
+
+                long endTime = System.currentTimeMillis();
+                long totalTime = endTime - startTime;
+
+                if (totalTime > MAX_LIMIT_TIME) {
+                    taskEnd = true;
+                    log.info("[自动选股]   ->   err : [task_921 - 超时]     -     startTime : {} , endTime : {} , totalTime : {} , maxTime : {}", formatMillis(startTime), formatMillis(endTime), formatMillis(totalTime), formatMillis((long) MAX_LIMIT_TIME));
+                }
+
+
+                // ------------------------------------ taskEnd
+
+
+                if (taskEnd) {
+
+
+                    // 关闭窗口 - [自动选股]
+
+
+                    // ----------
+                    // 窗口标题: 自动选股
+                    // 窗口类名: #32770
+                    // ---
+                    // 按钮文本: 取消
+                    // 按钮类名: Button
+                    // ---
+                    // ----------
+
+
+                    // ---------- [自动选股 - 取消]
+
+                    // 获取 [按钮]
+                    WinDef.HWND button_取消 = WinUtils.findWindowsButton(parentWinClassName, "自动选股", "取消");
+                    // 窗口切换
+                    WinUtils.windowSwitcher(button_取消);
+                    // 点击 [按钮]
+                    WinUtils.clickMouseLeft(button_取消);
+                    log.info("---------------------------- 点击 [自动选股 - 取消]");
+
+
+                    winSleep(3000);
+
+
+                    // 未知bug   -   关闭-按钮【自动选股-取消】  点击无效
+                    button_取消 = WinUtils.findWindowsButton(parentWinClassName, "自动选股", "取消");
+                    if (null == button_取消) {
+                        log.info("---------------------------- 点击 [自动选股 - 取消]   -   suc");
+                        return;
+                    }
+
+
+                    log.error("---------------------------- 点击 [自动选股 - 取消]   -   err");
+                }
+            }
+
+
+            // TODO   check频率  -  1次/5min
+            winSleep(60000 * 5);
+        }
     }
 
 

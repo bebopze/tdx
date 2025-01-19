@@ -79,7 +79,7 @@ public class WinUtils3 {
 
     public static void main(String[] args) {
 
-        List<HWND> hwndList = listAllWindows();
+        // List<HWND> hwndList = listAllWindows();
 
 
         // List<HWND> buttonList = listAllChildButton("#32770", "盘后数据下载");
@@ -87,7 +87,11 @@ public class WinUtils3 {
         // List<HWND> buttonList = listAllChildButton("#32770", "自动选股设置");
 
 
-        List<HWND> buttonList = listAllChildButton("#32770", null);
+        // List<HWND> buttonList = listAllChildButton(null, "自动选股");
+        // List<HWND> buttonList = listAllChildButton(null, "刷新数据");
+
+
+        // List<HWND> buttonList = listAllChildButton("#32770", null);
         // List<HWND> buttonList = listAllChildButton(null, "TdxW");
 
 
@@ -288,8 +292,87 @@ public class WinUtils3 {
     }
 
 
+    public static List<HWND> listAllChildWin(List<HWND> windowList) {
+
+        List<HWND> hwndChildList = Lists.newArrayList();
+
+
+        for (HWND win : windowList) {
+            List<HWND> childButtonList = listAllChildWin(win);
+            if (!CollectionUtils.isEmpty(childButtonList)) {
+                hwndChildList.addAll(childButtonList);
+            }
+        }
+
+        return hwndChildList;
+    }
+
+
+//    public static List<HWND> listAllChildWin(String lpClassName, String lpWindowName) {
+//
+//        // 查找指定窗口
+//        HWND hwnd = User32.INSTANCE.FindWindow(lpClassName, lpWindowName);
+//
+//
+//        // 枚举窗口的所有子控件
+//        return listAllChildWin(hwnd);
+//    }
+
+
     /**
-     * 枚举窗口的所有子控件
+     * 枚举窗口的所有   子控件
+     *
+     * @param hwnd -   指定窗口
+     * @return
+     */
+    public static List<HWND> listAllChildWin(HWND hwnd) {
+
+        List<HWND> hwndChildList = Lists.newArrayList();
+
+
+        User32.INSTANCE.EnumChildWindows(hwnd, new WNDENUMPROC() {
+
+
+            @Override
+            public boolean callback(HWND hwndChild, Pointer arg) {
+
+
+                System.out.println("---");
+
+                // 获取每个子控件的文本
+                String controlText = getWindowText(hwndChild);
+
+
+                // 如果是按钮控件，获取按钮 - 文本/类名/句柄
+                if (controlText != null && !controlText.isEmpty()) {
+                    String className = getClassName(hwndChild);
+                    // if ("Button".equals(className)) {
+                    //   System.out.println("按钮文本: " + controlText);
+                    //   System.out.println("按钮类名: " + className);
+                    //   System.out.println("按钮句柄: " + hwndChild);
+                    // }
+
+                    hwndChildList.add(hwndChild);
+                }
+
+
+                System.out.println("---");
+
+
+                // 继续枚举
+                return true;
+            }
+
+
+        }, null);
+
+
+        return hwndChildList;
+    }
+
+
+    /**
+     * 枚举窗口的所有   子 button
      *
      * @param hwnd -   指定窗口
      * @return
