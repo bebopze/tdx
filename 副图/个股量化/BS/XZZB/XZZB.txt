@@ -1,0 +1,147 @@
+X_1 :=  ( EMA(C, 4) + MA(C, 4*2) + MA(C, 4*4) )  /  3;
+X_2 :=  ( EMA(C, 6) + MA(C, 6*2) + MA(C, 6*4) )  /  3;
+X_3 :=  ( EMA(C, 9) + MA(C, 9*2) + MA(C, 9*4) )  /  3;
+X_4 :=  ( EMA(C,13) + MA(C,13*2) + MA(C,13*4) )  /  3;
+
+X_5 :=  LLV(L,27);
+X_6 :=  HHV(H,34);
+X_7 :=  EMA((C-X_5) / (X_6-X_5)  *4,   4)  *25;
+
+X_8 :=  HHV(H, 30);
+X_9 :=  LLV(L, 30);
+
+X_10:=  HHV(H, 60);
+X_11:=  LLV(L, 60);
+
+
+
+X_12:=  100 * EMA(C,50);
+X_13:=  100 * C;
+
+
+
+X_14:=  X_8  - X_9;
+X_15:=  X_10 - X_11;
+
+X_16:=  (C    - X_9 ) / X_14   *10000;
+X_17:=  (X_8  - C   ) / X_14   *10000;
+X_18:=  (C    - X_11) / X_15   *10000;
+X_19:=  (X_10 - C   ) / X_15   *10000;
+
+X_20:=  EMA(X_16,   2);
+X_21:=  EMA(X_17, 250);
+
+
+
+
+
+
+
+XZZB涨 :  X_20>=X_21 AND X_13>=X_12     COLORRED   NODRAW;
+XZZB跌 :  NOT(XZZB涨)                   COLORGREEN NODRAW;
+
+
+
+
+
+
+
+
+
+
+STICKLINE(X_20> X_21 OR  X_13> X_12,   C,O,   (-1),0)     COLORGREEN;
+STICKLINE(XZZB涨,   C,O,   (-1),0)     COLORRED;
+
+
+STICKLINE(XZZB跌,   L,H,      0,0)     COLORGREEN;
+STICKLINE(XZZB涨,   L,H,      0,0)     COLORRED;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{ -------------------------------------------------------------------------------------------------------- B/S }
+涨:=XZZB涨;
+跌:=XZZB跌;
+
+
+B :  涨  AND  REF(跌,1)     COLORRED   NODRAW;
+S :  跌  AND  REF(涨,1)     COLORGREEN NODRAW;
+
+
+
+
+
+{  ----------  持股/空仓  }
+
+持股天数    :  IF(涨||S,BARSLAST(B),0)   ,  COLORRED NODRAW;
+买点涨幅    :  C/REF(C,持股天数) *100-100,  COLORRED NODRAW;
+买点涨幅_H  := H/REF(C,持股天数) *100-100,  COLORRED NODRAW;
+
+B_MIN :  IF(持股天数>0, LLV(买点涨幅 ,持股天数), 0),  COLORFF00FF NODRAW;
+B_MAX :  IF(持股天数>0, HHV(买点涨幅 ,持股天数), 0),  COLORFF00FF NODRAW;
+BH_MAX:= IF(持股天数>0, HHV(买点涨幅_H,持股天数),0),  COLORFF00FF NODRAW;
+
+
+
+{
+空仓天数 :  IF(跌,   BARSLAST(S),0)    ,  COLORGREEN NODRAW;
+卖点跌幅 :  C/REF(C,空仓天数) *100-100 ,  COLORGREEN NODRAW;
+}
+空仓天数 :  IF(跌,  IF(BARSLAST(S)=DRAWNULL, BARSCOUNT(C)+1, BARSLAST(S))  ,0)                    ,COLORGREEN NODRAW;
+卖点跌幅 :  IF(BARSLAST(S)=DRAWNULL ,  C/REF(C,空仓天数-1) *100-100, C/REF(C,空仓天数) *100-100)  ,COLORGREEN NODRAW;
+
+
+
+
+
+{  ----------  收益率  }
+
+上市天数  : BARSCOUNT(C) +1 ,COLORC0C0C0 NODRAW;
+距今天数  : CURRBARSCOUNT-1 ,COLORC0C0C0 NODRAW;
+
+
+N:=500;
+统计N天   : N               ,COLORC0C0C0 NODRAW;
+
+N累计持股 : COUNT(涨,N)     ,COLORFF00FF  NODRAW;
+N累计空仓 : COUNT(跌,N)     ,COLOR808000  NODRAW;
+
+
+
+
+
+{  时间段内   所有 S点-买点涨幅（含 当前-最后一次 还在ING中的涨幅）  之 复利（乘积）  }
+
+{ING: 涨 AND BARSNEXT(S),COLORRED  NODRAW;}
+
+S_涨幅       := IF(S || (涨 AND CURRBARSCOUNT=1),  买点涨幅/100,  0), COLORRED NODRAW;  {2->0.02}
+
+N累计涨幅    :  MULAR(1+S_涨幅 ,N) *100-100, COLORRED    NODRAW;
+N累涨MAX     :  HHV(N累计涨幅  ,N)         , COLORFF00FF NODRAW;
+
+
+
+
+
+近1年  :  MULAR(1+S_涨幅, 250*1) *100-100  ,  COLOR00FFFF   NODRAW;
+近2年  :  MULAR(1+S_涨幅, 250*2) *100-100  ,  COLOR4080FF   NODRAW;
+近3年  :  MULAR(1+S_涨幅, 250*3) *100-100  ,  COLOR008080   NODRAW;
+
+近5年  :  MULAR(1+S_涨幅, 250*5) *100-100  ,  COLORC08080   NODRAW;
+近10年 :  MULAR(1+S_涨幅, 250*10)*100-100  ,  COLOR808040   NODRAW;
