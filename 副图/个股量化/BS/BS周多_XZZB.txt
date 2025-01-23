@@ -1,0 +1,154 @@
+MA20 := MA(C,20);
+
+
+
+中期涨幅   :=  H / LLV(L, BARSLAST(C<MA20) + 10)  *100 - 100;
+中期涨幅_H :=  HHV(中期涨幅, 10);
+
+
+
+SSF_MA20预多 :=   SSF_MA20预多.SSF_MA20预多;
+SSF_MA20多   :=   SSF_MA20多.SSF_MA20多;
+
+
+
+
+
+
+
+{  --------------------------------------------------  }
+CON_大多头 :=  周多;
+
+
+
+{  --------------------------------------------------  }
+涨 :   XZZB涨   AND   CON_大多头  ,COLORRED   NODRAW;
+
+跌 :   涨=0                       ,COLORGREEN NODRAW;
+
+
+
+B :  涨  AND  REF(涨,1)=0,  COLORFF8080 NODRAW;
+S :  跌  AND  REF(跌,1)=0,  COLORFFFF00 NODRAW;
+
+
+
+
+
+
+
+
+
+
+{  --------------------------------------------------  }
+STICKLINE(涨                 ,   C,O,   (-1),0)     COLORBLUE;
+STICKLINE(涨 AND SSF_MA20预多,   C,O,   (-1),0)     COLORMAGENTA;
+STICKLINE(涨 AND SSF_MA20多  ,   C,O,   (-1),0)     COLORRED;
+STICKLINE(跌                 ,   C,O,   (-1),0)     COLORGREEN;
+
+STICKLINE(涨                 ,   L,H,      0,0)     COLORBLUE;
+STICKLINE(涨 AND SSF_MA20预多,   L,H,      0,0)     COLORMAGENTA;
+STICKLINE(涨 AND SSF_MA20多  ,   L,H,      0,0)     COLORRED;
+STICKLINE(跌                 ,   L,H,      0,0)     COLORGREEN;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{  ----------  持股/空仓  }
+
+持股天数    :  IF(涨||S,BARSLAST(B),0)   ,  COLORRED NODRAW;
+买点涨幅    :  C/REF(C,持股天数) *100-100,  COLORRED NODRAW;
+
+B_MIN :  IF(持股天数>0, LLV(买点涨幅 ,持股天数), 0),  COLORFF00FF NODRAW;
+B_MAX :  IF(持股天数>0, HHV(买点涨幅 ,持股天数), 0),  COLORFF00FF NODRAW;
+
+
+
+{
+空仓天数 :  IF(跌,   BARSLAST(S),0)    ,  COLORGREEN NODRAW;
+卖点跌幅 :  C/REF(C,空仓天数) *100-100 ,  COLORGREEN NODRAW;
+}
+空仓天数 :  IF(跌,  IF(BARSLAST(S)=DRAWNULL, BARSCOUNT(C)+1, BARSLAST(S))  ,0)                    ,COLORGREEN NODRAW;
+卖点跌幅 :  IF(BARSLAST(S)=DRAWNULL ,  C/REF(C,空仓天数-1) *100-100, C/REF(C,空仓天数) *100-100)  ,COLORGREEN NODRAW;
+
+
+
+
+
+{  ----------  收益率  }
+
+上市天数  : BARSCOUNT(C) +1 ,COLORC0C0C0 NODRAW;
+距今天数  : CURRBARSCOUNT-1 ,COLORC0C0C0 NODRAW;
+
+
+统计N天   : N               ,COLORC0C0C0 NODRAW;
+
+N累计持股 : COUNT(涨,N)     ,COLORFF00FF  NODRAW;
+N累计空仓 : COUNT(跌,N)     ,COLOR808000  NODRAW;
+
+
+
+
+
+{  时间段内   所有 S点-买点涨幅（含 当前-最后一次 还在ING中的涨幅）  之 复利（乘积）  }
+
+{ING: 涨 AND BARSNEXT(S),COLORRED  NODRAW;}
+
+S_涨幅       := IF(S || (涨 AND CURRBARSCOUNT=1),  买点涨幅/100,  0), COLORRED NODRAW;  {2->0.02}
+
+N累计涨幅    :  MULAR(1+S_涨幅 ,N) *100-100, COLORRED    NODRAW;
+N累涨MAX     :  HHV(N累计涨幅  ,N)         , COLORFF00FF NODRAW;
+
+
+
+
+
+近1年  :  MULAR(1+S_涨幅, 250*1) *100-100  ,  COLOR00FFFF   NODRAW;
+近2年  :  MULAR(1+S_涨幅, 250*2) *100-100  ,  COLOR4080FF   NODRAW;
+近3年  :  MULAR(1+S_涨幅, 250*3) *100-100  ,  COLOR008080   NODRAW;
+
+近5年  :  MULAR(1+S_涨幅, 250*5) *100-100  ,  COLORC08080   NODRAW;
+近10年 :  MULAR(1+S_涨幅, 250*10)*100-100  ,  COLOR808040   NODRAW;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{  ----------  K线  }
+
+间隔1年 := FRACPART(CURRBARSCOUNT/250)=0 ,NODRAW;
+STICKLINE(间隔1年  ,0,1  ,0,2)       COLOR808080;
+
+
+
+
+
+STICKLINE(S_涨幅>  0.15 ,0,1  ,0,3)   COLORLIRED;
+STICKLINE(S_涨幅>  0.3  ,0,1  ,0,3)   COLORMAGENTA;
+STICKLINE(S_涨幅>  0.5  ,0,1  ,0,3)   COLORYELLOW;
+
+STICKLINE(S_涨幅< -0.1  ,0,1  ,0,3)   COLORBLUE;
+STICKLINE(S_涨幅< -0.15 ,0,1  ,0,3)   COLORCYAN;
+STICKLINE(S_涨幅< -0.2  ,0,1  ,0,3)   COLORGREEN;

@@ -1,0 +1,256 @@
+{  --------------------------------------------------  }
+MA5  :=MA(C, 5);
+MA10 :=MA(C,10);
+MA20 :=MA(C,20);
+MA50 :=IF(MA(C, 50)=DRAWNULL, 0, MA(C, 50));
+MA100:=IF(MA(C,100)=DRAWNULL, 0, MA(C,100));
+MA150:=IF(MA(C,150)=DRAWNULL, 0, MA(C,150));
+MA200:=IF(MA(C,200)=DRAWNULL, 0, MA(C,200));
+MA250:=IF(MA(C,250)=DRAWNULL, 0, MA(C,250));
+
+
+
+
+
+中期涨幅   :=   IF(C>=MA20,     H / LLV(L,   BARSLAST(C<MA20) + 10)  *100 - 100,     0)     COLORMAGENTA;
+中期涨幅_H :=   HHV(中期涨幅, 10);
+
+
+{SSF多        :=   TOOLS.SSF多;}
+
+
+SSF_MA20预多 :=   SSF_MA20预多.SSF_MA20预多;
+SSF_MA20多   :=   SSF_MA20多.SSF_MA20多;
+
+
+
+
+
+
+
+
+
+
+{  --------------------------------------------------  }
+DRAWICON(BARSSINCEN((TOOLS.月线反转),30)=0,   L,   34);
+DRAWICON(BARSSINCEN((TOOLS.二阶段)  ,30)=0,   L,    9);
+
+
+
+
+
+{  --------------------------------------------------  }
+CON_大多头 :=  TOOLS.月多     NODRAW;
+
+
+
+
+
+{  --------------------------------------------------  }
+涨1 :=   TOOLS.XZZB涨   AND   CON_大多头                              COLORRED NODRAW;
+{
+涨_SSF多 :=   IF(BARSLAST(涨1 AND SSF多) < BARSLAST(涨1=0) = DRAWNULL,     0,     1)     NODRAW;}
+
+涨  :   IF(涨1 AND REF(涨1,1)=0,     涨1 AND SSF多,     涨1 {AND (涨_SSF多)} )       COLORRED NODRAW;
+
+
+
+跌 :=   涨=0    COLORGREEN NODRAW;
+
+
+
+B :  涨  AND  REF(涨,1)=0,  COLORFF8080 NODRAW;
+S :  跌  AND  REF(跌,1)=0,  COLORFFFF00 NODRAW;
+
+
+
+
+
+
+
+
+
+
+{  --------------------------------------------------------------------- K线 }
+STICKLINE(涨                 ,   C,O,   (-1),0)     COLORBLUE;
+STICKLINE(涨 AND SSF_MA20预多,   C,O,   (-1),0)     COLORMAGENTA;
+STICKLINE(涨 AND SSF_MA20多  ,   C,O,   (-1),0)     COLORRED;
+STICKLINE(跌                 ,   C,O,   (-1),0)     COLORGREEN;
+
+STICKLINE(涨                 ,   L,H,      0,0)     COLORBLUE;
+STICKLINE(涨 AND SSF_MA20预多,   L,H,      0,0)     COLORMAGENTA;
+STICKLINE(涨 AND SSF_MA20多  ,   L,H,      0,0)     COLORRED;
+STICKLINE(跌                 ,   L,H,      0,0)     COLORGREEN;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{  ----------  持股/空仓  }
+
+持股天数    :  IF(涨||S,BARSLAST(B),0)   ,  COLORRED NODRAW;
+买点涨幅    :  C/REF(C,持股天数) *100-100,  COLORRED NODRAW;
+买点涨幅_H  := H/REF(C,持股天数) *100-100,  COLORRED NODRAW;
+
+B_MIN :  IF(持股天数>0, LLV(买点涨幅  , 持股天数), 0),  COLORFF00FF NODRAW;
+B_MAX :  IF(持股天数>0, HHV(买点涨幅  , 持股天数), 0),  COLORFF00FF NODRAW;
+BH_MAX:= IF(持股天数>0, HHV(买点涨幅_H, 持股天数), 0),  COLORFF00FF NODRAW;
+
+
+
+{
+空仓天数 :  IF(跌,   BARSLAST(S),0)    ,  COLORGREEN NODRAW;
+卖点跌幅 :  C/REF(C,空仓天数) *100-100 ,  COLORGREEN NODRAW;
+}
+空仓天数 :  IF(跌,  IF(BARSLAST(S)=DRAWNULL, BARSCOUNT(C)+1, BARSLAST(S))  ,0)                    ,COLORGREEN NODRAW;
+卖点跌幅 :  IF(BARSLAST(S)=DRAWNULL ,  C/REF(C,空仓天数-1) *100-100, C/REF(C,空仓天数) *100-100)  ,COLORGREEN NODRAW;
+
+
+
+
+
+{  ----------  收益率  }
+
+上市天数  : BARSCOUNT(C) +1 ,COLORC0C0C0 NODRAW;
+距今天数  : CURRBARSCOUNT-1 ,COLORC0C0C0 NODRAW;
+
+
+统计N天   : N               ,COLORC0C0C0 NODRAW;
+
+N累计持股 : COUNT(涨,N)     ,COLORFF00FF  NODRAW;
+N累计空仓 : COUNT(跌,N)     ,COLOR808000  NODRAW;
+
+
+
+
+
+{  时间段内   所有 S点-买点涨幅（含 当前-最后一次 还在ING中的涨幅）  之 复利（乘积）  }
+
+{ING: 涨 AND BARSNEXT(S),COLORRED  NODRAW;}
+
+S_涨幅       := IF(S || (涨 AND CURRBARSCOUNT=1),  买点涨幅/100,  0), COLORRED NODRAW;     { 2 -> 0.02 }
+
+N累计涨幅    :  MULAR(1+S_涨幅 ,N) *100-100     COLORRED    NODRAW;
+N累涨MAX     :  HHV(N累计涨幅  ,N)              COLORFF00FF NODRAW;
+
+
+
+
+
+近1年  :  MULAR(1+S_涨幅, 250*1) *100-100     COLOR00FFFF   NODRAW;
+近2年  :  MULAR(1+S_涨幅, 250*2) *100-100     COLOR4080FF   NODRAW;
+近3年  :  MULAR(1+S_涨幅, 250*3) *100-100     COLOR008080   NODRAW;
+
+近5年  :  MULAR(1+S_涨幅, 250*5) *100-100     COLORC08080   NODRAW;
+{近10年:  MULAR(1+S_涨幅, 250*10)*100-100     COLOR808040   NODRAW;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{----------------------------------------------------------------------------- K线 }
+
+{ ----------  止盈/止损 }
+
+MA5_MA10_死叉     :=   REF(MA5,1)>REF(MA10,1)  AND  MA5<=MA10;
+下穿MA10          :=   REF(C  ,1)>REF(MA10,1)  AND  C  <=MA10;
+回撤_破MA5        :=   BH_MAX-买点涨幅>=10     AND  C  < MA5 ;
+冲顶回撤_长上影   :=   BH_MAX-买点涨幅>=13     AND  H/C >=1.13;
+大阴线_收益减半   :=   买点涨幅/BH_MAX<=0.6;
+强势卖出          :=   中期涨幅_H>=100         OR   (  (中期涨幅_H>=90 || BH_MAX>=50)  AND  (C<MA5 || H/C>=1.05)   )  NODRAW;
+
+
+     止盈止损     :=   MA5_MA10_死叉 || 下穿MA10 || 回撤_破MA5 || 冲顶回撤_长上影 || 大阴线_收益减半  ||  强势卖出;
+高位_止盈止损     :=   涨 AND B_MAX>=30   AND   止盈止损;
+
+
+DRAWICON(高位_止盈止损,     1.05*H,     8);       { 盈利30%  -  考虑止盈 S }
+
+
+
+
+
+{ ---------- }
+STICKLINE(涨  AND  高位_止盈止损   AND   NOT(SSF_MA20预多),   C,O,   (-1),0)     COLORCYAN;
+STICKLINE(涨  AND  高位_止盈止损   AND   NOT(SSF_MA20预多),   L,H,      0,0)     COLORCYAN;
+
+
+
+
+
+
+
+{ ----------  盈亏/标识   -   红/绿  }
+DRAWTEXT( ((涨 AND CURRBARSCOUNT=1) || S)   AND   S_涨幅>=0,     1.05*H,     VAR2STR(买点涨幅,1))     COLORMAGENTA;
+DRAWTEXT( ((涨 AND CURRBARSCOUNT=1) || S)   AND   S_涨幅< 0,     1.05*H,     VAR2STR(买点涨幅,1))     COLORCYAN;
+
+
+
+{ ---- 涨幅标识   -   间隔 10个点 }
+H_ZF10        :=  涨 AND H=HHV(H,持股天数) AND 买点涨幅_H>=10                  NODRAW;
+ZF10_N        :=  买点涨幅_H/10 - FRACPART(买点涨幅_H/10)                      NODRAW;
+CON_H_ZF10_N  :=  H_ZF10  AND  MOD(ZF10_N,2)=0  AND  ZF10_N-REF(ZF10_N,1)>=1   NODRAW;
+
+DRAWTEXT(CON_H_ZF10_N,   1.01*H,   VAR2STR(BH_MAX, 0))                   COLORMAGENTA;
+
+
+
+
+
+
+
+STICKLINE(S AND S_涨幅>= 0.50,  0,1,  0,3)  COLORYELLOW;                 {50%}
+STICKLINE(S AND S_涨幅>= 0.50,  C,O, -1,0)  COLORYELLOW;
+STICKLINE(S AND S_涨幅>= 0.50,  L,H,  0,0)  COLORYELLOW;
+
+STICKLINE(S AND RANGE(S_涨幅, 0.30, 0.50),   0,1,   0,3)  COLORMAGENTA;  {30%}
+STICKLINE(S AND RANGE(S_涨幅, 0.30, 0.50),   C,O,  -1,0)  COLORMAGENTA;
+STICKLINE(S AND RANGE(S_涨幅, 0.30, 0.50),   L,H,   0,0)  COLORMAGENTA;
+
+STICKLINE(S AND RANGE(S_涨幅, 0.15, 0.30),   0,1,   0,3)  COLORLIRED;    {15%}
+STICKLINE(S AND RANGE(S_涨幅, 0.15, 0.30),   C,O,  -1,0)  COLORLIRED;
+STICKLINE(S AND RANGE(S_涨幅, 0.15, 0.30),   L,H,   0,0)  COLORLIRED;
+
+STICKLINE(S AND RANGE(S_涨幅, 0, 0.15),   0,1,   0,3)  COLOR404080;      {5%}
+STICKLINE(S AND RANGE(S_涨幅, 0, 0.15),   C,O,  -1,0)  COLOR404080;
+STICKLINE(S AND RANGE(S_涨幅, 0, 0.15),   L,H,   0,0)  COLOR404080;
+
+
+
+STICKLINE(S AND RANGE(S_涨幅, -0.02, 0),   0,1,   0,3)  COLORLIGRAY;     {0%}
+STICKLINE(S AND RANGE(S_涨幅, -0.02, 0),   C,O,  -1,0)  COLORLIGRAY;
+STICKLINE(S AND RANGE(S_涨幅, -0.02, 0),   L,H,   0,0)  COLORLIGRAY;
+
+
+
+STICKLINE(S AND RANGE(S_涨幅, -0.05, -0.02),   0,1,   0,3)  COLOR408000; {-5%}
+STICKLINE(S AND RANGE(S_涨幅, -0.05, -0.02),   C,O,  -1,0)  COLOR408000;
+STICKLINE(S AND RANGE(S_涨幅, -0.05, -0.02),   L,H,   0,0)  COLOR408000;
+
+STICKLINE(S AND RANGE(S_涨幅, -0.10, -0.05),   0,1,   0,3)  COLORBLUE;   {-10%}
+STICKLINE(S AND RANGE(S_涨幅, -0.10, -0.05),   C,O,  -1,0)  COLORBLUE;
+STICKLINE(S AND RANGE(S_涨幅, -0.10, -0.05),   L,H,   0,0)  COLORBLUE;
+
+STICKLINE(S AND S_涨幅<= -0.10,  0,1,  0,3)  COLORCYAN;                  {-15%}
+STICKLINE(S AND S_涨幅<= -0.10,  C,O, -1,0)  COLORCYAN;
+STICKLINE(S AND S_涨幅<= -0.10,  L,H,  0,0)  COLORCYAN;
