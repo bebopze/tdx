@@ -1,0 +1,17 @@
+N :   IF( (MA多(100) || MA多(200))  AND  PERIOD=5{日},     100,     200)       NODRAW;
+
+
+
+_H    :   HHV(H,     N);
+H_DAY :   HHVBARS(H, N)      +1;
+
+_L    :   LLV(L,     H_DAY);
+L_DAY :   LLVBARS(L, H_DAY)  +1;
+
+
+
+调整幅度  :  _L/_H *100-100;
+调整天数  :  H_DAY - L_DAY ;
+
+调整幅度2 :  L/_H *100 -100;
+调整天数2 :  H_DAY -1      ;
