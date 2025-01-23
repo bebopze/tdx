@@ -1,0 +1,66 @@
+{ ----------------------------------------------------------------------------- 仓位 }
+大盘 :   TOOLS_RPS.大盘;
+板块 :   TOOLS_RPS.板块;
+个股 :   TOOLS_RPS.个股;
+
+
+仓位_大盘 :   仓位_大盘.仓位     NODRAW;
+仓位_板块 :   仓位_板块.仓位     NODRAW;
+仓位_个股 :   仓位_个股.仓位     NODRAW;
+
+
+
+
+
+仓位 :   
+
+IF(大盘,     仓位_大盘,     
+IF(板块,     仓位_板块,     
+IF(个股,     仓位_个股,     
+
+0)))     DOTLINE COLORWHITE;
+
+
+
+
+
+{
+
+仓位_个股 :   仓位_个股.仓位     NODRAW;
+TESTSKIP(个股);
+
+
+仓位_大盘 :   仓位_大盘.仓位     NODRAW;
+TESTSKIP(个股);
+
+仓位_板块 :   仓位_板块.仓位     NODRAW;
+TESTSKIP(个股);
+
+
+
+
+仓位:=1;
+}
+
+
+
+
+{ ------------------------------------------------------------------------------------ }
+NOTEXT_仓位_3 :   IF(仓位<=40,  仓位,  DRAWNULL)     DOTLINE COLORGREEN;
+NOTEXT_仓位_2 :   IF(仓位<=30,  仓位,  DRAWNULL)             COLORBLUE;
+NOTEXT_仓位_1 :   IF(仓位<=20,  仓位,  DRAWNULL)             COLORCYAN    LINETHICK2;
+
+
+NOTEXT_仓位_4 :   IF(仓位>=60,  仓位,  DRAWNULL)     DOTLINE COLORMAGENTA;
+NOTEXT_仓位_5 :   IF(仓位>=70,  仓位,  DRAWNULL)     DOTLINE COLORRED;
+NOTEXT_仓位_6 :   IF(仓位>=80,  仓位,  DRAWNULL)             COLORYELLOW  LINETHICK2;
+
+
+
+
+
+NOTEXT_1 :   80     COLORYELLOW  LINETHICK1;
+NOTEXT_2 :   70     COLORRED     LINETHICK1;
+NOTEXT_3 :   50     COLORWHITE   LINETHICK1;
+NOTEXT_4 :   30     COLORBLUE    LINETHICK1;
+NOTEXT_5 :   20     COLORCYAN    LINETHICK1;
