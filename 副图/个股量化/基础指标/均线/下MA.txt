@@ -1,0 +1,4 @@
+MA20 := MA(C, N);
+
+
+下MA :  C<MA20       COLORCYAN;

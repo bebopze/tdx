@@ -1,0 +1,4 @@
+MA20 := MA(C, N);
+
+
+上MA :  C>=MA20       COLORMAGENTA;

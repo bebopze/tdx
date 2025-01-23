@@ -1,0 +1,4 @@
+MA20 := MA(C, N);
+
+
+MA空 :  C<MA20  AND  MA20<REF(MA20,1)       COLORCYAN;
