@@ -1,0 +1,5 @@
+SSF1 :=  SSF1.SSF1;
+
+
+
+SSF多 :   C>=SSF1   AND   SSF1>=REF(SSF1,1)       COLORMAGENTA;
