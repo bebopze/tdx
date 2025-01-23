@@ -1,0 +1,28 @@
+H新高    :   SUMBARS(REF(H,1)-H,   H*0.0001)     COLORGREEN NODRAW;
+
+板块     :=  TOOLS_RPS.板块;
+
+
+中期涨幅  :  MAX(中期涨幅.中期涨幅,   H/LLV(L,30))     COLORMAGENTA NODRAW;   { TEST }
+
+{MA多_天数 :  TOOLS.趋势股   ||   TOOLS.慢牛股   ||   ((TOOLS.均线萌出||均线预萌出)  AND  EVERY(MA多(20), 5) )     ||     (  COUNT(MA多(20), 10)>=8  ||  COUNT(MA多(10), 12)>=10  ||  COUNT(MA多(5), 15)>=12  )     NODRAW;
+}
+
+
+
+
+
+
+倍 :   {MA多_天数   AND}   IF(板块,   H新高>=25 AND 中期涨幅>=35,   H新高>=25 AND 中期涨幅>=80)     COLORRED;
+危 :   {MA多_天数   AND}   IF(板块,   H新高>=30 AND 中期涨幅>=40,   H新高>=30 AND 中期涨幅>=95)     COLORCYAN;
+
+
+
+
+
+{ ---------------------------------------------------------- }
+STATUS :
+
+IF(危,   2,
+IF(倍,   1,
+         0))     COLORWHITE NODRAW;
