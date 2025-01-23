@@ -1,9 +1,15 @@
-MA5  :=MA(C,  5);
-MA10 :=MA(C, 10);
-MA20 :=MA(C, 20);
-MA50 :=MA(C, 50);
-MA100:=MA(C,100);
-MA200:=MA(C,200);
+MA5  := MA(C,  5);
+MA10 := MA(C, 10);
+MA20 := MA(C, 20);
+MA50 := IF(MA(C, 50)=DRAWNULL,   0,   MA(C, 50));
+MA100:= IF(MA(C,100)=DRAWNULL,   0,   MA(C,100));
+MA200:= IF(MA(C,200)=DRAWNULL,   0,   MA(C,200));
+
+
+
+月多     :=  TOOLS.月多;
+均线萌出 :=  TOOLS.均线萌出;
+
 
 
 
@@ -13,12 +19,13 @@ MA200:=MA(C,200);
 { ------ 0 - 慢趋势（周线）}
 
 { TODO   -   海尔智家 }
-
+{
 CON_X1 :    COUNT(C>MA5#WEEK,   11*5)>=9*5
 
-      AND   COUNT(C>MA5#WEEK AND MA5#WEEK > MA10#WEEK,   7*5)>=5*5   
+      AND   COUNT(C>MA5#WEEK AND MA5#WEEK > MA10#WEEK,   7*5)>=5*5
 
       AND   COUNT(C>MA10#WEEK  AND  MA5#WEEK > MA10#WEEK  AND  MA10#WEEK > MA20#WEEK,   5*5)>=4*5     NODRAW;
+}
 
 
 
@@ -74,8 +81,8 @@ CON_C4 :  C>MA20 AND MA20>MA50 AND MA50>MA100 AND MA100>MA200     NODRAW COLORWH
 
 
 CON_C5 :          均线萌出
- 
-          ||   (  COUNT(C>MA10  AND  MA5>MA10 AND MA10>MA20,   11) >= 10  )    
+
+          ||   (  COUNT(C>MA10  AND  MA5>MA10 AND MA10>MA20,   11) >= 10  )
 
           ||   (  COUNT(C>MA50 AND C>MA100 AND C>MA200   AND   MA50>=REF(MA50,1) AND MA100>=REF(MA100,1) AND MA200>=REF(MA200,1),   25) >= 20  )     NODRAW COLORWHITE;
 
@@ -89,7 +96,9 @@ CON_C  :  CON_C1 AND CON_C2 AND CON_C3 AND CON_C4 AND CON_C5                NODR
 
 { ---------- }
 
-趋势股 :  (  CON_A   ||   CON_B   ||   CON_C  )     { AND     NOT(动量股 || 慢牛股) }     COLORWHITE;
+趋势股 :   CON_A   ||   CON_B   ||   CON_C     COLORWHITE;
+
+
 
 
 

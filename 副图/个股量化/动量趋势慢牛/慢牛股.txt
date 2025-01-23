@@ -1,0 +1,50 @@
+MA5  :=MA(C,  5);
+MA10 :=MA(C, 10);
+MA20 :=MA(C, 20);
+MA50 :=MA(C, 50);
+MA100:=MA(C,100);
+MA200:=MA(C,200);
+
+
+
+月多     :=  TOOLS.月多;
+均线萌出 :=  TOOLS.均线萌出;
+
+
+
+
+
+
+
+{ --------------------------------------------------------------------------------------------------------------- }
+CON_1 :   RPS一线红(97) || RPS双线红(92) || RPS三线红(88)     ||     EVERY(RPS一线红(90), 10)     NODRAW;
+
+
+CON_2 :      ( COUNT(MA50>=REF(MA50,1),  150)>=60   AND   COUNT(            MA100>=REF(MA100,1),  150)>=80   AND   COUNT(C>MA200 AND MA200>=REF(MA200,1),  150)>=100 )
+         ||  ( COUNT(MA50>=REF(MA50,1),  120)>=50   AND   COUNT(C>MA100 AND MA100>=REF(MA100,1),  120)>=60   AND   COUNT(C>MA200 AND MA200>=REF(MA200,1),  120)>= 80 )     NODRAW;
+
+
+CON_3 :   COUNT(MA50>MA100 AND MA100>MA200,   100) >= 80     ||     COUNT(MA50>MA200 AND MA100>MA200,   200) >= 150     NODRAW;
+
+
+CON_4 :   月多 || 均线萌出 || RPS一线红(98) || RPS双线红(95) || RPS三线红(90)     NODRAW;
+
+
+CON_5 :       ( MA20>MA50  AND  MA50>MA100  AND  MA100>MA200 )
+         ||   ( COUNT(N日新高(200),   5)    AND  C>MA10      )     NODRAW;
+
+
+CON_6 :   TOOLS_RPS.RPS250>=90     NODRAW;
+
+
+
+
+
+慢牛股 :   CON_1 AND CON_2 AND CON_3 AND CON_4 AND CON_5   AND   CON_6     COLORWHITE;
+
+
+
+
+
+天数 :   IF(慢牛股,   BARSLAST(慢牛股=0)-1,                      0)     NODRAW COLORRED;
+涨幅 :   IF(慢牛股,   C/REF(C,BARSLAST(慢牛股=0)-1)  *100-100,   0)     NODRAW COLORRED;
