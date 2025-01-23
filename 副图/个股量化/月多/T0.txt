@@ -1,0 +1,16 @@
+CON_1_1 :=  RPS三线红(99)       ||   RPS5五线和>=485      NODRAW;     {  RPS = 100            }
+CON_1_2 :=  H/LLV(L,12)>=1.48   ||   中期涨幅N(5)>=48     NODRAW;     {  3-5日内   极速 暴涨  }
+
+CON_1   :   CON_1_1   ||   CON_1_2                        NODRAW;
+
+
+
+CON_2   :   MA多(5)   AND   MA多(10)   AND   MA多(20)     NODRAW;     {  均线多头  }
+
+CON_3   :   周多 || 均线预萌出                            NODRAW;
+
+
+
+
+
+T0 :   CON_1 AND CON_2 AND CON_3       COLORYELLOW;

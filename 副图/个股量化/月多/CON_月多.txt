@@ -1,0 +1,98 @@
+MA20 :=   MA(C,20);
+MA50 :=IF(MA(C, 50)=DRAWNULL, 0, MA(C, 50));
+MA100:=IF(MA(C,100)=DRAWNULL, 0, MA(C,100));
+MA250:=IF(MA(C,250)=DRAWNULL, 0, MA(C,250));
+
+
+
+均线萌出   :=  均线萌出.均线萌出;
+均线预萌出 :=  均线预萌出.均线预萌出;
+
+
+
+MACD   :=  MACD.MACD;
+
+MACD_M :=  MACD.MACD#MONTH;
+ DEA_M :=  MACD.DEA#MONTH;
+ DIF_M :=  MACD.DIF#MONTH;
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------- 月多（V6   -   2024-02-05） }
+
+{ MACD月多  -  月/周金叉  -  日上0轴 }
+MACD月_比率     :=  MIN(ABS(DEA_M), ABS(DIF_M)) / MAX(ABS(DEA_M), ABS(DIF_M));
+MACD月_接近金叉 :=  (BARSLASTCOUNT(DIF_M >= REF(DIF_M, 1 *20))>=1.2*20   AND   MACD月_比率>=0.9)   ||   (BARSLASTCOUNT(DIF_M > REF(DIF_M, 1 *20))>=1   AND   MACD月_比率>=0.95);
+MACD_月金叉     :=  MACD_M>=0     ||     ( MACD_M = HHV(MACD_M, 9 *20)   AND   MACD月_接近金叉 );
+
+
+MACD_周金叉  :=  MACD.MACD#WEEK >=0;
+
+
+MACD_日上0轴 :=  (MACD.DIF>=0 AND MACD.DEA>=0)   ||   ({MACD.DIF>=0 AND}     MACD>=0 AND MACD=HHV(MACD,10));
+
+
+MACD月多     :=  MACD_月金叉  AND  MACD_周金叉   AND  MACD_日上0轴;
+MACD周多     :=  MACD_周金叉  AND  MACD_日上0轴  AND  (MACD_月金叉  ||  (MA250=0 AND C>MA20 AND MA20>MA50)  ||  (C>MA100 AND C>MA250 AND (MA50>MA100 || MA50>MA250) AND (MA100>REF(MA100,1) || MA250>REF(MA250,1) )) );
+
+
+
+{ SAR周多  -  C > SAR#周 }
+{
+C_  :  C;
+SAR_周  :  SAR.SAR#WEEK;
+}
+SAR周多  :  C >= SAR.SAR#WEEK       NODRAW;
+
+
+
+
+
+CON_RPS :=  1; {RPS一线红(95) || RPS双线红(90) || RPS三线红(85);}
+
+
+
+月多     :   MACD月多 AND (SAR周多   ||   BARSSINCEN(均线萌出||均线预萌出,2)=0)   AND   CON_RPS;
+周多     :   MACD周多 AND (SAR周多   ||   BARSSINCEN(均线萌出||均线预萌出,2)=0)   AND   CON_RPS;
+
+
+月多中期 :   CON_RPS  AND  MACD_月金叉     AND     ( ABS(MACD_周金叉) + ABS(MACD_日上0轴) + ABS(SAR周多||均线萌出) ) >=2;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------- 月多（V5   -   2024-01-05） }
+
+{ MACD月多  -  月/周金叉  -  日上0轴 }
+{
+MACD_月金叉  :=  MACD.MACD#MONTH>=0   ||   MACD.MACD#MONTH = HHV(MACD.MACD#MONTH, 10 *20);
+MACD_周金叉  :=  MACD.MACD#WEEK >=0;
+MACD_日上0轴 :=  (MACD.DIF>=0 AND MACD.DEA>=0)   OR   (MACD.DIF>0  AND  MACD.MACD>=0 AND MACD.MACD=HHV(MACD.MACD,10));
+
+
+MACD月多 :=  MACD_月金叉  AND  MACD_周金叉   AND  MACD_日上0轴;
+
+
+SAR周多  :=  C>=SAR.SAR#WEEK;
+
+
+月多 :  MACD月多 AND SAR周多;
+};
