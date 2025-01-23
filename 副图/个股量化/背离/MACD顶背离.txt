@@ -1,0 +1,90 @@
+     H_DAY :  HHVBARS(       C,  N)     NODRAW;     {  个股新高 天数  }
+MACD_H_DAY :  HHVBARS(MACD.DIF,  N)     NODRAW;     {  MACD新高 天数  }
+
+
+   C_比率  :         C / HHV(       C,  N)  *100   NODRAW;
+MACD_比率  :  MACD.DIF / HHV(MACD.DIF,  N)  *100   NODRAW;
+
+
+
+中期_ZF1 :=  IF(TOOLS_RPS.板块,   30,  90)   NODRAW;
+中期_ZF2 :=  IF(TOOLS_RPS.板块,   20,  60)   NODRAW;
+中期_ZF3 :=  IF(TOOLS_RPS.板块,   23,  65)   NODRAW;
+
+中期_FD  :=  IF(TOOLS_RPS.板块,  -12, -25)   NODRAW;
+
+
+CON_11:=  ( 均线萌出 || 大均线多头 || HHV(中期涨幅N(20), 50)>=90      )   AND   ( HHV(中期涨幅N(20), 50)>=60         ||   HHV(中期涨幅N(50), 50) >= 65        || HHV(中期天数N(50), 50)>=50  )     NODRAW;     {  顶  -  （筑顶 / 冲顶）  }
+CON_1 :   ( 均线萌出 || 大均线多头 || HHV(中期涨幅N(20), 50)>=中期_ZF1)   AND   ( HHV(中期涨幅N(20), 50)>=中期_ZF2   ||   HHV(中期涨幅N(50), 50) >= 中期_ZF3  || HHV(中期天数N(50), 50)>=50  )     NODRAW;     {  顶  -  （筑顶 / 冲顶）  }
+
+
+
+CON_2 :   中期涨幅N(20)>=80   ||   中期涨幅N(50)>=80   ||   中期涨幅N(100)>=80     NODRAW;     {  顶  ->   倍/危（筑顶 / 冲顶）  }
+
+CON_3 :   MA多(10)  AND  MA多(20)      NODRAW;                                                 {  顶  ->   多头 + 新高 + 上涨    }
+
+
+
+
+{ || 中期天数(20||50)>=50   趋势股/慢牛股    -  美的集团  }
+
+
+
+CON_4 :   H_DAY<=20 || C_比率>=90                 NODRAW;     { 近期新高 / 维持高位   }
+
+CON_5 :   C_比率 >= 80                            NODRAW;     { 横盘阶段  -  窄幅调整 }
+
+CON_66:=  上MA(20)  AND  中期调整幅度>= -25       NODRAW;
+CON_6 :   上MA(20)  AND  中期调整幅度>= 中期_FD   NODRAW;
+
+
+
+CON_7  :          MACD.MACD >= 0
+
+           ||   ( MACD.DIF >= REF(MACD.DIF, 1)   AND   MACD.MACD >= REF(MACD.MACD, 1)  )
+
+           ||   ( MACD.DIF >= REF(MACD.DIF, 1)   AND   MACD.DEA  >= REF(MACD.DEA,  1)  )
+
+           NODRAW;
+
+
+
+线顶背离1  :   H_DAY<=5      AND   MACD_比率<=60     NODRAW;
+
+线顶背离2  :   H_DAY<=5      AND   MACD_H_DAY>=20   AND   MACD_比率<=70     NODRAW;
+
+
+线顶背离3  :   H_DAY<=20     AND   C_比率>=90   AND   MACD_比率<=60     NODRAW;
+
+线顶背离4  :   H_DAY<=20     AND   C_比率>=80   AND   MACD_比率<=50     NODRAW;
+
+
+
+{
+顶背离11  :                     H_DAY <=5     AND   MACD_H_DAY >= 10  AND  (MACD.DIF<=0 || MACD.MACD<0 || MACD_比率<=60)     NODRAW;    { 个股新高↓   5日内     MACD没有 跟随新高 }
+{
+顶背离22  :   C_比率<=85   AND  H_DAY<=15     AND   MACD_H_DAY >= 20  AND  (MACD.DIF<=0 || MACD.MACD<0 || MACD_比率<=30)     NODRAW;    { 个股新高↓   附近      MACD没有 跟随新高 }
+
+
+
+
+CON_8 :  线顶背离1 || 线顶背离2 || 线顶背离3 || 线顶背离4     NODRAW;
+
+
+
+
+
+
+
+
+
+
+MACD顶背离_低位 :  CON_1  AND  NOT(CON_2)   AND CON_3 AND CON_4 AND CON_5 AND CON_6 AND CON_7 AND CON_8     COLORWHITE DOTLINE;
+
+
+MACD顶背离      :  CON_1  AND  CON_2        AND CON_3 AND CON_4 AND CON_5 AND CON_6 AND CON_7 AND CON_8     COLORWHITE;
+
+
+
+
+{ MACD柱顶背离 : 1; };
