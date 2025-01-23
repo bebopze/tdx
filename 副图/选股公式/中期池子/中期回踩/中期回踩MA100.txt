@@ -1,0 +1,9 @@
+CON_1 :   RPS99   ||   AMO> 10 * 100000000   ||   (RPS一线红(95) AND 极限缩量(9) )     NODRAW;
+
+CON_2 :   回踩MA(100) || 回踩MA(120)     ||     回踩MA(200) || 回踩MA(250)             NODRAW;
+
+
+
+
+
+中期回踩MA100 :   CON_1 AND CON_2       COLORCYAN;

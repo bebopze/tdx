@@ -1,0 +1,40 @@
+中期池子1 :   中期池子1.中期池子(1)       DOTLINE NODRAW;
+中期池子2 :   中期池子2.中期池子          DOTLINE NODRAW;
+
+
+
+中期池子 :   中期池子1   ||   中期池子2       COLORCYAN NODRAW;
+
+
+
+
+
+
+
+{ --------------------------------------------------------------- }
+{
+牛熊线    :=  ABS(NXX.牛熊线)                          NODRAW;     { NXX-牛熊线     源代码 = PARTLINE - 画线FUN  -  非数字   ->   ABS转换
+牛熊线_空 :=  C<牛熊线   AND   牛熊线<REF(牛熊线,1);
+
+
+
+NOT(牛熊线_空)   AND   中期池子       COLORBLUE DOTLINE;
+    牛熊线_空    AND   中期池子       COLORCYAN;
+}
+
+
+{ --------------------------------------------------------------- }
+决策线    :=  ABS(NXX.决策线)                          NODRAW;
+牛熊线    :=  ABS(NXX.牛熊线)                          NODRAW;     { NXX-牛熊线     源代码 = PARTLINE - 画线FUN  -  非数字   ->   ABS转换 }
+
+决策线_多 :=  C>决策线   AND   决策线>REF(决策线,1)   AND   决策线>牛熊线;
+牛熊线_空 :=  C<牛熊线   AND   牛熊线<REF(牛熊线,1)   AND   决策线<牛熊线;
+
+
+
+    决策线_多    AND                          中期池子       COLORMAGENTA DOTLINE;
+NOT(决策线_多)   AND   NOT(牛熊线_空)   AND   中期池子       COLORBLUE    DOTLINE;
+                           牛熊线_空    AND   中期池子       COLORCYAN;
+
+( 回踩MA(100) || 回踩MA(120) || 回踩MA(200) || 回踩MA(250) )
+                                        AND   中期池子       COLORCYAN;

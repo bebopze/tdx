@@ -1,0 +1,70 @@
+中期调整幅度  :=  中期调整幅度 ;
+中期调整天数2 :=  中期调整天数2;
+
+
+中期涨幅      :=  中期涨幅.中期涨幅;
+
+
+中期涨幅_MA50 :=  中期涨幅N(50);
+中期天数_MA50 :=  中期天数N(50);
+
+
+
+
+中期_DAY      :=  HHV(中期调整天数2, 10) + 10;       { 中期突破 + 10天 }
+
+
+
+{ ------------------------------}
+RPS50 :=  TOOLS_RPS.RPS50;
+
+
+
+
+
+{ ------------------------------------------------------------------------------ }
+
+CON_1 :   COUNT(TOOLS.危,  中期_DAY)   ||   COUNT(中期涨幅>=85,  中期_DAY)   ||   COUNT(中期涨幅_MA50>=100 AND 中期天数_MA50>=55{55-60},  中期_DAY)       NODRAW;
+
+CON_2 :   大均线多头   ||   COUNT(MA多(250),  100)>=95   ||   RPS一线红(99)    NODRAW;
+
+
+
+CON_3 :   中期调整幅度 <= -25      ||   MA空(20)     ||   中期调整天数2>25     NODRAW;
+
+CON_4 :   月多   ||   均线预萌出   ||   MA200多                                NODRAW;
+
+
+CON_5 :   中期调整天数2>10   ||   中期涨幅<60                                  NODRAW;
+
+
+CON_6 :   RPS50<50   ||   中期调整幅度<-40   ||   中期调整天数2>35             NODRAW;
+
+
+
+
+
+中期池子 :   CON_1 AND CON_2 AND CON_3 AND CON_4 AND CON_5 AND CON_6         COLORCYAN NODRAW;
+
+
+
+
+
+
+
+TESTSKIP(X);
+{ --------------------------------------------------------------- }
+决策线    :=  ABS(NXX.决策线)                          NODRAW;
+牛熊线    :=  ABS(NXX.牛熊线)                          NODRAW;     { NXX-牛熊线     源代码 = PARTLINE - 画线FUN  -  非数字   ->   ABS转换 }
+
+决策线_空 :=  C<决策线   AND   决策线<REF(决策线,1);
+牛熊线_空 :=  C<牛熊线   AND   牛熊线<REF(牛熊线,1);
+
+
+
+NOT(决策线_空)   AND                          中期池子       COLORMAGENTA DOTLINE;
+    决策线_空    AND   NOT(牛熊线_空)   AND   中期池子       COLORBLUE    DOTLINE;
+                           牛熊线_空    AND   中期池子       COLORCYAN;
+
+
+{上MA(20)   AND   中期池子       COLORCYAN DOTLINE;};
