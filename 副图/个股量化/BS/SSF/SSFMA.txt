@@ -1,0 +1,60 @@
+{N:=3;   {  3-10 }
+{M:=21;  { 21-60 }
+
+{ ----------------------------------------- }
+X_1 :=  ABS(C - REF(C,11));
+X_2 :=  SUM(ABS(C-REF(C,1)),  11);
+X_3 :=  ABS(X_1 / X_2);
+X_4 :=  X_3*(2/N - 2/M) + 2/M;
+X_5 :=  X_4*X_4;
+
+
+SSF1 :  EMA(DMA(C,X_5),2);
+
+
+
+
+
+
+
+IF(SSF1>REF(SSF1,1),   SSF1,   DRAWNULL)     POINTDOT  COLORRED    LINETHICK4;
+IF(SSF1>REF(SSF1,1),   SSF1,   DRAWNULL)               COLORRED;
+
+IF(SSF1=REF(SSF1,1),   SSF1,   DRAWNULL)     POINTDOT  COLORWHITE  LINETHICK4;
+IF(SSF1=REF(SSF1,1),   SSF1,   DRAWNULL)               COLORWHITE;
+
+IF(SSF1<REF(SSF1,1),   SSF1,   DRAWNULL)     POINTDOT  COLORGREEN  LINETHICK4;
+IF(SSF1<REF(SSF1,1),   SSF1,   DRAWNULL)               COLORGREEN;
+
+
+
+
+IF(C<SSF1   AND   SSF1>=REF(SSF1,1),   SSF1,   DRAWNULL)               COLORFF0080;
+
+
+
+
+
+
+
+
+
+TESTSKIP(X);
+{ ------------------------------------------- }
+RPS10  :=  TOOLS_RPS.RPS10;
+RPS20  :=  TOOLS_RPS.RPS20;
+RPS50  :=  TOOLS_RPS.RPS50;
+RPS120 :=  TOOLS_RPS.RPS120;
+RPS250 :=  TOOLS_RPS.RPS250;
+
+
+
+{ ------------------------------------------- }
+中期涨幅   :   中期涨幅N(20)     COLORMAGENTA NODRAW;
+中期涨幅_H :=  HHV(中期涨幅, 10);
+
+
+
+{ ------------------------------------------- }
+AMO_BL     :   AMO_BL      COLORRED NODRAW;
+AMO_BL2    :   AMO_BL2     COLORRED NODRAW;
