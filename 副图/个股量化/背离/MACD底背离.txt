@@ -1,11 +1,25 @@
+TESTSKIP(INBLOCK('中期池子')=0   AND   INBLOCK('下单')=0);     { IN - 中期池子 }
+
+
+
+{ ------------------------------------------------------------------------------------- }
 中期调整幅度 :=  中期调整幅度;
 中期调整天数 :=  中期调整天数;
-板块        :=  TOOLS_RPS.板块   ||   TOOLS_RPS.大盘;
+中期调整天数2:=  中期调整天数2;
+板块         :=  TOOLS_RPS.板块   ||   TOOLS_RPS.大盘;
 
 
 
-{N:= IF(中期调整天数>=100,   150,   100);}
-N :  IF(中期调整天数>=100   ||   MA空(200),     150,     IF(N1<100,  N1,  100))     NODRAW;
+{N:=  IF(中期调整天数>=100,   150,   100);}
+{N :   IF(中期调整天数>=100   ||   MA空(200),     150,     MIN(中期调整天数2,  100))     NODRAW;}
+ N :   中期调整天数2     NODRAW;
+
+
+
+MACD_DIF  :=  MACD.DIF;
+MACD_DEA  :=  MACD.DEA;
+MACD_MACD :=  MACD.MACD;
+
 
 
 
@@ -16,17 +30,19 @@ MACD_L_DAY :   LLVBARS(MACD.DIF,  N)     NODRAW;     {  MACD新低 天数  }
 
 
    C_比率  :          C / LLV(       C,  N)  *100     NODRAW;
-MACD_比率  :   MACD.DIF / LLV(MACD.DIF,  N)  *100     NODRAW;
+MACD_比率  :   MACD_DIF / LLV(MACD_DIF,  N)  *100     NODRAW;
+
+C__MACD_L_C比率 :   C / REF(C,  MACD_L_DAY)  *100     NODRAW;   { C跌幅  ->  C / MACD_L-C }
 
 
 
-中期_FD    :=  IF(板块,  -12, -25)     NODRAW;
+中期_FD    :=  IF(板块,   -12,   -25)     NODRAW;
 
 
 
-{ ----------- }
+{ ------------ }
 
-上0轴_距今天数 :   BARSLAST(MACD.DIF>0   AND   MACD.DEA>0)     NODRAW;
+上0轴_距今天数 :   BARSLAST(MACD_DIF>0   AND   MACD_DEA>0)     NODRAW;
 
 
 
@@ -37,11 +53,17 @@ MACD_比率  :   MACD.DIF / LLV(MACD.DIF,  N)  *100     NODRAW;
 { ------------------------------------------------------------------------------------- }
 
 
-CON_1  :   上0轴_距今天数 > MACD_L_DAY   ||   上0轴_距今天数 > 50    NODRAW;     { MACD线  全程   在 0轴以下     （中途 ：  不能上0轴    再下0轴）  }
+CON_1   :   上0轴_距今天数 > MACD_L_DAY   ||   上0轴_距今天数 > 50    NODRAW;     { MACD线  全程   在 0轴以下     （中途 ：  不能上0轴    再下0轴）  }
 
 
 
-CON_2  :   COUNT(均线萌出 || 大均线多头,  50)=0   AND   (大均线空头 || MA空(200) || LLV(中期调整幅度, 50) <= -35)   AND   中期调整幅度 <= 中期_FD     NODRAW;     {  底  -  （筑底 / 冲底）  }
+{CON_2_ :   COUNT(均线萌出 || 大均线多头,  50)=0   AND   (大均线空头 || MA空(200) || 回踩MA(250) || LLV(中期调整幅度, 50) <= -35)   AND   中期调整幅度 <= 中期_FD     NODRAW;     {  底  -  （筑底 / 冲底）  }
+
+CON_2_1 :   COUNT(均线萌出,  50)=0   ||   COUNT(大均线多头,  50)=0   ||   ( 中期调整天数2>=50 AND 回踩MA(250) )        NODRAW;
+CON_2_2 :   中期调整幅度 <= 中期_FD       NODRAW;
+CON_2_3 :   大均线空头 || MA空(200)  ||   回踩MA(250)   ||   中期调整天数2>=75   ||   LLV(中期调整幅度, 50) <= -35     NODRAW;
+
+CON_2   :   CON_2_1 AND CON_2_2 AND CON_2_3       NODRAW;
 
 
 
@@ -51,17 +73,20 @@ CON_3 :   L_DAY<=20 || C_比率<=115               NODRAW;     { 近期新低 / 
 
 CON_4 :   C_比率 <= 120                          NODRAW;     { 横盘阶段  -  窄幅调整 }
 
+CON_5 :   C__MACD_L_C比率 <= 100                 NODRAW;     { C <= MACD_L - C       }
+
+CON_6 :   MA向上(250)   ||   C>MA(C,250)         NODRAW;     { 上年线                }
 
 
-CON_5  :   MA空(50)   AND   (中期调整幅度<= -35   ||   (中期调整幅度<= 中期_FD  AND  中期调整天数>=70)  )     NODRAW;
+CON_7 :   MA空(50)   AND   (中期调整幅度<= -35   ||   (中期调整幅度<= 中期_FD  AND  中期调整天数>=70)  )     NODRAW;
 
 
 
-CON_6  :          MACD.MACD >= 0
+CON_8  :          MACD_MACD >= 0
 
-           ||   ( MACD.DIF >= REF(MACD.DIF, 1)   AND   MACD.MACD >= REF(MACD.MACD, 1)  )
+           ||   ( MACD_DIF >= REF(MACD_DIF, 1)   AND   MACD_MACD >= REF(MACD_MACD, 1)  )
 
-           ||   ( MACD.DIF >= REF(MACD.DIF, 1)   AND   MACD.DEA  >= REF(MACD.DEA,  1)  ) 
+           ||   ( MACD_DIF >= REF(MACD_DIF, 1)   AND   MACD_DEA  >= REF(MACD_DEA,  1)  )
 
            NODRAW;
 
@@ -69,9 +94,15 @@ CON_6  :          MACD.MACD >= 0
 
 
 
-底背离1  :                     L_DAY <=5     AND   MACD_L_DAY >= 20  AND  (MACD.DIF>=0 || MACD_比率<=65)     NODRAW;    { 个股新低↓   5日内     MACD没有 跟随新低 }
 
-底背离2  :   C_比率<=115  AND  L_DAY<=25     AND   MACD_L_DAY >= 30  AND  (MACD.DIF>=0 || MACD_比率<=35)     NODRAW;    { 个股新低↓   附近      MACD没有 跟随新低 }
+
+
+
+底背离1  :   C_比率<=105  AND  L_DAY<= 5     AND   MACD_L_DAY >= 15  AND  (MACD_DIF>=0 || MACD_比率<=90 || C__MACD_L_C比率<=93)     NODRAW;    { 个股新低↓   5日内     MACD没有 跟随新低 }
+
+底背离2  :   C_比率<=110  AND  L_DAY<=10     AND   MACD_L_DAY >= 20  AND  (MACD_DIF>=0 || MACD_比率<=65 || C__MACD_L_C比率<=93)     NODRAW;    { 个股新低↓   5日内     MACD没有 跟随新低 }
+
+底背离3  :   C_比率<=115  AND  L_DAY<=25     AND   MACD_L_DAY >= 25  AND  (MACD_DIF>=0 || MACD_比率<=35 || C__MACD_L_C比率<=93)     NODRAW;    { 个股新低↓   附近      MACD没有 跟随新低 }
 
 
 {
@@ -88,7 +119,7 @@ CON_6  :          MACD.MACD >= 0
 }
 
 
-CON_7 :  底背离1 || 底背离2   {|| 底背离1 || 底背离2 || 底背离3 || 底背离4 || 底背离5}     NODRAW;     
+CON_9 :  底背离1 || 底背离2 || 底背离3   {|| 底背离1 || 底背离2 || 底背离3 || 底背离4 || 底背离5}     NODRAW;
 
 
 {   }
@@ -99,4 +130,4 @@ CON_7 :  底背离1 || 底背离2   {|| 底背离1 || 底背离2 || 底背离3 |
 
 
 
-MACD底背离 :   CON_1  AND  CON_2 AND CON_3 AND CON_4 AND CON_5 AND CON_6 AND CON_7     COLORWHITE;   
+MACD底背离 :   CON_1  AND  CON_2 AND CON_3 AND CON_4 AND CON_5 AND CON_6 AND CON_7 AND CON_8 AND CON_9       COLORGREEN;
