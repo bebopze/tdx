@@ -1,0 +1,27 @@
+中期调整天数2 :=  中期调整天数2;
+
+
+中期_DAY      :   中期调整天数2 + 1   +   20     NODRAW;
+
+
+中期VOL_H     :=  HHV(VOL, 中期_DAY);
+中期AMO_H     :=  HHV(AMO, 中期_DAY);
+
+
+
+
+
+{ ------------------------------------------------------------------------------ }
+VOL占比 :   VOL/中期VOL_H *100     DOTLINE COLORWHITE;
+AMO占比 :   AMO/中期AMO_H *100     DOTLINE COLORYELLOW;
+
+
+
+中期VOL占比 :   IF(VOL占比<40,     MIN(VOL占比, AMO占比),       MAX(VOL占比, AMO占比))       COLORMAGENTA;
+
+
+
+
+
+30,   COLORMAGENTA;
+80,   COLORCYAN;
