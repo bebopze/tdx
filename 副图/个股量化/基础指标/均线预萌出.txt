@@ -1,0 +1,26 @@
+MA5  :=MA(C, 5);
+MA10 :=MA(C,10);
+MA20 :=MA(C,20);
+MA50 :=IF(MA(C, 50)=DRAWNULL, 0, MA(C, 50));
+MA100:=IF(MA(C,100)=DRAWNULL, 0, MA(C,100));
+MA120:=IF(MA(C,120)=DRAWNULL, 0, MA(C,120));
+MA150:=IF(MA(C,150)=DRAWNULL, 0, MA(C,150));
+MA200:=IF(MA(C,200)=DRAWNULL, 0, MA(C,200));
+
+
+
+均线预萌出1 :=  ( C>=MA10 AND MA10>=MA20 AND MA20>=MA50      AND     C>=MA100 AND C>=MA200 )
+
+AND             ( MA10>=REF(MA10,1)  AND  MA20>=REF(MA20,1)  AND  MA50>=REF(MA50,1)        )
+
+AND             ( MA100>=REF(MA100,1) ||  MA200>=REF(MA200,1)                              );
+
+
+
+均线预萌出2 :=  MA多(5) AND MA多(10) AND MA多(20) AND MA多(50) AND MA多(100) AND MA多(200)     AND     大均线多头;
+
+
+
+
+
+均线预萌出 :   均线预萌出1   ||   均线预萌出2;
