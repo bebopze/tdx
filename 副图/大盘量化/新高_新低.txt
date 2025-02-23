@@ -21,9 +21,17 @@ IF(差值>0,  差值,  DRAWNULL)       COLORRED   LINETHICK2;
 
 
 { ----------------------------------------------------------------------------------------------------------------------------- }
-新高中期_DAY :   IF(牛市,       BARSLAST(MA50占比<25 AND 差值<0),       BARSLAST( EVERY(差值<0, 10) ))     COLORWHITE NODRAW;     { 牛市  ->  中期底:  差值<0     仅 2-3 天 }
-                                                                                                                             { 熊市  ->  中期底:  差值<0   长达 10-50天 }
+{新高中期_DAY_1 :   IF(牛市,       BARSLAST(MA50占比<25 AND 差值<0),       BARSLAST( EVERY(差值<0, 10) ))     COLORWHITE NODRAW;     { 牛市  ->  中期底:  差值<0     仅 2-3 天 }
+                                                                                                                                { 熊市  ->  中期底:  差值<0   长达 10-50天 }
 
+
+
+
+{新高中期_DAY_2 :   MIN(   BARSLAST(MA50占比<25 AND 差值<0),          BARSLAST( EVERY(差值<0, 10) )   )       COLORWHITE NODRAW;}
+
+
+
+新高中期_DAY :   BARSLAST(MA50占比<25 AND 差值<0)       COLORWHITE NODRAW;
 
 
 
