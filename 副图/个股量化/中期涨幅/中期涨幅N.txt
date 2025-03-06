@@ -1,26 +1,47 @@
 N :=  MIN(BARSCOUNT(C)+1,   N);
 
 
-MA20  :=  MA(C, N)     NODRAW;
-L_DAY :=  IF(N<20,   5,       IF(N<50,   10,       15));
+
+{ --------------------------------------------- }
+MA20   :   MA(C, N)                    NODRAW;
+
+NL_DAY :   IF(N<= 10,      5,
+           IF(N<= 20,     15,
+           IF(N<= 50,     25,
+           IF(N<=100,     50,
+                         100))))       NODRAW;
 
 
 
 
 
+{ --------------------------------------------- }
+L_DAY :   BARSLAST(C<MA20) + NL_DAY    NODRAW;
+
+_L    :   LLV(L,   L_DAY)              NODRAW;
 
 
-中期涨幅 :  IF(C>=MA20,     H / LLV(L,   BARSLAST(C<MA20) + L_DAY)  *100 - 100,     0)     COLORMAGENTA;
+
+
+
+{ --------------------------------------------- }
+{中期涨幅_:  IF(C>=MA20,     H / LLV(L,   BARSLAST(C<MA20) + NL_DAY)  *100 - 100,     0)     COLORMAGENTA;}
+中期涨幅 :   IF(C>=MA20,     H / _L  *100 - 100,     0)     COLORMAGENTA;
+
+
+
+
 
 
 
 TESTSKIP(X);
 { ------------------------------------------------------------------------------------------------------- }
-中期天数 :  IF(C>=MA20,     LLVBARS(L,   BARSLAST(C<MA20) + L_DAY)            ,     0)     NODRAW;
+{中期天数_:  IF(C>=MA20,     LLVBARS(L,   BARSLAST(C<MA20) + NL_DAY)            ,     0)     NODRAW;}
+中期天数 :   IF(C>=MA20,     LLVBARS(L,   L_DAY),     0)     NODRAW;
 
 
 
 
 
-IF(中期涨幅>=80 AND 中期涨幅<95,  中期涨幅,  DRAWNULL)   LINETHICK2 COLORRED;
-IF(中期涨幅>=95,                  中期涨幅,  DRAWNULL)   LINETHICK2 COLORCYAN;
+IF(中期涨幅>=80 AND 中期涨幅<95,  中期涨幅,  DRAWNULL)       LINETHICK2 COLORRED ;
+IF(中期涨幅>=95,                  中期涨幅,  DRAWNULL)       LINETHICK2 COLORCYAN;
