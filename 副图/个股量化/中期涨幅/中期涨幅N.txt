@@ -1,56 +1,37 @@
-MA20   :   MA(C, N)                    NODRAW;
+MA20 :   MA(C, N)               NODRAW;
 
 
 
-{ --------------------------------------------- }
-调整幅度  :   中期调整幅度      NODRAW;
-调整幅度2 :   中期调整幅度2     NODRAW;
+{ -------------------------------------------------------------------------------- }
+调整幅度    :=   中期调整幅度      NODRAW;
+调整幅度2   :=   中期调整幅度2     NODRAW;
 
 
 
 调整幅度_L1 :=   LLV  (调整幅度   ,   20)              COLORCYAN NODRAW;
 调整幅度_L2 :=   REFXV(调整幅度_L1,   20)              COLORCYAN NODRAW;
 
-调整幅度_L  :=   MIN(调整幅度_L1, 调整幅度_L2)         COLORCYAN NODRAW;
-
-
-
-
-{
-L_DAY_1 :   BARSLAST(调整幅度2=调整幅度_L AND 调整幅度_L<-19)         COLORCYAN NODRAW;
-L_DAY_2 :   BARSLAST(C<MA20)                                      COLORCYAN NODRAW;
-
-L_DAY   :   MAX(L_DAY_1,   L_DAY_2)       COLORCYAN;
-}
-
-L_DAY   :   BARSLAST(调整幅度2=调整幅度_L   AND   C<MA20)             COLORCYAN;
+调整幅度_L  :=   MIN(调整幅度_L1, 调整幅度_L2)           COLORCYAN NODRAW;
 
 
 
 
 
+L_DAY :   BARSLAST(调整幅度2=调整幅度_L   AND   C<MA20)       COLORCYAN NODRAW;
+
+_L    :   LLV(L,   L_DAY + 1)                              COLORCYAN NODRAW;
 
 
 
-_L      :   REF(L,   L_DAY  )              COLORCYAN NODRAW;
-_L_     :   LLV(L,   L_DAY +1)             COLORCYAN NODRAW;
 
 
-
-{ --------------------------------------------- }
-{
-中期涨幅 :   IF(C>=MA20,     H / _L  *100 - 100,     0)     COLORMAGENTA;}
-中期涨幅 :   IF(C>=MA20,     H / _L  *100 - 100,     0)     COLORMAGENTA;
-
-
+{ -------------------------------------------------------------------------------- }
+中期涨幅 :   IF(C>=MA20,     H / _L  *100 -100,     0)       COLORMAGENTA;
 
 
 
 
 
 TESTSKIP(X);
-{ ------------------------------------------------------------------------------------------------------- }
-{中期天数:   IF(C>=MA20,     LLVBARS(L,   L_DAY+1),     0)     NODRAW;}
-中期天数 :   L_DAY     NODRAW;
-
-
+{ -------------------------------------------------------------------------------- }
+中期天数 :   IF(C>=MA20,                 L_DAY,     0)       COLORCYAN;
