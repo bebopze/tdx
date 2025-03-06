@@ -1,14 +1,1 @@
-N :=  MIN(BARSCOUNT(C)+1,   N);
-
-
-MA20  :=  MA(C, N)     NODRAW;
-L_DAY :=  IF(N<20,   5,       IF(N<50,   10,       15));
-
-
-
-
-
-中期天数 :  IF(C>=MA20,     LLVBARS(L,   BARSLAST(C<MA20) + L_DAY),     0);
-
-
-{中期天数:  LLVBARS(L,   BARSLAST(C<MA20) + L_DAY);};
+中期天数N :   _中期涨幅N.中期天数(N);
