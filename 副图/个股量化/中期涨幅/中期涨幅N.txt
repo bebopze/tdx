@@ -16,6 +16,22 @@ NL_DAY :   IF(N<= 10,      5,
 
 
 { --------------------------------------------- }
+{
+调整幅度  :   中期调整幅度      NODRAW;
+调整幅度2 :   中期调整幅度2     NODRAW;
+
+调整幅度_L1 :=   LLV  (调整幅度   ,   20)              COLORCYAN NODRAW;
+调整幅度_L2 :=   REFXV(调整幅度_L1,   20)              COLORCYAN NODRAW;
+
+调整幅度_L  :=   MIN(调整幅度_L1, 调整幅度_L2)         COLORCYAN NODRAW;
+
+
+中期_L_DAY :  BARSLAST(调整幅度2=调整幅度_L AND 调整幅度_L<-19)      COLORCYAN NODRAW;
+}
+
+
+
+{ --------------------------------------------- }
 L_DAY :   BARSLAST(C<MA20) + NL_DAY    NODRAW;
 
 _L    :   LLV(L,   L_DAY)              NODRAW;
