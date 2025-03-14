@@ -21,10 +21,10 @@ IF(MA50占比<=15,   MA50占比,   DRAWNULL)     COLORCYAN    LINETHICK3;
 
 
 
-NOTEXT_1 :  75, COLORYELLOW  LINETHICK1;
-NOTEXT_2 :  65, COLORRED     LINETHICK1;
-NOTEXT_3 :  25, COLORGREEN   LINETHICK1;
-NOTEXT_4 :  15, COLORCYAN    LINETHICK1;
+NOTEXT_1 :=  75, COLORYELLOW  LINETHICK1;
+NOTEXT_2 :=  65, COLORRED     LINETHICK1;
+NOTEXT_3 :=  25, COLORGREEN   LINETHICK1;
+NOTEXT_4 :=  15, COLORCYAN    LINETHICK1;
 
 
 
@@ -56,7 +56,7 @@ NOTEXT_4 :  15, COLORCYAN    LINETHICK1;
 
 { ----------------------------------------------------------------------------------------------- }
 {仓位_大盘 :  仓位_大盘.仓位_平均数     COLOR008080;}
-{仓位      :  仓位.仓位                 COLOR008080;}
+{仓位      :  仓位.仓位               COLOR008080;}
 
 
 {
@@ -73,24 +73,31 @@ TESTSKIP( 状态 = 状态);
 
 
 { ----------------------------------------------------------------------------------------------- }
-大盘_牛    :=  TOOLS_大盘.牛;
+{
+大盘_牛     :=  大盘量化.牛;
 
 
-中期调整_N :   BARSLAST(MA50占比 >= 70)   +   IF(大盘_牛,   30,   20)       COLORWHITE NODRAW;
+中期调整_N  :    BARSLAST(MA50占比 >= 70)   +   IF(大盘_牛,   30,   25)            COLORWHITE NODRAW;
+}
 
 
 
-_H    :=        HHV(MA50占比,   中期调整_N);
-H_DAY :=    HHVBARS(MA50占比,   中期调整_N)   +1;
+中期调整_N0 :=   BARSLAST(MA50占比 >= 70)                                          COLORWHITE NODRAW;
+中期调整_N  :    中期调整_N0   +   REF(BARSLAST(MA50占比<70),   中期调整_N0)          COLORWHITE NODRAW;
 
-_L    :=        LLV(MA50占比,   H_DAY);
-L_DAY :=   BARSLAST(MA50占比  =    _L)  +1;
+
+
+_H    :=        HHV(MA50占比,   中期调整_N)          NODRAW;
+H_DAY :=    HHVBARS(MA50占比,   中期调整_N)   +1     NODRAW;
+
+_L    :=        LLV(MA50占比,   H_DAY)               NODRAW;
+L_DAY :=   BARSLAST(MA50占比  =    _L)  +1           NODRAW;
 
 
 调整幅度  :          _L/_H   *100 -100     COLORCYAN NODRAW;
 调整天数  :   H_DAY - L_DAY                COLORCYAN NODRAW;
 
-调整幅度2 :    MA50占比/_H   *100 -100     COLORCYAN NODRAW;
+调整幅度2 :    MA50占比/_H   *100 -100      COLORCYAN NODRAW;
 调整天数2 :   H_DAY - 1                    COLORCYAN NODRAW;
 
 
@@ -98,15 +105,33 @@ DRAWNUMBER(CURRBARSCOUNT=CONST(L_DAY),     35,     调整幅度)       COLORCYAN
 DRAWNUMBER(CURRBARSCOUNT=CONST(L_DAY),     25,     调整天数)       COLORCYAN;
 
 
-{ ----- 回调幅度 -88% }
+{ ----- 回调幅度 -88% }{
 DRAWNUMBER(BARSSINCEN(调整幅度2<-88, 5),     55,     调整幅度2)       COLORBLUE;
-DRAWNUMBER(BARSSINCEN(调整幅度2<-88, 5),     45,     调整天数2)       COLORBLUE;
+DRAWNUMBER(BARSSINCEN(调整幅度2<-88, 5),     45,     调整天数2)       COLORBLUE;}
+
+{ ----- 回调幅度 -90% }{
+DRAWTEXT(BARSSINCEN(调整幅度2<-92, 5),     22,     VAR2STR(调整幅度2,0))       COLORCYAN;
+DRAWTEXT(BARSSINCEN(调整幅度2<-92, 5),     17,     VAR2STR(调整天数2,0))       COLORCYAN;}
+
+{ ----------------------------------------------------------------------------}
+调整幅度_L1 :   LLV  (调整幅度   ,   30)              COLORCYAN NODRAW;
+调整幅度_L2 :   REFXV(调整幅度_L1,   30)              COLORCYAN NODRAW;
+
+调整幅度_L  :   MIN(调整幅度_L1,   调整幅度_L2)       COLORCYAN NODRAW;
+
+
+
+{ ----- 回调幅度 -88% }{
+DRAWNUMBER(调整幅度2=调整幅度_L AND 调整幅度2<-80 AND 调整幅度2>=-90,     55,     调整幅度2)       COLORBLUE;
+DRAWNUMBER(调整幅度2=调整幅度_L AND 调整幅度2<-80 AND 调整幅度2>=-90,     45,     调整天数2)       COLORBLUE;}
+
+
+DRAWNUMBER(MA50占比<25 AND 调整幅度2=调整幅度_L AND 调整幅度2>=-90,     55,     调整幅度2)                  COLORBLUE;
+DRAWNUMBER(MA50占比<25 AND 调整幅度2=调整幅度_L AND 调整幅度2>=-90,     45,     调整天数2)                  COLORBLUE;
 
 { ----- 回调幅度 -90% }
-DRAWTEXT(BARSSINCEN(调整幅度2<-92, 5),     22,     VAR2STR(调整幅度2,0))       COLORCYAN;
-DRAWTEXT(BARSSINCEN(调整幅度2<-92, 5),     17,     VAR2STR(调整天数2,0))       COLORCYAN;
-
-
+DRAWTEXT(MA50占比<25   AND 调整幅度2=调整幅度_L AND 调整幅度2< -90,     22,     VAR2STR(调整幅度2,0))       COLORCYAN;
+DRAWTEXT(MA50占比<25   AND 调整幅度2=调整幅度_L AND 调整幅度2< -90,     17,     VAR2STR(调整天数2,0))       COLORCYAN;
 
 
 
