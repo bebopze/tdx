@@ -33,13 +33,10 @@ NOTEXT_4 :=  15, COLORCYAN    LINETHICK1;
 
 
 { ----------------------------------------------------------------------------------------------- 主线板块   ->   月多-板块 }
+{
 板块月多 :   TOOLS_板块.月多       COLORYELLOW NODRAW;
+}
 
-
-
-
-
-{DRAWTEXT  (CURRBARSCOUNT=CONST(L_DAY),   _L      ,   STRCAT(   STRCAT( VAR2STR(调整幅度,0),   '&' ),   VAR2STR(调整天数,0) ) )   COLORCYAN;}
 
 
 
@@ -73,17 +70,8 @@ TESTSKIP( 状态 = 状态);
 
 
 { ----------------------------------------------------------------------------------------------- }
-{
-大盘_牛     :=  大盘量化.牛;
-
-
-中期调整_N  :    BARSLAST(MA50占比 >= 70)   +   IF(大盘_牛,   30,   25)            COLORWHITE NODRAW;
-}
-
-
-
-中期调整_N0 :=   BARSLAST(MA50占比 >= 70)                                          COLORWHITE NODRAW;
-中期调整_N  :    中期调整_N0   +   REF(BARSLAST(MA50占比<70),   中期调整_N0)          COLORWHITE NODRAW;
+中期调整_N0 :=   BARSLAST(MA50占比 >= 70)                                       COLORWHITE NODRAW;
+中期调整_N  :    中期调整_N0   +   REF(BARSLAST(MA50占比<70),   中期调整_N0)       COLORWHITE NODRAW;   { 70（N）↗ 90（MAX）↘ 70（N0） }
 
 
 
@@ -97,7 +85,7 @@ L_DAY :=   BARSLAST(MA50占比  =    _L)  +1           NODRAW;
 调整幅度  :          _L/_H   *100 -100     COLORCYAN NODRAW;
 调整天数  :   H_DAY - L_DAY                COLORCYAN NODRAW;
 
-调整幅度2 :    MA50占比/_H   *100 -100      COLORCYAN NODRAW;
+调整幅度2 :    MA50占比/_H   *100 -100     COLORCYAN NODRAW;
 调整天数2 :   H_DAY - 1                    COLORCYAN NODRAW;
 
 
@@ -105,27 +93,16 @@ DRAWNUMBER(CURRBARSCOUNT=CONST(L_DAY),     35,     调整幅度)       COLORCYAN
 DRAWNUMBER(CURRBARSCOUNT=CONST(L_DAY),     25,     调整天数)       COLORCYAN;
 
 
-{ ----- 回调幅度 -88% }{
-DRAWNUMBER(BARSSINCEN(调整幅度2<-88, 5),     55,     调整幅度2)       COLORBLUE;
-DRAWNUMBER(BARSSINCEN(调整幅度2<-88, 5),     45,     调整天数2)       COLORBLUE;}
-
-{ ----- 回调幅度 -90% }{
-DRAWTEXT(BARSSINCEN(调整幅度2<-92, 5),     22,     VAR2STR(调整幅度2,0))       COLORCYAN;
-DRAWTEXT(BARSSINCEN(调整幅度2<-92, 5),     17,     VAR2STR(调整天数2,0))       COLORCYAN;}
 
 { ----------------------------------------------------------------------------}
 调整幅度_L1 :   LLV  (调整幅度   ,   30)              COLORCYAN NODRAW;
 调整幅度_L2 :   REFXV(调整幅度_L1,   30)              COLORCYAN NODRAW;
 
-调整幅度_L  :   MIN(调整幅度_L1,   调整幅度_L2)       COLORCYAN NODRAW;
+调整幅度_L  :   MIN(调整幅度_L1,   调整幅度_L2)         COLORCYAN NODRAW;
 
 
 
-{ ----- 回调幅度 -88% }{
-DRAWNUMBER(调整幅度2=调整幅度_L AND 调整幅度2<-80 AND 调整幅度2>=-90,     55,     调整幅度2)       COLORBLUE;
-DRAWNUMBER(调整幅度2=调整幅度_L AND 调整幅度2<-80 AND 调整幅度2>=-90,     45,     调整天数2)       COLORBLUE;}
-
-
+{ ----- 回调幅度 -88% }
 DRAWNUMBER(MA50占比<25 AND 调整幅度2=调整幅度_L AND 调整幅度2>=-90,     55,     调整幅度2)                  COLORBLUE;
 DRAWNUMBER(MA50占比<25 AND 调整幅度2=调整幅度_L AND 调整幅度2>=-90,     45,     调整天数2)                  COLORBLUE;
 
@@ -143,7 +120,6 @@ DRAWTEXT(MA50占比<25   AND 调整幅度2=调整幅度_L AND 调整幅度2< -90
 
 
 { ----------------------------------------------------------------------------------------------- 间隔线 1年 }
+间隔1年 :=   MONTH=1   AND   DAY<10     NODRAW;
 
-间隔1年 :=   MONTH=1   AND   DAY<10 ,NODRAW;
-
-STICKLINE(间隔1年  ,0,1  ,0,2)       COLOR808080;
+STICKLINE(间隔1年  ,0,1  ,0,2)          COLOR808080;
