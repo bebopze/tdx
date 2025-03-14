@@ -35,27 +35,29 @@ MA空   :=  C<MA20   AND   MA向下;
 调整幅度_L1 :=   LLV  (调整幅度   ,   20)              COLORCYAN NODRAW;
 调整幅度_L2 :=   REFXV(调整幅度_L1,   20)              COLORCYAN NODRAW;
 
-调整幅度_L  :=   MIN(调整幅度_L1, 调整幅度_L2)           COLORCYAN NODRAW;
+调整幅度_L  :=   MIN(调整幅度_L1, 调整幅度_L2)          COLORCYAN NODRAW;
 
 
 
-L_DAY_中期 :   BARSLAST(调整幅度2=调整幅度_L   AND   C<MA20)       COLORCYAN NODRAW;
+L_DAY_中期 :   BARSLAST(调整幅度2=调整幅度_L   AND   C<MA20)         COLORCYAN NODRAW;
 
 
 
 { ---------------------------------------------------- }
-L_DAY_近期 :   BARSLAST(MA空)  +  NL_DAY                         COLORCYAN NODRAW;
+L_DAY_近期 :   BARSLAST(MA空)  +  NL_DAY                           COLORCYAN NODRAW;
 
-
+                      { EVERY(MA空,3) - 趋势   /   MA空 - 动量 }
 
 
 
 { ------------------------------------------------------------------------------------------------------- }
-L_DAY :   IF(L_DAY_中期 / L_DAY_近期 > 2,     L_DAY_近期,     L_DAY_中期)       COLORCYAN NODRAW;
+L_DAY :   IF(L_DAY_中期 = DRAWNULL
+        ||   L_DAY_近期 > L_DAY_中期
+        ||   L_DAY_中期 / L_DAY_近期 > 2,          L_DAY_近期,          L_DAY_中期)       COLORCYAN NODRAW;
 
 
 
-_L    :   LLV(L,   L_DAY + 1)                                                COLORCYAN NODRAW;
+_L    :   LLV(L,   L_DAY + 1)                                       COLORCYAN NODRAW;
 
 
 
