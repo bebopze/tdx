@@ -62,7 +62,7 @@ DRAWTEXT_FIX(ISLASTBAR AND X,0.01,0.15,0,ZDBLOCK),COLORWHITE;
 
 
 { ----------------------------------------------------------------------------------------------- }
-中期调整_N :=  IF( (MA多(100) || MA多(200))  AND  PERIOD>=5{日K},     100,     200);
+中期调整_N :=  IF( (MA多(100) || MA多(200))  AND  日,     100,     200);
 
 
 _H    :=  HHV(H,     中期调整_N);
@@ -90,45 +90,25 @@ DRAWTEXT   (距今天数=CONST(L_DAY),   0.99*L      ,   STRCAT(   STRCAT( VAR2S
 
 
 
-
 { ----------------------------------------------------------------------------------------------- }
-MA50占比 :=   大盘量化.MA50占比;
-
-
-大盘         :=   TOOLS_RPS.大盘;
-调整幅度_VAL :=   IF(大盘,   -10,     -15)     NODRAW;
-
-
-{
-中期_DAY0 :=   BARSLAST(调整天数2=0)                                           COLORWHITE NODRAW;
-中期_DAY_ :    中期_DAY0   +   REF(BARSLAST(调整天数2>0),   中期_DAY0)         COLORWHITE NODRAW;
-
-
-大盘中期_DAY : MA50占比.中期调整_N   NODRAW;
-
-中期_DAY : IF(大盘,     大盘中期_DAY,     中期_DAY_) NODRAW;
-}
-
-
+调整幅度_VAL :=   IF(TOOLS_RPS.大盘,   -10,     -15)     NODRAW;
 
 { ---------------------------------------------------------------------- }
-调整幅度_L1 :=   LLV  (调整幅度   ,   调整天数2)       COLORCYAN NODRAW;
-调整幅度_L2 :=   REFXV(调整幅度_L1,          20)       COLORCYAN NODRAW;
+N1 :=   MIN(MAX(          调整天数2   ,   20),50)      NODRAW; { 20-50 }
+N2 :=   MIN(MAX( BARSNEXT(调整天数2=0),   20),50)      NODRAW;
+
+
+调整幅度_L1 :=   LLV  (调整幅度   ,          N1)       COLORCYAN NODRAW;
+调整幅度_L2 :=   REFXV(调整幅度_L1,          N2)       COLORCYAN NODRAW;
+
 
 调整幅度_L  :    MIN(调整幅度_L1,   调整幅度_L2)       COLORCYAN NODRAW;
 
 
 
+DRAWNUMBER(调整幅度2=调整幅度_L AND 调整幅度_L<调整幅度_VAL,   _L      ,   调整幅度)     COLORCYAN;
+DRAWNUMBER(调整幅度2=调整幅度_L AND 调整幅度_L<调整幅度_VAL,   _L *0.95,   调整天数)     COLORCYAN;
 
-X :=  调整幅度2=调整幅度_L AND 调整幅度_L<调整幅度_VAL   AND   IF(大盘, MA50占比<20, 1);
-
-DRAWNUMBER(X,   _L      ,   调整幅度)     COLORCYAN;
-DRAWNUMBER(X,   _L *0.95,   调整天数)     COLORCYAN;
-
-{
-DRAWNUMBER(调整幅度2=调整幅度_L AND (MA50占比<20 || 调整幅度_L<调整幅度_VAL),   _L      ,   调整幅度)     COLORCYAN;
-DRAWNUMBER(调整幅度2=调整幅度_L AND (MA50占比<20 || 调整幅度_L<调整幅度_VAL),   _L *0.95,   调整天数)     COLORCYAN;
-}
 
 
 { ----------------------------------------------------------------------------------------------- }
@@ -292,10 +272,10 @@ STICKLINE(BARSSINCEN(个股熊,   10)=0,   LLV(L,200)*0.7, 2*HHV(H,200)   ,0, 1)
 { ----------------------------------------------- 大盘牛熊 }
 大盘牛 :   大盘量化.牛       COLORRED  NODRAW;
 大盘熊 :   NOT(大盘牛)       COLORCYAN NODRAW;
-
+{
 STICKLINE(BARSSINCEN(大盘牛,   10)=0,   LLV(L,200)*0.7, 2*HHV(H,200)   ,1, 0)     COLORRED  ;
 STICKLINE(BARSSINCEN(大盘熊,   10)=0,   LLV(L,200)*0.7, 2*HHV(H,200)   ,1, 0)     COLORCYAN ;
-
+}
 
 
 
