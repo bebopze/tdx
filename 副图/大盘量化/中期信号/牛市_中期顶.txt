@@ -1,0 +1,198 @@
+牛熊状态 :=  大盘量化.牛熊状态     NODRAW;
+
+牛市     :   牛熊状态 = 4          NODRAW;
+牛市中继 :   牛熊状态 = 3          NODRAW;
+
+
+
+{TESTSKIP(牛市=0);}
+
+均线大多头 :=  均线大多头.均线大多头;
+{ ------------------------------------------------------------ }
+MA50占比         :=    大盘量化.MA50占比;
+月多占比         :=    大盘量化.月多占比;
+差值             :=    新高_新低.差值   ;
+
+
+板块_右侧买占比  :=    板块量化.右侧买_占比;
+板块_强势卖占比  :=    板块量化.强势卖出_占比;
+
+板块_右侧B占比   :=    板块_右侧买占比 + 板块_强势卖占比;
+
+板块_右侧S占比   :=    板块量化.右侧卖_占比;
+
+
+
+{ ------------------------------------------------------------ 2019-04-04 }
+CON_A1 :=   MA50占比 > 97           NODRAW;
+
+CON_A2 :=   月多占比 > 68           NODRAW;
+
+CON_A3 :=   差值     > 250          NODRAW;
+
+CON_A4 :=   板块_右侧B占比 > 95   AND   板块_强势卖占比 > 22     NODRAW;   { 73+23   -   0+2 }
+
+
+
+CON_A  :    CON_A1 AND CON_A2 AND CON_A3 AND CON_A4       NODRAW;
+
+
+
+
+
+{ ------------------------------------------------------------ 2019-09-16 }
+CON_B1 :=   BETWEEN(MA50占比,   88, 98)     NODRAW;
+
+CON_B2 :=   BETWEEN(月多占比,   45, 60)     NODRAW;
+
+CON_B3 :=   差值     > 70           NODRAW;
+
+CON_B4 :=   板块_右侧B占比 > 94     NODRAW;     { 94+1   -   1+4 }
+
+
+
+CON_B  :    CON_B1 AND CON_B2 AND CON_B3 AND CON_B4       NODRAW;
+
+
+
+
+
+{ ------------------------------------------------------------ 2020-01-14 }
+CON_C1 :=   MA50占比 > 92           NODRAW;
+
+CON_C2 :=   月多占比 > 61           NODRAW;
+
+CON_C3 :=   差值     > 170          NODRAW;
+
+CON_C4 :=   板块_右侧B占比 > 92     NODRAW;     { 90+3   -   4+2 }
+
+
+
+CON_C  :    CON_C1 AND CON_C2 AND CON_C3 AND CON_C4       NODRAW;
+
+
+
+
+
+{ ------------------------------------------------------------ 2020-03-05  武汉疫情 黑天鹅 }
+CON_D0 :=   COUNT(差值<-1000 , 30)  NODRAW;   { 闪崩 - 指数跌停 }
+
+
+CON_D1 :=   MA50占比 > 70           NODRAW;
+
+CON_D2 :=   月多占比 > 44           NODRAW;
+
+CON_D3 :=   差值     > 150          NODRAW;
+
+CON_D4 :=   板块_右侧B占比 > 77     NODRAW;     { 74+4   -   17+6 }
+
+
+CON_D  :    CON_D0   AND   CON_D1 AND CON_D2 AND CON_D3 AND CON_D4       NODRAW;
+
+
+
+{ ------------ 减仓区  2020-02-25 }
+
+CON_D11 :=   MA50占比 > 57           NODRAW;
+
+CON_D12 :=   月多占比 > 39           NODRAW;
+
+CON_D13 :=   差值     > 250          NODRAW;
+
+CON_D14 :=   板块_右侧B占比 > 59     NODRAW;     { 59+1   -   1+30 }
+
+CON_DD  :    CON_D0   AND   CON_D11 AND CON_D12 AND CON_D13 AND CON_D14       NODRAW;
+
+
+
+
+
+
+{ ------------------------------------------------------------ 2020-07-13 }
+CON_E1 :=   MA50占比 > 97           NODRAW;
+
+CON_E2 :=   月多占比 > 70           NODRAW;
+
+CON_E3 :=   差值     > 600          NODRAW;
+
+CON_E4 :=   板块_右侧B占比 > 98     NODRAW;     { 69+30   -   1+0 }
+
+CON_E5 :=   均线大多头              NODRAW;
+
+
+
+CON_E  :    CON_E1 AND CON_E2 AND CON_E3 AND CON_E4 AND CON_E5       NODRAW;
+
+
+
+
+
+{ ------------------------------------------------------------ 2021-04-19 }
+CON_F0 :=   {牛市中继   AND}   COUNT(下MA(200),   30)       NODRAW;
+
+
+
+CON_F1 :=   BETWEEN(MA50占比,   70, 90)     NODRAW;
+
+CON_F2 :=   月多占比 > 24           NODRAW;
+
+CON_F3 :=   差值     > 40           NODRAW;
+
+CON_F4 :=   板块_右侧B占比 > 61     NODRAW;     { 62+0   -   6+31 }
+
+
+
+CON_F  :    CON_F0   AND   CON_F1 AND CON_F2 AND CON_F3 AND CON_F4       NODRAW;
+
+
+
+
+
+
+{ ------------------------------------------------------------------------------ 2021-09-08 }
+CON_G0 :=   COUNT(MA50占比>25,   70) >=70   ||   COUNT(月多占比>20,   70) >=70     NODRAW;
+
+
+
+CON_G1 :=   MA50占比 > 69           NODRAW;
+
+CON_G2 :=   月多占比 > 38           NODRAW;
+
+CON_G3 :=   差值     > 230          NODRAW;
+
+CON_G4 :=   板块_右侧B占比 > 66     NODRAW;     { 61+6   -   17+15 }
+
+
+
+CON_G  :    CON_G0     AND     CON_G1 AND CON_G2 AND CON_G3 AND CON_G4       NODRAW;
+
+
+
+
+
+{ ------------------------------------------------------------ 2021-12-16 }
+CON_H1 :=   BETWEEN(MA50占比,   75, 90)       NODRAW;
+
+CON_H2 :=   月多占比 > 31           NODRAW;
+
+CON_H3 :=   差值     > 90           NODRAW;
+
+CON_H4 :=   板块_右侧B占比 > 75     NODRAW;     { 75+1   -   3+21 }
+
+CON_H5 :=   COUNT(下MA(100),   50)     NODRAW;
+
+
+
+CON_H  :    CON_H1 AND CON_H2 AND CON_H3 AND CON_H4   AND   CON_H5       NODRAW;
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------------- }
+
+中期顶_减仓  :   牛市       AND   ({CON_AA || CON_BB || CON_CC ||} CON_DD)       COLORMAGENTA DOTLINE;
+中期顶_减仓2 :   牛市中继   AND   CON_F       COLORMAGENTA DOTLINE;
+
+
+牛市_中期顶  :   牛市       AND   (CON_A || CON_B || CON_C || CON_D || CON_E || CON_F || CON_G || CON_H)       COLORRED;
