@@ -1,0 +1,62 @@
+牛 :   牛熊.牛      NODRAW;
+熊 :   NOT(牛)     NODRAW;
+
+
+
+{ ----------------------------------------------------------------------------------- }
+均线大空头  :   均线大空头.均线大空头            NODRAW;
+
+大空头_DAY  :   BARSLAST(均线大空头) +1       NODRAW;
+牛_DAY      :   BARSLAST(牛)       +1       NODRAW;
+
+
+中继_H :   HHV(H,   大空头_DAY)              NODRAW;
+中继_L :   LLV(L,   大空头_DAY)              NODRAW;
+
+
+
+
+
+{ ----------------------------------------------------------------------------------- }
+CON_1 :   熊                               NODRAW;
+
+CON_2 :   大空头_DAY < 牛_DAY               NODRAW;
+
+CON_3 :   COUNT(MA多(100),  50)            NODRAW;
+
+
+
+CON_4_1 :   MA空(250)                      NODRAW;
+CON_4_2 :   中继_L<L   AND   H<中继_H       NODRAW;
+CON_4   :   CON_4_1 || CON_4_2            NODRAW;
+
+
+
+
+
+下跌中继 :   CON_1 AND CON_2 AND CON_3 AND CON_4       COLORCYAN;
+
+
+
+
+
+
+
+{ ---------------------------------------------------------------------------------------------------------------------- 量化 FUN2（可用） }
+{
+熊市中继 :   牛熊状态.熊市中继            NODRAW;
+
+
+
+CON_1 :   熊                           NODRAW;
+
+CON_2 :   EXIST(熊市中继,    100)       NODRAW;
+
+CON_3 :   COUNT(MA多(100),   50)       NODRAW;
+
+CON_4 :   COUNT(牛, 100)=0             NODRAW;
+
+
+
+下跌中继 :   CON_1 AND CON_2 AND CON_3 AND CON_4       COLORCYAN;
+};
