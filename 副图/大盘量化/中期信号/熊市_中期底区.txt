@@ -8,7 +8,7 @@
 
 { -------------------------------------------------------------------------------}
 {
-牛熊状态 :=  大盘量化.牛熊状态                                     NODRAW;
+牛熊状态 :=  大盘量化.牛熊状态                                    NODRAW;
 牛市     :   牛熊状态 = 3  ||  牛熊状态 = 4  || 牛熊状态 = 0       NODRAW;
 }
 牛市 :=   大盘量化.牛     NODRAW;
@@ -16,9 +16,9 @@
 
 
 
-MA50占比      :=   大盘量化.MA50占比         NODRAW;
+MA50占比      :=   大盘量化.MA50占比        NODRAW;
 月多占比      :=   大盘量化.月多占比         NODRAW;
-板块月多占比  :=   板块量化.月多占比         NODRAW;
+板块月多占比  :=   板块量化.月多占比          NODRAW;
 新高新低_差值 :=   新高_新低.差值            NODRAW;
 右侧S_占比    :=   板块量化.右侧S_占比       NODRAW;
 
@@ -26,11 +26,11 @@ MA50占比      :=   大盘量化.MA50占比         NODRAW;
 
 { ------------------------------------------------------------------- }
 {
-MA50_调整幅度   :   MA50占比.调整幅度          NODRAW;
-MA50_调整幅度2  :   MA50占比.调整幅度2         NODRAW;
+MA50_调整幅度   :   MA50占比.调整幅度        NODRAW;
+MA50_调整幅度2  :   MA50占比.调整幅度2       NODRAW;
 
-月多_调整幅度   :   月多占比.调整幅度          NODRAW;
-月多_调整幅度2  :   月多占比.调整幅度2         NODRAW;
+月多_调整幅度   :   月多占比.调整幅度         NODRAW;
+月多_调整幅度2  :   月多占比.调整幅度2        NODRAW;
 
 BK月多调整幅度  :   板块月多占比.调整幅度      NODRAW;
 BK月多调整幅度2 :   板块月多占比.调整幅度2     NODRAW;
@@ -39,19 +39,19 @@ BK月多调整幅度2 :   板块月多占比.调整幅度2     NODRAW;
 
 
 
-MA50_调整天数   :   MA50占比.调整天数          NODRAW;
-MA50_调整天数2  :   MA50占比.调整天数2         NODRAW;
+MA50_调整天数   :   MA50占比.调整天数       NODRAW;
+MA50_调整天数2  :   MA50占比.调整天数2      NODRAW;
 
-月多_调整天数   :   月多占比.调整天数          NODRAW;
-月多_调整天数2  :   月多占比.调整天数2         NODRAW;
+月多_调整天数   :   月多占比.调整天数         NODRAW;
+月多_调整天数2  :   月多占比.调整天数2        NODRAW;
 
 BK月多调整天数  :   板块月多占比.调整天数      NODRAW;
 BK月多调整天数2 :   板块月多占比.调整天数2     NODRAW;
 
 
-  MA50_中期天数  :=   MA50_调整天数2  -  MA50_调整天数     NODRAW;
-  月多_中期天数  :=   月多_调整天数2  -  月多_调整天数     NODRAW;
-BK月多_中期天数  :=   BK月多调整天数2 - BK月多调整天数     NODRAW;
+ MA50_中期天数  :=   MA50_调整天数2  -  MA50_调整天数     NODRAW;
+  月多_中期天数  :=   月多_调整天数2  -  月多_调整天数      NODRAW;
+BK月多_中期天数  :=   BK月多调整天数2 - BK月多调整天数      NODRAW;
 }
 
 
@@ -61,7 +61,7 @@ BK月多调整幅度2 :   板块月多占比.调整幅度2     NODRAW;
 
 MA50_调整天数   :    MA50占比.调整天数                    NODRAW;
 MA50_调整天数2  :    MA50占比.调整天数2                   NODRAW;
-MA50_中期天数   :=   MA50_调整天数2  -  MA50_调整天数     NODRAW;
+MA50_中期天数   :=   MA50_调整天数2  -  MA50_调整天数      NODRAW;
 }
 
 
@@ -76,13 +76,13 @@ MA50_中期天数   :=   MA50_调整天数2  -  MA50_调整天数     NODRAW;
 { ---------------------------------------------------------------------------------------------------------------------------}
 CON_冰1 :   MA50占比      < 25     {||     MA50_调整幅度2  <-90}        COLORCYAN NODRAW;
 
-CON_冰2 :   月多占比      < 15     {||     月多_调整幅度2  <-90}        COLORCYAN NODRAW;
+CON_冰2 :   月多占比      < 15     {||     月多_调整幅度2  <-90}          COLORCYAN NODRAW;
 
-CON_冰3 :   板块月多占比  < 10     {||     BK月多调整幅度2 <-90}        COLORCYAN NODRAW;
+CON_冰3 :   板块月多占比  < 10     {||     BK月多调整幅度2 <-90}          COLORCYAN NODRAW;
 
 CON_冰4 :   新高新低_差值 < -150                                        COLORCYAN NODRAW;
 
-CON_冰5 :   右侧S_占比    > 85     AND     EXIST(右侧S_占比>95, 20)     COLORCYAN NODRAW;
+CON_冰5 :   右侧S_占比    > 85     AND     EXIST(右侧S_占比>95, 20)      COLORCYAN NODRAW;
 
 
 
@@ -133,10 +133,10 @@ MA50_调整天数2  :   MA50占比.调整天数2       COLORCYAN  NODRAW;
 { ----- 大空头  ->  必须 极值（时/空 任一极值） }
 
 CON_熊_时换空 :=   均线大空头   AND   EVERY(新高新低_差值<0, 10)     AND     (大盘_调整天数2 >  90   ||   新低天数>65)
-                                                                    {AND     (COUNT(板块月多占比<5,   40)>=15        )}       COLORCYAN NODRAW;
+                                                              {AND     (COUNT(板块月多占比<5,   40)>=15        )}       COLORCYAN NODRAW;
 
 
-CON_熊_空换时 :=   {均线大空头  AND}   EVERY(新高新低_差值<0,  3)     AND     (大盘_调整幅度2 < -30   ||   新低占比>50)       COLORCYAN NODRAW;
+CON_熊_空换时 :=   {均线大空头  AND}   EVERY(新高新低_差值<0,  3)     AND     (大盘_调整幅度2 < -30   ||   新低占比>50)        COLORCYAN NODRAW;
 
 
 
@@ -153,7 +153,7 @@ CON_熊_时空_加  :   CON_熊_时换空   AND   CON_熊_空换时       COLORC
 
 { ----- 震荡市/下跌中继  ->  蜻蜓点水 }
 
-CON_下跌中继  :=   下跌中继   AND   1;
+CON_下跌中继  :=   下跌中继   AND   大盘_调整天数2>=15 AND 新低天数>=5;
 
 
 
@@ -169,98 +169,18 @@ CON_熊下跌中继2 :    熊市 AND 下跌中继       AND     CON_下跌中继
 
 
 { ------------------------------------------------------------------- }
-CON_熊_下跌中继 :    熊市 AND 下跌中继       AND     CON_下跌中继     AND   CON_冰NUM>=3   AND   CON_极冰_NUM>=1       COLORBLUE;
+CON_熊_下跌中继 :    熊市 AND 下跌中继        AND     CON_下跌中继     AND   CON_冰NUM>=3   AND   CON_极冰_NUM>=1        COLORBLUE;
+
+CON_熊_下跌     :    熊市 AND NOT(下跌中继)   AND     CON_下跌中继     AND   CON_冰NUM>=3   AND   CON_极冰_NUM>=1       COLORBLUE;
 
 
-CON_熊_大空头   :    熊市 {AND 均线大空头}     AND     CON_熊_时空_或   AND   COUNT(CON_熊_时空_加,   新低天数)=0
+CON_熊_大空头   :    熊市 {AND 均线大空头}    AND     CON_熊_时空_或   AND   COUNT(CON_熊_时空_加,   新低天数)=0
 
-                                                                      AND   CON_冰NUM>=5
+                                                                      AND   (CON_冰NUM>=5   ||    CON_极冰_NUM>=4  )
 
 
                                                                       AND   (  (CON_熊_时换空 AND CON_极冰_NUM>=1   AND   COUNT(板块月多占比<5,   40)>=15)   ||   (CON_熊_空换时 AND CON_极冰_NUM>=2)  )       COLORCYAN;
 
 
 
-CON_熊_大大空头 :    熊市 AND 均线大空头     AND     CON_熊_时空_加   AND   CON_冰NUM>=5   AND   CON_极冰_NUM>=4       COLORCYAN;
-
-
-{ ------------------------------------------------------------------- }
-
-
-
-
-{
-CON_X1 :    熊市                  NODRAW;
-CON_X2 :    大均线空头            NODRAW;
-CON_X3 :    CON_熊_时换空         NODRAW;
-CON_X4 :    CON_冰NUM>=5          NODRAW;
-CON_X5 :    CON_极冰_NUM>=2       NODRAW;
-}
-
-
-
-
-
-
-
-
-
-
-
-{ ------------------------------------------------------------------------------- 价格（平均股价-880003）顶/底 }
-牛市初期 :=   EXIST(MA50占比>99   AND   月多占比>50   AND   板块月多占比>50,     100)       COLORMAGENTA;
-
-
-
-
-
-{TESTSKIP(牛市=0);}
-{ ------------------------------------------------------------ 2019-2021 }
-{
-CON_1 :=   MA50占比      < 25     {||     MA50_调整幅度2  <-90       COLORCYAN NODRAW;
-
-CON_2 :=   月多占比      < 20     {||     月多_调整幅度2  <-90       COLORCYAN NODRAW;
-
-CON_3 :=   板块月多占比  < 10     {||     BK月多调整幅度2 <-90       COLORCYAN NODRAW;
-
-CON_4 :=   新高新低_差值 < -50                                        COLORCYAN NODRAW;
-
-CON_5 :=   右侧S_占比    > 80     AND     EXIST(右侧S_占比>95, 20)    COLORCYAN NODRAW;
-
-
-
-
-CON_NUM :   CON_1 + CON_2 + CON_3 + CON_4 + CON_5     COLORWHITE NODRAW;
-
-
-
-CON_牛0  :=   (牛市||牛市初期)     AND     CON_NUM>=4       COLORWHITE;
-CON_牛02 :=   (牛市||牛市初期)     AND     CON_NUM>=5       COLORCYAN;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{ ---------------------------------------------------------------------------------------------------------------------------}
-{
-中期底部 :   CON_0 AND (牛市 || 牛市初期 || 牛市顶部震荡)                COLORWHITE;
-
-中期底部   AND   (中期底J || 中期底K || 中期底L)                         COLORMAGENTA;
-
-中期底部   AND   (中期底G || 中期底H)                                     COLORBLUE;
-
-中期底部   AND   (中期底A || 中期底B || 中期底C || 中期底D || 中期底E || 中期底F || 中期底M)       COLORCYAN;
-};
+CON_熊_极限空头 :    熊市 AND 均线大空头     AND     CON_熊_时空_加   AND   CON_冰NUM>=5   AND   CON_极冰_NUM>=4       COLORCYAN;
