@@ -1,0 +1,32 @@
+{
+ROC1:=100*(C-REF(C,14))/REF(C,14)  NODRAW;
+ROC2:=100*(C-REF(C,11))/REF(C,11)  NODRAW;
+WMA(ROC1+ROC2,10),LINETHICK2,COLORRED;
+0,LINETHICK2,COLORGREEN;
+}
+
+
+
+{ ------------------------------------------------- }
+ROC1 :=  C/REF(C,14)   *100-100       NODRAW;
+ROC2 :=  C/REF(C,11)   *100-100       NODRAW;
+
+
+估波 :   WMA(ROC1+ROC2, 10)       LINETHICK2 COLORRED;
+
+
+
+
+
+{ ------------------------------------------------- }
+IF(估波>0,估波,DRAWNULL),LINETHICK2,COLORRED;
+0,LINETHICK2,COLORGREEN;
+DRAWICON(CROSS(估波,0),0-0.01,1);
+
+
+
+{
+ 70,DOTLINE LINETHICK1,COLORYELLOW;
+  0,        LINETHICK2,COLORGREEN;
+-50,DOTLINE LINETHICK1,COLORCYAN;
+};
