@@ -1,40 +1,29 @@
-牛 :   牛熊.牛      NODRAW;
-熊 :   NOT(牛)     NODRAW;
+大牛 :   牛熊.大牛     NODRAW;
+熊   :   牛熊.熊      NODRAW;
 
 
 
-{ ----------------------------------------------------------------------------------- }
-均线大空头  :   均线大空头.均线大空头            NODRAW;
-
-大空头_DAY  :   BARSLAST(均线大空头) +1       NODRAW;
-牛_DAY      :   BARSLAST(牛)       +1       NODRAW;
-
-
-中继_H :   HHV(H,   大空头_DAY)              NODRAW;
-中继_L :   LLV(L,   大空头_DAY)              NODRAW;
+{ ------------------------- }
+MA100_多 :=  MA多(100);
 
 
 
 
 
 { ----------------------------------------------------------------------------------- }
-CON_1 :   熊                               NODRAW;
+CON_1 :   熊                            NODRAW;
 
-CON_2 :   大空头_DAY < 牛_DAY               NODRAW;
+CON_2 :   COUNT(大牛, 100)=0             NODRAW;
 
-CON_3 :   COUNT(MA多(100),  50)            NODRAW;
+CON_3 :   LLV(L,20) != LLV(L,150)       NODRAW;
 
-
-
-CON_4_1 :   MA空(250)                      NODRAW;
-CON_4_2 :   中继_L<L   AND   H<中继_H       NODRAW;
-CON_4   :   CON_4_1 || CON_4_2            NODRAW;
+CON_4 :   EXIST(MA100_多, 50)     ||     (EXIST(MA100_多, 100)   AND   EXIST(MA多(50), 10))       NODRAW;
 
 
 
 
 
-下跌中继 :   CON_1 AND CON_2 AND CON_3 AND CON_4       COLORCYAN;
+下跌中继 :   CON_1 AND CON_2 AND CON_3 AND CON_4       COLORBLUE;
 
 
 
@@ -44,19 +33,23 @@ CON_4   :   CON_4_1 || CON_4_2            NODRAW;
 
 { ---------------------------------------------------------------------------------------------------------------------- 量化 FUN2（可用） }
 {
-熊市中继 :   牛熊状态.熊市中继            NODRAW;
+熊市中继 :   牛熊状态.熊市中继              NODRAW;
 
 
 
-CON_1 :   熊                           NODRAW;
+CON_1 :   熊                            NODRAW;
 
-CON_2 :   EXIST(熊市中继,    100)       NODRAW;
+CON_2 :   COUNT(牛, 100)=0              NODRAW;
 
-CON_3 :   COUNT(MA多(100),   50)       NODRAW;
+CON_3 :   LLV(L,20) != LLV(L,150)       NODRAW;
 
-CON_4 :   COUNT(牛, 100)=0             NODRAW;
+CON_4 :   EXIST(熊市中继,   100)         NODRAW;
+
+CON_5 :   EXIST(MA100_多,    50)     ||     (EXIST(MA100_多, 100)   AND   EXIST(MA多(50), 10))       NODRAW;
 
 
 
-下跌中继 :   CON_1 AND CON_2 AND CON_3 AND CON_4       COLORCYAN;
+
+
+下跌中继 :   CON_1 AND CON_2 AND CON_3 AND CON_4 AND CON_5       COLORBLUE;
 };
