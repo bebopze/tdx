@@ -1,0 +1,18 @@
+MA5:=MA(C,5);
+
+
+
+{ 陶博士说 大盘（深证综指/平均股价）   MA10月线金叉MA20月线   叠加 MACD月线翻红，基本上可以确认 牛市 的到来 }
+
+  MA金叉 :   MA(C,10)  >= MA(C,20)               NODRAW;
+MACD金叉 :   MACD.MACD >= 0                      NODRAW;
+
+MA5非空  :   NOT( C<MA5 AND MA5<REF(MA5,1) )     NODRAW;
+
+
+
+
+
+牛   :   MA金叉 AND MACD金叉   AND   MA5非空       COLORRED;
+
+熊   :   NOT(牛)                                 COLORCYAN NODRAW;
