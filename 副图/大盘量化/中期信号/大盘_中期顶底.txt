@@ -1,0 +1,49 @@
+牛底_STATUS :   牛市_中期底.牛底_STATUS       COLORLICYAN NODRAW;
+牛顶_STATUS :   牛市_中期顶.牛顶_STATUS       COLORLIRED  NODRAW;
+
+熊底_STATUS :   熊市_中期底.熊底_STATUS       COLORLICYAN NODRAW;
+熊顶_STATUS :   熊市_中期顶.熊顶_STATUS       COLORLIRED  NODRAW;
+
+
+
+
+
+
+
+{ ------------------------------------------------------------------ }
+大盘_中期底 :   牛底_STATUS || 熊底_STATUS       COLORCYAN NODRAW;
+大盘_中期顶 :   牛顶_STATUS || 熊顶_STATUS       COLORRED  NODRAW;
+
+
+
+
+
+
+
+{ ------------------------------------------------------------------ }
+STATUS :
+
+IF(牛底_STATUS || 熊底_STATUS,     1,
+IF(牛顶_STATUS || 熊顶_STATUS,     2,
+
+                                  0))     COLORWHITE;
+
+
+
+
+
+
+
+{ ------------------------------------------------------------------ }
+
+NOTEXT_底1  :    IF(牛底_STATUS = 1   ||   熊底_STATUS = 1,     1,     DRAWNULL)       COLORWHITE;
+NOTEXT_底2  :    IF(牛底_STATUS = 2   ||   熊底_STATUS = 2,     1,     DRAWNULL)       COLORBLUE;
+NOTEXT_底3  :    IF(牛底_STATUS = 3   ||   熊底_STATUS = 3,     1,     DRAWNULL)       COLORCYAN;
+
+
+
+NOTEXT_顶1  :    IF(牛顶_STATUS = 1   ||   熊顶_STATUS = 1,     2,     DRAWNULL)       COLORWHITE;
+NOTEXT_顶2  :    IF(牛顶_STATUS = 2   ||   熊顶_STATUS = 2,     2,     DRAWNULL)       COLORRED;
+NOTEXT_顶3  :    IF(牛顶_STATUS = 3   ||   熊顶_STATUS = 3,     2,     DRAWNULL)       COLORYELLOW;
+NOTEXT_顶4  :    IF(牛顶_STATUS = 4   ||   熊顶_STATUS = 4,     2,     DRAWNULL)       COLORBLUE;
+NOTEXT_顶5  :    IF(牛顶_STATUS = 5   ||   熊顶_STATUS = 5,     2,     DRAWNULL)       COLORCYAN;
