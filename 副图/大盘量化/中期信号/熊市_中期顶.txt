@@ -102,10 +102,10 @@ CON_熊顶 :=    (熊市||牛转弱)     AND     新高天数>=10   {AND   NOT(C
 
 
 { --------------------------------------------------------------------------------------------------------------------------- }
-CON_顶_强势S11 :   CON_熊顶     AND   CON_热NUM >= 5                               COLORWHITE;
-CON_顶_强势S12 :   CON_熊顶     AND   CON_热NUM + CON_极热_NUM >= 5                COLORWHITE;
-CON_顶_强势S13 :   CON_熊顶     AND   CON_热NUM + CON_极热_NUM + BS_强势S_NUM>= 5                COLORWHITE;
-CON_顶_强势S1  :   CON_熊顶     AND   CON_顶_强势S11 || CON_顶_强势S12 || CON_顶_强势S13             COLORWHITE;
+CON_顶_强势S11 :   CON_熊顶     AND   CON_热NUM >= 5                                                           COLORWHITE;
+CON_顶_强势S12 :   CON_熊顶     AND   CON_热NUM + CON_极热_NUM >= 5                                            COLORWHITE;
+CON_顶_强势S13 :   CON_熊顶     AND   CON_热NUM + CON_极热_NUM + BS_强势S_NUM>= 5                              COLORWHITE;
+CON_顶_强势S1  :   CON_熊顶     AND   CON_顶_强势S11 || CON_顶_强势S12 || CON_顶_强势S13                       COLORWHITE;
 
 
 
@@ -143,3 +143,23 @@ CON_顶_右侧S   :   CON_熊顶     AND   CON_顶_右侧S1 || CON_顶_右侧S2 
 
 { --------------------------------------------------------------------------------------------------------------------------- }
 熊市_中期顶 :   CON_顶_强势S1   ||   CON_顶_强势S2   ||   CON_顶_强势S3   ||   CON_顶_左侧S   ||   CON_顶_右侧S       COLORYELLOW NODRAW;
+
+
+
+
+
+
+
+
+
+
+{ --------------------------------------------------------------------------------------------------------------------------------------------------------- }
+熊顶_STATUS :
+
+IF(CON_顶_强势S1,          1,          {COLORWHITE }
+IF(CON_顶_强势S2,          2,          {COLORRED   }
+IF(CON_顶_强势S3,          3,          {COLORYELLOW}
+IF(CON_顶_左侧S ,          4,          {COLORBLUE  }
+IF(CON_顶_右侧S ,          5,          {COLORCYAN  }
+
+0)))))       COLORWHITE NODRAW;

@@ -190,3 +190,23 @@ CON弱_顶_右侧S   :   CON_弱牛顶     AND   CON弱_顶_右侧S1 || CON弱_�
 牛市_中期顶 :   CON_顶_强势S1     ||   CON_顶_强势S2     ||   CON_顶_强势S3     ||   CON_顶_左侧S     ||   CON_顶_右侧S
 
            ||   CON弱_顶_强势S1   ||   CON弱_顶_强势S2   ||   CON弱_顶_强势S3   ||   CON弱_顶_左侧S   ||   CON弱_顶_右侧S       COLORYELLOW NODRAW;
+
+
+
+
+
+
+
+
+
+
+{ --------------------------------------------------------------------------------------------------------------------------------------------------------- }
+牛顶_STATUS :
+
+IF(CON_顶_强势S1 || CON弱_顶_强势S1,          1,          {COLORWHITE }
+IF(CON_顶_强势S2 || CON弱_顶_强势S2,          2,          {COLORRED   }
+IF(CON_顶_强势S3 || CON弱_顶_强势S3,          3,          {COLORYELLOW}
+IF(CON_顶_左侧S  || CON弱_顶_左侧S ,          4,          {COLORBLUE  }
+IF(CON_顶_右侧S  || CON弱_顶_右侧S ,          5,          {COLORCYAN  }
+
+0)))))       COLORWHITE NODRAW;

@@ -7,10 +7,6 @@
 
 
 { -------------------------------------------------------------------------------}
-{
-牛熊状态 :=  大盘量化.牛熊状态                                     NODRAW;
-牛市     :   牛熊状态 = 3  ||  牛熊状态 = 4  || 牛熊状态 = 0       NODRAW;
-}
 牛市 :=   大盘量化.牛     NODRAW;
 熊市 :=   NOT(牛市)       NODRAW;
 
@@ -24,73 +20,29 @@ MA50占比      :=   大盘量化.MA50占比         NODRAW;
 
 
 
-{ ------------------------------------------------------------------- }
-{
-MA50_调整幅度   :   MA50占比.调整幅度          NODRAW;
-MA50_调整幅度2  :   MA50占比.调整幅度2         NODRAW;
 
-月多_调整幅度   :   月多占比.调整幅度          NODRAW;
-月多_调整幅度2  :   月多占比.调整幅度2         NODRAW;
-
-BK月多调整幅度  :   板块月多占比.调整幅度      NODRAW;
-BK月多调整幅度2 :   板块月多占比.调整幅度2     NODRAW;
-
-
-
-
-
-MA50_调整天数   :   MA50占比.调整天数          NODRAW;
-MA50_调整天数2  :   MA50占比.调整天数2         NODRAW;
-
-月多_调整天数   :   月多占比.调整天数          NODRAW;
-月多_调整天数2  :   月多占比.调整天数2         NODRAW;
-
-BK月多调整天数  :   板块月多占比.调整天数      NODRAW;
-BK月多调整天数2 :   板块月多占比.调整天数2     NODRAW;
-
-
-  MA50_中期天数  :=   MA50_调整天数2  -  MA50_调整天数     NODRAW;
-  月多_中期天数  :=   月多_调整天数2  -  月多_调整天数     NODRAW;
-BK月多_中期天数  :=   BK月多调整天数2 - BK月多调整天数     NODRAW;
-}
-
-
-
-{
-BK月多调整幅度2 :   板块月多占比.调整幅度2     NODRAW;
-
-MA50_调整天数   :    MA50占比.调整天数                    NODRAW;
-MA50_调整天数2  :    MA50占比.调整天数2                   NODRAW;
-MA50_中期天数   :=   MA50_调整天数2  -  MA50_调整天数     NODRAW;
-}
-
-
-
-
-
-{ --------------------------------------------------------------------------------------------------------------------------- 熊市（2022-2024）}
-熊市初期 :=  熊市 {AND MA空(200)}     AND     EXIST(牛市, 100)       COLORMAGENTA;     { 牛转熊  ->  必须有一波 极限暴跌（急跌） }
 
 
 
 { ---------------------------------------------------------------------------------------------------------------------------}
-CON_冰1 :   MA50占比      < 25     {||     MA50_调整幅度2  <-90}        COLORCYAN NODRAW;
+CON_冰1 :   MA50占比      < 25         COLORCYAN NODRAW;
 
-CON_冰2 :   月多占比      < 15     {||     月多_调整幅度2  <-90}        COLORCYAN NODRAW;
+CON_冰2 :   月多占比      < 15         COLORCYAN NODRAW;
 
-CON_冰3 :   板块月多占比  < 10     {||     BK月多调整幅度2 <-90}        COLORCYAN NODRAW;
+CON_冰3 :   板块月多占比  < 10         COLORCYAN NODRAW;
 
-CON_冰4 :   新高新低_差值 < -150                                        COLORCYAN NODRAW;
+CON_冰4 :   新高新低_差值 < -150       COLORCYAN NODRAW;
 
-CON_冰5 :   右侧S_占比    > 85     AND     EXIST(右侧S_占比>95, 20)     COLORCYAN NODRAW;
-
-
-
+CON_冰5 :   (  右侧S_占比 > 90   )     ||
+            (  右侧S_占比 > 85     AND     EXIST(右侧S_占比>95, 20)  )       COLORCYAN NODRAW;
 
 
-CON_冰NUM    :    CON_冰1 + CON_冰2 + CON_冰3 + CON_冰4 + CON_冰5         COLORWHITE NODRAW;
 
-CON_极冰_NUM :    (MA50占比<5) + (月多占比<5) + (板块月多占比<2) + (新高新低_差值<-2000) + ({COUNT(右侧S_占比>85, 10)>=5 AND }右侧S_占比>=95)    COLORCYAN NODRAW;
+
+
+CON_冰NUM    :    CON_冰1 + CON_冰2 + CON_冰3 + CON_冰4 + CON_冰5       COLORWHITE NODRAW;
+
+CON_极冰_NUM :    (MA50占比<5) + (月多占比<5) + (板块月多占比<2) + (新高新低_差值<-2000) + (右侧S_占比>=95)       COLORCYAN NODRAW;
 
 
 
@@ -114,17 +66,6 @@ CON_极冰_NUM :    (MA50占比<5) + (月多占比<5) + (板块月多占比<2) +
 新低占比       :   新高_新低.新低占比     COLORCYAN NODRAW; { 空 }
 
 
-{
-大盘_调整幅度2 :   CON_中期调整2.调整幅度2    COLORCYAN NODRAW;
-大盘_调整天数2 :   CON_中期调整2.调整天数2    COLORCYAN NODRAW;
-}
-
-
-
-{
-MA50_调整幅度2  :   MA50占比.调整幅度2       COLORCYAN  NODRAW;
-MA50_调整天数2  :   MA50占比.调整天数2       COLORCYAN  NODRAW;
-}
 
 
 
@@ -132,16 +73,14 @@ MA50_调整天数2  :   MA50占比.调整天数2       COLORCYAN  NODRAW;
 
 { ----- 大空头  ->  必须 极值（时/空 任一极值） }
 
-CON_熊_时换空 :=   均线大空头   AND   EVERY(新高新低_差值<0, 10)     AND     (大盘_调整天数2 >  90   ||   新低天数>65)
-                                                                    {AND     (COUNT(板块月多占比<5,   40)>=15        )}       COLORCYAN NODRAW;
+CON_熊_时换空 :=   均线大空头   AND   EVERY(新高新低_差值<0, 10)     AND     (大盘_调整天数2 >  90   ||   新低天数>65)       COLORCYAN NODRAW;
 
-
-CON_熊_空换时 :=   {均线大空头  AND}   EVERY(新高新低_差值<0,  3)     AND     (大盘_调整幅度2 < -30   ||   新低占比>50)       COLORCYAN NODRAW;
+CON_熊_空换时 :=   {均线大空头  AND}  EVERY(新高新低_差值<0,  3)     AND     (大盘_调整幅度2 < -30   ||   新低占比>50)       COLORCYAN NODRAW;   { 均线大空头（DEL）   20150826-20160229 }
 
 
 
-X1:CON_熊_时换空 NODRAW;
-X2:CON_熊_空换时 NODRAW;
+X1 : CON_熊_时换空   NODRAW;
+X2 : CON_熊_空换时   NODRAW;
 
 
 CON_熊_时空_或  :   CON_熊_时换空   ||    CON_熊_空换时       COLORCYAN NODRAW;
@@ -177,16 +116,18 @@ CON_熊_下跌中继 :    熊市 AND 下跌中继        AND     CON_下跌中�
 CON_熊_下跌     :    熊市 AND NOT(下跌中继)   AND     CON_下跌         AND   CON_冰NUM>=4   AND   CON_极冰_NUM>=3       COLORWHITE;   {DEL}
 
 
-CON_熊_大空头   :    熊市 {AND 均线大空头}    AND     CON_熊_时空_或   AND   COUNT(CON_熊_时空_加,   新低天数)=0
+CON_熊_大空头   :    熊市                     AND     CON_熊_时空_或   AND   COUNT(CON_熊_时空_加,   新低天数)=0
 
-                                                                      AND   (CON_冰NUM>=5   ||    CON_极冰_NUM>=4  )
-
-
-                                                                      AND   (  (CON_熊_时换空 AND CON_极冰_NUM>=1   AND   COUNT(板块月多占比<5,   40)>=15)   ||   (CON_熊_空换时 AND CON_极冰_NUM>=2)  )       COLORCYAN;
+                                                                       AND   (CON_冰NUM>=5   ||   CON_极冰_NUM>=4)
 
 
+                                                                       AND   (  (CON_熊_时换空 AND CON_极冰_NUM>=1   AND   COUNT(板块月多占比<5,  40)>=15)   ||   (CON_熊_空换时 AND CON_极冰_NUM>=2)  )     COLORCYAN;
 
-CON_熊_极限空头 :    熊市 AND 均线大空头     AND     CON_熊_时空_加   AND   CON_冰NUM>=5   AND   CON_极冰_NUM>=4       COLORCYAN;
+
+
+CON_熊_极限空头 :    熊市 AND 均线大空头      AND     CON_熊_时空_加   AND   CON_冰NUM>=5   AND   CON_极冰_NUM>=4       COLORCYAN;
+
+
 
 
 
@@ -194,3 +135,21 @@ CON_熊_极限空头 :    熊市 AND 均线大空头     AND     CON_熊_时空_
 
 { --------------------------------------------------------------------------------------------------------------------------- }
 熊市_中期底 :   CON_熊_下跌中继   ||   CON_熊_下跌   ||   CON_熊_大空头   ||   CON_熊_极限空头       COLORCYAN NODRAW;
+
+
+
+
+
+
+
+
+
+
+{ --------------------------------------------------------------------------------------------------------------------------- }
+熊底_STATUS :
+
+IF(CON_熊_下跌                     ,          1,          {COLORWHITE}
+IF(CON_熊_下跌中继                 ,          2,          {COLORBLUE }
+IF(CON_熊_大空头 || CON_熊_极限空头,          3,          {COLORCYAN }
+
+0)))       COLORWHITE NODRAW;
