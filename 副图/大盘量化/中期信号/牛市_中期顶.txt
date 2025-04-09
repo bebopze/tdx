@@ -17,9 +17,9 @@ BS_科创 :=   "SH000688$TOOLS.BS大盘"     COLORWHITE NODRAW;   {科创50  }
 BS_NUM  :=     4 + ABS(BS_科创!=DRAWNULL)       COLORWHITE NODRAW;
 
 
-BS_强势S_NUM :   ABS(BS_平均=4) + ABS(BS_深证=4) + ABS(BS_上证=4) + ABS(BS_创业=4) + ABS(BS_科创=4)     COLORRED  NODRAW;
-BS_左侧S_NUM :   ABS(BS_平均=5) + ABS(BS_深证=5) + ABS(BS_上证=5) + ABS(BS_创业=5) + ABS(BS_科创=5)     COLORBLUE NODRAW;
-BS_右侧S_NUM :   ABS(BS_平均=6) + ABS(BS_深证=6) + ABS(BS_上证=6) + ABS(BS_创业=6) + ABS(BS_科创=6)     COLORCYAN NODRAW;
+BS_强势S_NUM :=   ABS(BS_平均=4) + ABS(BS_深证=4) + ABS(BS_上证=4) + ABS(BS_创业=4) + ABS(BS_科创=4)     COLORRED  NODRAW;
+BS_左侧S_NUM :=   ABS(BS_平均=5) + ABS(BS_深证=5) + ABS(BS_上证=5) + ABS(BS_创业=5) + ABS(BS_科创=5)     COLORBLUE NODRAW;
+BS_右侧S_NUM :=   ABS(BS_平均=6) + ABS(BS_深证=6) + ABS(BS_上证=6) + ABS(BS_创业=6) + ABS(BS_科创=6)     COLORCYAN NODRAW;
 
 
 
@@ -69,17 +69,17 @@ MA50占比      :=   大盘量化.MA50占比         NODRAW;
 
 
 { --------------------------------------------------------------------------------------------------------------------------- }
-CON_热1 :   MA50占比      > 85       COLORLIRED NODRAW;
+CON_热1 :=   MA50占比      > 85       COLORLIRED NODRAW;
 
-CON_热2 :   月多占比      > 40       COLORLIRED NODRAW;
+CON_热2 :=   月多占比      > 40       COLORLIRED NODRAW;
 
-CON_热3 :   板块月多占比  > 50       COLORLIRED NODRAW;
+CON_热3 :=   板块月多占比  > 50       COLORLIRED NODRAW;
 
-CON_热4 :   新高新低_差值 > 50       COLORLIRED NODRAW;
+CON_热4 :=   新高新低_差值 > 50       COLORLIRED NODRAW;
 
-CON_热5 :   右侧B_占比    > 85     AND     EXIST(右侧B_占比>90, 30)     COLORLIRED NODRAW;
+CON_热5 :=   右侧B_占比    > 85     AND     EXIST(右侧B_占比>90, 30)     COLORLIRED NODRAW;
 
-CON_热6 :   BS_强势S_NUM >= BS_NUM - 2       COLORLIRED NODRAW;
+CON_热6 :=   BS_强势S_NUM >= BS_NUM - 2       COLORLIRED NODRAW;
 
 
 
@@ -163,21 +163,21 @@ CON_弱牛顶  :=   CON_牛顶     AND   牛转弱   AND   熊市_中期顶;
 
 
 
-CON弱_顶_强势S1  :   CON_弱牛顶                                 COLORWHITE;
-CON弱_顶_强势S2  :   CON_弱牛顶     AND   BS_强势S_NUM>=1       COLORRED;
+CON弱_顶_强势S1  :=   CON_弱牛顶                                 COLORWHITE;
+CON弱_顶_强势S2  :=   CON_弱牛顶     AND   BS_强势S_NUM>=1       COLORRED;
 CON弱_顶_强势S3  :   CON_弱牛顶     AND   BS_强势S_NUM>=2       COLORYELLOW;
 
 
-CON弱_顶_左侧S1  :   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S1,  10)     AND     BS_左侧S_NUM + BS_右侧S_NUM>= 2       COLORBLUE;
-CON弱_顶_左侧S2  :   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S2,   5)     AND     BS_左侧S_NUM + BS_右侧S_NUM>= 2       COLORBLUE;
-CON弱_顶_左侧S3  :   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S3,   5)     AND                    BS_右侧S_NUM>= 1       COLORBLUE;
+CON弱_顶_左侧S1  :=   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S1,  10)     AND     BS_左侧S_NUM + BS_右侧S_NUM>= 2       COLORBLUE;
+CON弱_顶_左侧S2  :=   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S2,   5)     AND     BS_左侧S_NUM + BS_右侧S_NUM>= 2       COLORBLUE;
+CON弱_顶_左侧S3  :=   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S3,   5)     AND                    BS_右侧S_NUM>= 1       COLORBLUE;
 CON弱_顶_左侧S   :   CON_弱牛顶     AND   CON弱_顶_左侧S1 || CON弱_顶_左侧S2 || CON弱_顶_左侧S3                                                COLORBLUE;
 
 
 
-CON弱_顶_右侧S1  :   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S1,  10)     AND                    BS_右侧S_NUM>= 2       COLORCYAN;
-CON弱_顶_右侧S2  :   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S2,   5)     AND                    BS_右侧S_NUM>= 2       COLORCYAN;
-CON弱_顶_右侧S3  :   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S3,   3)     AND                    BS_右侧S_NUM>= 2       COLORCYAN;
+CON弱_顶_右侧S1  :=   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S1,  10)     AND                    BS_右侧S_NUM>= 2       COLORCYAN;
+CON弱_顶_右侧S2  :=   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S2,   5)     AND                    BS_右侧S_NUM>= 2       COLORCYAN;
+CON弱_顶_右侧S3  :=   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S3,   3)     AND                    BS_右侧S_NUM>= 2       COLORCYAN;
 CON弱_顶_右侧S   :   CON_弱牛顶     AND   CON弱_顶_右侧S1 || CON弱_顶_右侧S2 || CON弱_顶_右侧S3                                                COLORCYAN;
 
 
@@ -203,10 +203,10 @@ CON弱_顶_右侧S   :   CON_弱牛顶     AND   CON弱_顶_右侧S1 || CON弱_�
 { --------------------------------------------------------------------------------------------------------------------------------------------------------- }
 牛顶_STATUS :
 
-IF(CON_顶_强势S1 || CON弱_顶_强势S1,          1,          {COLORWHITE }
-IF(CON_顶_强势S2 || CON弱_顶_强势S2,          2,          {COLORRED   }
-IF(CON_顶_强势S3 || CON弱_顶_强势S3,          3,          {COLORYELLOW}
-IF(CON_顶_左侧S  || CON弱_顶_左侧S ,          4,          {COLORBLUE  }
 IF(CON_顶_右侧S  || CON弱_顶_右侧S ,          5,          {COLORCYAN  }
+IF(CON_顶_左侧S  || CON弱_顶_左侧S ,          4,          {COLORBLUE  }
+IF(CON_顶_强势S3 || CON弱_顶_强势S3,          3,          {COLORYELLOW}
+IF(CON_顶_强势S2 || CON弱_顶_强势S2,          2,          {COLORRED   }
+IF(CON_顶_强势S1 || CON弱_顶_强势S1,          1,          {COLORWHITE }
 
 0)))))       COLORWHITE NODRAW;

@@ -148,8 +148,8 @@ CON_熊_极限空头 :    熊市 AND 均线大空头      AND     CON_熊_时空
 { --------------------------------------------------------------------------------------------------------------------------- }
 熊底_STATUS :
 
-IF(CON_熊_下跌                     ,          1,          {COLORWHITE}
-IF(CON_熊_下跌中继                 ,          2,          {COLORBLUE }
 IF(CON_熊_大空头 || CON_熊_极限空头,          3,          {COLORCYAN }
+IF(CON_熊_下跌中继               ,          2,          {COLORBLUE }
+IF(CON_熊_下跌                  ,          1,          {COLORWHITE}
 
 0)))       COLORWHITE NODRAW;

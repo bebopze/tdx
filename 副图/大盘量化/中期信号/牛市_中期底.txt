@@ -118,8 +118,9 @@ CON牛_上涨中继   :=   CON牛_上涨中继1 || CON牛_上涨中继2;
 { --------------------------------------------------------------------------------------------------------------------------- }
 牛底_STATUS :
 
-IF(CON_牛_微冰 || CON牛_上涨中继1,          1,          {COLORWHITE}
-IF(CON_牛_冰                   ,          2,          {COLORBLUE }
 IF(CON_牛_极冰 || CON牛_上涨中继2,          3,          {COLORCYAN }
+IF(CON_牛_冰                   ,          2,          {COLORBLUE }
+IF(CON_牛_微冰 || CON牛_上涨中继1,          1,          {COLORWHITE}
+
 
 0)))       COLORWHITE NODRAW;
