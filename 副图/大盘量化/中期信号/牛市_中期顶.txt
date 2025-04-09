@@ -1,0 +1,192 @@
+{ 时间换空间 }
+
+{ 空间换时间 }
+
+{ 量价 -> 价格 + MA50占比/... }
+
+
+
+
+
+BS_平均 :=     "880003$TOOLS.BS大盘"     COLORWHITE NODRAW;   {平均股价}
+BS_深证 :=     "399106$TOOLS.BS大盘"     COLORWHITE NODRAW;   {深证综指}
+BS_上证 :=     "999999$TOOLS.BS大盘"     COLORWHITE NODRAW;   {上证指数}
+BS_创业 :=     "399006$TOOLS.BS大盘"     COLORWHITE NODRAW;   {创业板指}
+BS_科创 :=   "SH000688$TOOLS.BS大盘"     COLORWHITE NODRAW;   {科创50  }
+
+BS_NUM  :=     4 + ABS(BS_科创!=DRAWNULL)       COLORWHITE NODRAW;
+
+
+BS_强势S_NUM :   ABS(BS_平均=4) + ABS(BS_深证=4) + ABS(BS_上证=4) + ABS(BS_创业=4) + ABS(BS_科创=4)     COLORRED  NODRAW;
+BS_左侧S_NUM :   ABS(BS_平均=5) + ABS(BS_深证=5) + ABS(BS_上证=5) + ABS(BS_创业=5) + ABS(BS_科创=5)     COLORBLUE NODRAW;
+BS_右侧S_NUM :   ABS(BS_平均=6) + ABS(BS_深证=6) + ABS(BS_上证=6) + ABS(BS_创业=6) + ABS(BS_科创=6)     COLORCYAN NODRAW;
+
+
+
+
+
+{ ------------------------------------------------------------------------------- }
+牛市 :=   大盘量化.牛     NODRAW;
+熊市 :=   NOT(牛市)       NODRAW;
+
+
+
+MA50占比      :=   大盘量化.MA50占比         NODRAW;
+月多占比      :=   大盘量化.月多占比         NODRAW;
+板块月多占比  :=   板块量化.月多占比         NODRAW;
+新高新低_差值 :=   新高_新低.差值            NODRAW;
+右侧B_占比    :=   板块量化.右侧B_占比       NODRAW;
+
+
+
+{ ------------------------------------------------------------------- }
+{均线萌出:=     均线萌出.均线萌出      NODRAW;}
+新高天数 :=     新高_新低.新高天数     NODRAW;
+
+
+均线极多头 :=   "880003$均线极多头.均线极多头";
+百日新高   :=   "880003$百日新高";
+
+
+中期涨幅   :=   中期涨幅N(30);
+
+
+
+
+
+{ ------------------------------------------------------------------- }
+上涨中继 :=   上涨中继.上涨中继;     { 牛市ING - 上涨中继   =>   进入弱市   =>   一切指标 降级   =>   等效进入 - 熊市 }
+
+牛转弱   :=   牛市   AND   EXIST(上涨中继,  200);
+
+
+
+
+
+
+
+
+
+
+{ --------------------------------------------------------------------------------------------------------------------------- }
+CON_热1 :   MA50占比      > 85       COLORLIRED NODRAW;
+
+CON_热2 :   月多占比      > 40       COLORLIRED NODRAW;
+
+CON_热3 :   板块月多占比  > 50       COLORLIRED NODRAW;
+
+CON_热4 :   新高新低_差值 > 50       COLORLIRED NODRAW;
+
+CON_热5 :   右侧B_占比    > 85     AND     EXIST(右侧B_占比>90, 30)     COLORLIRED NODRAW;
+
+CON_热6 :   BS_强势S_NUM >= BS_NUM - 2       COLORLIRED NODRAW;
+
+
+
+
+
+CON_热NUM    :    CON_热1 + CON_热2 + CON_热3 + CON_热4 + CON_热5 + CON_热6       COLORWHITE NODRAW;
+
+
+
+CON_极热_NUM :    (MA50占比>85) + (月多占比>40) + (板块月多占比>50) + (新高新低_差值>300) + (右侧B_占比>=90)
+
+                + (BS_强势S_NUM>=BS_NUM)
+
+                + (中期涨幅>=30   ||   新高天数>=40)       COLORYELLOW NODRAW;
+
+
+
+
+
+
+
+{ --------------------------------------------------------------------------------------------------------------------------- }
+CON_牛顶 :=    牛市   AND   ( 新高天数>=10  ||   MA50占比>99 )     {MA50占比>99  -  熊转牛 -> 牛市初期（疯牛）}
+
+                      AND   ( MA50占比>50   ||   CON_极热_NUM>=1 )
+
+                      AND   ( COUNT(MA50占比>85, 20)     ||     COUNT(CON_极热_NUM>=3, 10)   ||   牛转弱 )
+
+                      AND   IF(均线极多头,       COUNT(百日新高 AND (MA50占比>90 || 中期涨幅>25),   20),       1)       NODRAW;
+
+
+
+
+
+
+
+{ --------------------------------------------------------------------------------------------------------------------------- }
+CON_顶_强势S11 :   CON_牛顶     AND   CON_热NUM >= 5                               COLORWHITE;
+CON_顶_强势S12 :   CON_牛顶     AND   CON_热NUM + CON_极热_NUM >= 5                COLORWHITE;
+CON_顶_强势S1  :   CON_牛顶     AND   CON_顶_强势S11 || CON_顶_强势S12             COLORWHITE;
+
+
+
+CON_顶_强势S21 :   CON_牛顶     AND   CON_热NUM >= 6   AND   CON_极热_NUM>=1     AND     BS_强势S_NUM>=1       COLORRED;
+CON_顶_强势S22 :   CON_牛顶     AND   CON_热NUM >= 5   AND   CON_极热_NUM>=2     AND     BS_强势S_NUM>=1       COLORRED;
+CON_顶_强势S2  :   CON_牛顶     AND   CON_顶_强势S21 || CON_顶_强势S22                                         COLORRED;
+
+
+
+CON_顶_强势S31 :   CON_牛顶     AND   CON_热NUM >= 6   AND   CON_极热_NUM>=2     AND     BS_强势S_NUM>=3       COLORYELLOW;
+CON_顶_强势S32 :   CON_牛顶     AND   CON_热NUM >= 5   AND   CON_极热_NUM>=3     AND     BS_强势S_NUM>=3       COLORYELLOW;
+CON_顶_强势S33 :   CON_牛顶     AND   CON_热NUM >= 4   AND   CON_极热_NUM>=4     AND     BS_强势S_NUM>=3       COLORYELLOW;
+CON_顶_强势S3  :   CON_牛顶     AND   CON_顶_强势S31 || CON_顶_强势S32 || CON_顶_强势S33                       COLORYELLOW;
+
+
+
+CON_顶_左侧S1  :   CON_牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON_顶_强势S1,  10)     AND     BS_左侧S_NUM + BS_右侧S_NUM>= 2       COLORBLUE;
+CON_顶_左侧S2  :   CON_牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON_顶_强势S2,   5)     AND     BS_左侧S_NUM + BS_右侧S_NUM>= 2       COLORBLUE;
+CON_顶_左侧S3  :   CON_牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON_顶_强势S3,   5)     AND                    BS_右侧S_NUM>= 1       COLORBLUE;
+CON_顶_左侧S   :   CON_牛顶     AND   CON_顶_左侧S1 || CON_顶_左侧S2 || CON_顶_左侧S3                                                    COLORBLUE;
+
+
+
+CON_顶_右侧S1  :   CON_牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON_顶_强势S1,  10)     AND                    BS_右侧S_NUM>= 2       COLORCYAN;
+CON_顶_右侧S2  :   CON_牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON_顶_强势S2,   5)     AND                    BS_右侧S_NUM>= 2       COLORCYAN;
+CON_顶_右侧S3  :   CON_牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON_顶_强势S3,   3)     AND                    BS_右侧S_NUM>= 2       COLORCYAN;
+CON_顶_右侧S   :   CON_牛顶     AND   CON_顶_右侧S1 || CON_顶_右侧S2 || CON_顶_右侧S3                                                    COLORCYAN;
+
+
+
+
+
+
+
+{ --------------------------------------------------------------------------------------------------------------------------- 牛转弱（上涨中继）}
+熊市_中期顶 :=   熊市_中期顶.熊市_中期顶;
+
+CON_弱牛顶  :=   CON_牛顶     AND   牛转弱   AND   熊市_中期顶;
+
+
+
+
+
+CON弱_顶_强势S1  :   CON_弱牛顶                                 COLORWHITE;
+CON弱_顶_强势S2  :   CON_弱牛顶     AND   BS_强势S_NUM>=1       COLORRED;
+CON弱_顶_强势S3  :   CON_弱牛顶     AND   BS_强势S_NUM>=2       COLORYELLOW;
+
+
+CON弱_顶_左侧S1  :   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S1,  10)     AND     BS_左侧S_NUM + BS_右侧S_NUM>= 2       COLORBLUE;
+CON弱_顶_左侧S2  :   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S2,   5)     AND     BS_左侧S_NUM + BS_右侧S_NUM>= 2       COLORBLUE;
+CON弱_顶_左侧S3  :   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S3,   5)     AND                    BS_右侧S_NUM>= 1       COLORBLUE;
+CON弱_顶_左侧S   :   CON_弱牛顶     AND   CON弱_顶_左侧S1 || CON弱_顶_左侧S2 || CON弱_顶_左侧S3                                                COLORBLUE;
+
+
+
+CON弱_顶_右侧S1  :   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S1,  10)     AND                    BS_右侧S_NUM>= 2       COLORCYAN;
+CON弱_顶_右侧S2  :   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S2,   5)     AND                    BS_右侧S_NUM>= 2       COLORCYAN;
+CON弱_顶_右侧S3  :   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S3,   3)     AND                    BS_右侧S_NUM>= 2       COLORCYAN;
+CON弱_顶_右侧S   :   CON_弱牛顶     AND   CON弱_顶_右侧S1 || CON弱_顶_右侧S2 || CON弱_顶_右侧S3                                                COLORCYAN;
+
+
+
+
+
+
+
+{ --------------------------------------------------------------------------------------------------------------------------------------------------------- }
+牛市_中期顶 :   CON_顶_强势S1     ||   CON_顶_强势S2     ||   CON_顶_强势S3     ||   CON_顶_左侧S     ||   CON_顶_右侧S
+
+           ||   CON弱_顶_强势S1   ||   CON弱_顶_强势S2   ||   CON弱_顶_强势S3   ||   CON弱_顶_左侧S   ||   CON弱_顶_右侧S       COLORYELLOW NODRAW;
