@@ -40,8 +40,8 @@ MA50占比      :=   大盘量化.MA50占比         NODRAW;
 
 
 { ------------------------------------------------------------------- }
-{均线萌出:=     均线萌出.均线萌出      NODRAW;}
-新高天数 :=     新高_新低.新高天数     NODRAW;
+新高天数 :=     新高_新低.新高天数     NODRAW;     {用于COUNT运算  ->  需 +1 （0 -> ALL） }
+
 
 
 均线极多头 :=   "880003$均线极多头.均线极多头";
@@ -101,14 +101,53 @@ CON_极热_NUM :    (MA50占比>85) + (月多占比>40) + (板块月多占比>50
 
 
 
+{ --------------------------------------------------------------------------------------------------------------------------- 牛市初启（熊转牛）  阶段 }
+
+
+疯牛1    :=    (MA50占比>97 AND 中期涨幅>20)   AND   CON_极热_NUM>=4     NODRAW;     { MA50占比>99  -  熊转牛  ->  牛市初期（疯牛）  ->  40-50天 超大行情 }
+疯牛2    :=    (MA50占比>98 ||  中期涨幅>50)   AND   CON_极热_NUM>=6     NODRAW;
+
+
+
+急涨疯牛       :=    (疯牛2 AND 中期涨幅>40  AND  C>REF(C,1))   AND   新高天数<=10     NODRAW;     { 急涨 -> 1000% 会   急跌   =>   二波（正常牛） ->  慢涨（15~20天） }
+
+
+
+EXIST_急涨疯牛 :=    COUNT(急涨疯牛,   新高天数+1)   >   0                             NODRAW;
+
+
+
+
+
+疯牛二波 :=    EXIST_急涨疯牛     AND   NOT(急涨疯牛)                    NODRAW;   { IF存在 [急涨疯牛]     ==  才会存在  ==>     [疯牛二波]      202409（一波 急涨疯牛） 202410-202412（二波 疯牛）}
+
+正常疯牛 :=    EXIST_急涨疯牛=0   AND   COUNT(疯牛1,   新高天数+1)       NODRAW;   { 否则  ->    直接合并（正常慢走）  正常大牛   ==>   只是 行情大 + 持续时间久         201902-201904（正常疯牛） }
+
+
+
+
+
+
+
 { --------------------------------------------------------------------------------------------------------------------------- }
-CON_牛顶 :=    牛市   AND   ( 新高天数>=10  ||   MA50占比>99 )     {MA50占比>99  -  熊转牛 -> 牛市初期（疯牛）}
+CON_牛顶 :     牛市   AND   ( 新高天数>=10  ||   急涨疯牛)
 
                       AND   ( MA50占比>50   ||   CON_极热_NUM>=1 )
 
                       AND   ( COUNT(MA50占比>85, 20)     ||     COUNT(CON_极热_NUM>=3, 10)   ||   牛转弱 )
 
-                      AND   IF(均线极多头,       COUNT(百日新高 AND (MA50占比>90 || 中期涨幅>25),   20),       1)       NODRAW;
+
+
+                      AND   IF(均线极多头,       COUNT(百日新高 AND (MA50占比>90 || 中期涨幅>25),   20),       1)       { 牛市中期             -   行情最好   的一段 }
+
+
+
+                      AND   IF(正常疯牛  ,       新高天数>=25 AND (中期涨幅>40 || CON_极热_NUM>=6),       1)            { 牛市初启（熊转牛）   -   反弹最暴力 的一段 }
+
+
+                      AND   IF(急涨疯牛  ,                                                   1,       1)
+
+                      AND   IF(疯牛二波  ,       新高天数>=25 AND (中期涨幅>45 || CON_极热_NUM>=6),       1)       NODRAW;
 
 
 
@@ -165,20 +204,20 @@ CON_弱牛顶  :=   CON_牛顶     AND   牛转弱   AND   熊市_中期顶;
 
 CON弱_顶_强势S1  :=   CON_弱牛顶                                 COLORWHITE;
 CON弱_顶_强势S2  :=   CON_弱牛顶     AND   BS_强势S_NUM>=1       COLORRED;
-CON弱_顶_强势S3  :   CON_弱牛顶     AND   BS_强势S_NUM>=2       COLORYELLOW;
+CON弱_顶_强势S3  :    CON_弱牛顶     AND   BS_强势S_NUM>=2       COLORYELLOW;
 
 
 CON弱_顶_左侧S1  :=   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S1,  10)     AND     BS_左侧S_NUM + BS_右侧S_NUM>= 2       COLORBLUE;
 CON弱_顶_左侧S2  :=   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S2,   5)     AND     BS_左侧S_NUM + BS_右侧S_NUM>= 2       COLORBLUE;
 CON弱_顶_左侧S3  :=   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S3,   5)     AND                    BS_右侧S_NUM>= 1       COLORBLUE;
-CON弱_顶_左侧S   :   CON_弱牛顶     AND   CON弱_顶_左侧S1 || CON弱_顶_左侧S2 || CON弱_顶_左侧S3                                                COLORBLUE;
+CON弱_顶_左侧S   :    CON_弱牛顶     AND   CON弱_顶_左侧S1 || CON弱_顶_左侧S2 || CON弱_顶_左侧S3                                                COLORBLUE;
 
 
 
 CON弱_顶_右侧S1  :=   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S1,  10)     AND                    BS_右侧S_NUM>= 2       COLORCYAN;
 CON弱_顶_右侧S2  :=   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S2,   5)     AND                    BS_右侧S_NUM>= 2       COLORCYAN;
 CON弱_顶_右侧S3  :=   CON_弱牛顶     AND   CON_热NUM >= 2   AND   COUNT(CON弱_顶_强势S3,   3)     AND                    BS_右侧S_NUM>= 2       COLORCYAN;
-CON弱_顶_右侧S   :   CON_弱牛顶     AND   CON弱_顶_右侧S1 || CON弱_顶_右侧S2 || CON弱_顶_右侧S3                                                COLORCYAN;
+CON弱_顶_右侧S   :    CON_弱牛顶     AND   CON弱_顶_右侧S1 || CON弱_顶_右侧S2 || CON弱_顶_右侧S3                                                COLORCYAN;
 
 
 
