@@ -1,5 +1,5 @@
-{N:=3;   {  3-10 }
-{M:=21;  { 21-60 }
+N:=3;   {  3-10 }
+M:=21;  { 21-60 }
 { ----------------------------------------- }
 X_1 :=  ABS(C - REF(C,11));
 X_2 :=  SUM(ABS(C-REF(C,1)),  11);
@@ -18,14 +18,14 @@ SSF1 :   EMA(DMA(C,X_5),   2);
 
 TESTSKIP(X);
 { ---------------------------------------------------------------------------------------- }
-IF(SSF1>REF(SSF1,1),   SSF1,   DRAWNULL)     POINTDOT  COLORRED    LINETHICK4;
-IF(SSF1>REF(SSF1,1),   SSF1,   DRAWNULL)               COLORRED;
+NOTEXT_A1 :   IF(SSF1>REF(SSF1,1),   SSF1,   DRAWNULL)     POINTDOT  COLORRED    LINETHICK4;
+NOTEXT_A2 :   IF(SSF1>REF(SSF1,1),   SSF1,   DRAWNULL)               COLORRED;
 
-IF(SSF1=REF(SSF1,1),   SSF1,   DRAWNULL)     POINTDOT  COLORWHITE  LINETHICK4;
-IF(SSF1=REF(SSF1,1),   SSF1,   DRAWNULL)               COLORWHITE;
+NOTEXT_A3 :   IF(SSF1=REF(SSF1,1),   SSF1,   DRAWNULL)     POINTDOT  COLORWHITE  LINETHICK4;
+NOTEXT_A4 :   IF(SSF1=REF(SSF1,1),   SSF1,   DRAWNULL)               COLORWHITE;
 
-IF(SSF1<REF(SSF1,1),   SSF1,   DRAWNULL)     POINTDOT  COLORGREEN  LINETHICK4;
-IF(SSF1<REF(SSF1,1),   SSF1,   DRAWNULL)               COLORGREEN;
+NOTEXT_A5 :   IF(SSF1<REF(SSF1,1),   SSF1,   DRAWNULL)     POINTDOT  COLORGREEN  LINETHICK4;
+NOTEXT_A6 :   IF(SSF1<REF(SSF1,1),   SSF1,   DRAWNULL)               COLORGREEN;
 
 
 
@@ -61,7 +61,8 @@ AMO_BL2    :   AMO_BL2     COLORRED NODRAW;
 
 
 
-大盘     :=  INBLOCK('中期信号') {TOOLS_RPS.大盘};
+大盘     :=  INBLOCK('中期信号')   ;   {TOOLS_RPS.大盘}
+板块     :=  INBLOCK('板块指数RPS');   {TOOLS_RPS.板块}
 
 
 距今天数 :=  CURRBARSCOUNT;
@@ -85,7 +86,7 @@ MA100 :   MA(C, 100)                                                            
 MA120 :   IF(MA100>REF(MA100,1)   AND   (COUNT(C<MA100,10) || REFXV(C<MA100,10)),   MA(C,120),   DRAWNULL)     COLORGRAY;
 
 MA200 :   MA(C, 200)     COLORBLUE;
-
+MA250 :   IF(MA200>REF(MA200,1)   AND   (COUNT(C<MA200,10) || REFXV(C<MA200,10)),   MA(C,250),   DRAWNULL)     COLORCYAN;
 
 
 
@@ -106,9 +107,10 @@ NOTEXT_MA200_2 :   IF(MA200 < REF(MA200,1)    ,MA200,  DRAWNULL)   COLORCYAN    
 
 
 
-DRAWTEXT_FIX({ISLASTBAR AND} Y,0.01,0.05,0,HYBLOCK),COLORYELLOW;
-DRAWTEXT_FIX({ISLASTBAR AND} Y,0.01,0.10,0,GNBLOCK),COLORYELLOW;{
-DRAWTEXT_FIX( ISLASTBAR AND  Y,0.01,0.15,0,ZDBLOCK),COLORWHITE ;}
+DRAWTEXT_FIX({ISLASTBAR AND} Y,0.01,0.05,0,STRCAT6(LEVEL1HYBLOCK, '   ', MOREHYBLOCK, '     ', CON2STR(FINANCE(8),0), '')),COLORYELLOW;
+DRAWTEXT_FIX({ISLASTBAR AND} Y,0.01,0.10,0,GNBLOCK),COLORYELLOW;
+DRAWTEXT_FIX({ISLASTBAR AND} Y,0.01,0.15,0,MAINBUSINESS),COLORWHITE;{
+DRAWTEXT_FIX( ISLASTBAR AND  Y,0.01,0.25,0,ZDBLOCK),COLORWHITE ;}
 
 
 
@@ -120,7 +122,7 @@ DRAWTEXT_FIX( ISLASTBAR AND  Y,0.01,0.15,0,ZDBLOCK),COLORWHITE ;}
 
 
 { ----------------------------------------------------------------------------------------------- }
-中期调整_N :=  IF( (MA多(100) || MA多(200))  AND  PERIOD>=5{日K},     100,     200);
+中期调整_N :=  IF( (MA多(100) {|| MA多(200)})  AND  PERIOD>=5{日K},     100,     200);
 
 
 _H    :=  HHV(H,     中期调整_N);
@@ -140,24 +142,20 @@ L_DAY :=  LLVBARS(L, H_DAY)  +1;
 
 
 { ----------------------------------------------------------------------------------------------- 适用：牛市 }
-调整幅度_L1 :          LLV(调整幅度,   MIN(  调整天数2+1, 20))                    COLORCYAN NODRAW;
-调整幅度_L2 :   REFXV( LLV(调整幅度,   MIN(CURRBARSCOUNT, 20)),       20)       COLORCYAN NODRAW;
+调整幅度_L1 :          LLV(调整幅度,   MIN(    调整天数2+1 ,  20))                  COLORCYAN NODRAW;
+调整幅度_L2 :   REFXV( LLV(调整幅度,   MIN(REF(距今天数,20),  20)),       20)       COLORCYAN NODRAW;
 
 调整幅度_L  :   MIN(调整幅度_L1,   调整幅度_L2)       COLORCYAN NODRAW;
 
 
+
 DRAW_调整幅度_L :
-DRAWTEXT(BARSSINCEN(调整幅度2=调整幅度_L AND 调整幅度_L<IF(大盘, -5, -15),3)=0,     IF(L/LL>1.05,   0.99*L,   0.90*L),     VARCAT6(  VAR2STR(调整幅度,0),   '&',   VAR2STR(调整天数,0),  '&','&',   VAR2STR(LLV(中期VOL占比,10),0)  ) )       COLORCYAN;
+DRAWTEXT(BARSSINCEN(上MA(250) AND 调整幅度2=调整幅度_L AND 调整幅度_L<IF(大盘,-5,   IF(板块,-10,   -15)),   2)=0,     IF(L/LL>1.05,   0.99*L,   0.90*L),     VARCAT6(  VAR2STR(调整幅度,0),   '&',   VAR2STR(调整天数,0),  '&','&',   VAR2STR(LLV(中期VOL占比,10),0)  ) )       COLORCYAN;
 
-{
-DRAWTEXT(调整幅度2=调整幅度_L AND 调整幅度_L<-15,                    0.99*L,     VARCAT(   VARCAT( VAR2STR(调整幅度,1),   '&' ),   VAR2STR(调整天数,1)  ) )       COLORCYAN;
-}
 
-{
-DRAWNUMBER(调整幅度2=调整幅度_L AND 调整幅度_L<-15,   _L      ,      调整幅度)     COLORCYAN;
-DRAWNUMBER(调整幅度2=调整幅度_L AND 调整幅度_L<-15,   _L *0.95,      调整天数)     COLORCYAN;
-DRAWNUMBER(调整幅度2=调整幅度_L AND 调整幅度_L<-15,   _L *0.90,   中期VOL占比)     COLORYELLOW;
-}
+
+
+
 
 
 { ----------------------------------------------------------------------------------------------- 适用：牛熊市 }
@@ -168,9 +166,8 @@ DRAWNUMBER(调整幅度2=调整幅度_L AND 调整幅度_L<-15,   _L *0.90,   �
 
 
 
-
 DRAW_中期涨幅_H :
-DRAWTEXT(BARSSINCEN(中期涨幅=中期涨幅__H AND 中期涨幅>IF(大盘, 10, 50),3)=0,     IF(H/HH>0.95,   0.97*H,   1.06*H),     VARCAT6(  VAR2STR(中期涨幅,0),   '&',   VAR2STR(中期天数,0),   '&','&',   VAR2STR(中期VOL占比,0)  ) )       COLORYELLOW;
+DRAWTEXT(BARSSINCEN(中期涨幅=中期涨幅__H AND 中期涨幅> IF(大盘,10,   IF(板块,15,   30)),   3)=0,     IF(H/HH>0.95,   0.97*H,   1.06*H),     VARCAT6(  VAR2STR(中期涨幅,0),   '&',   VAR2STR(中期天数,0),   '&','&',   VAR2STR(中期VOL占比,0)  ) )       COLORYELLOW;
 
 
 
@@ -198,19 +195,18 @@ _调整天数2 :   _H_DAY -1             COLORCYAN NODRAW;
 
 
 
-{
-_调整幅度_L11:          LLV(_调整幅度,          MIN(_中期调整_N , 20))       COLORWHITE NODRAW;
-_调整幅度_L22:   REFXV( LLV(_调整幅度, 20),                     20 )       COLORWHITE NODRAW;
-}
-_调整幅度_L1 :          LLV(_调整幅度,   MIN(  _调整天数2+1, 20))                   COLORWHITE NODRAW;
-_调整幅度_L2 :   REFXV( LLV(_调整幅度,   MIN(CURRBARSCOUNT, 20)),       20)       COLORWHITE NODRAW;
+_调整幅度_L1 :          LLV(_调整幅度,   MIN(    _调整天数2+1 ,  20))                  COLORWHITE NODRAW;
+_调整幅度_L2 :   REFXV( LLV(_调整幅度,   MIN( REF(距今天数,20),  20)),       20)       COLORWHITE NODRAW;
 
 
 _调整幅度_L  :   MIN(_调整幅度_L1,   _调整幅度_L2)       COLORWHITE NODRAW;
 
 
+
 _DRAW_调整幅度L :
-DRAWTEXT(BARSSINCEN(MA空(250) AND _调整幅度2=_调整幅度_L AND _调整幅度_L<IF(大盘, -5, -15),3)=0,     IF(L/LL>1.05,   0.99*L,   0.90*L),     VARCAT6(  VAR2STR(_调整幅度,0),   '&',   VAR2STR(_调整天数,0),  '&','&',   VAR2STR(LLV(中期VOL占比,10),0)  ) )       COLORCYAN COLORWHITE;
+DRAWTEXT(BARSSINCEN((下MA(250)||DRAW_调整幅度_L=0) AND _调整幅度2=_调整幅度_L AND _调整幅度_L<IF(大盘,-5,   IF(板块,-10,   -15)),   2)=0,     IF(L/LL>1.05,   0.99*L,   0.90*L),     VARCAT6(  VAR2STR(_调整幅度,0),   '&',   VAR2STR(_调整天数,0),  '&','&',   VAR2STR(LLV(中期VOL占比,10),0)  ) )       COLORCYAN COLORWHITE;
+
+
 
 
 
@@ -232,5 +228,47 @@ N倍 :=  8.5; { 750% }
 _10倍_C       :   LL * N倍       COLORRED    NODRAW;
 
 
-NOTEXT__5倍 :   IF(中期涨幅_H250>=5  AND 上MA(200)   AND   C > _10倍_C/2,       LL *   5,       DRAWNULL)     COLORBLUE;   { 400% }
-NOTEXT_10倍 :   IF(中期涨幅_H250>=N  AND 上MA(200)   AND   C > _10倍_C/2,        _10倍_C,       DRAWNULL)     COLORCYAN;   { 750% };
+NOTEXT__5倍 :=   IF(中期涨幅_H250>=5  AND 上MA(200)   AND   C > _10倍_C/2,       LL *   5,       DRAWNULL)     COLORBLUE;   { 400% }
+NOTEXT_10倍 :=   IF(中期涨幅_H250>=N  AND 上MA(200)   AND   C > _10倍_C/2,        _10倍_C,       DRAWNULL)     COLORCYAN;   { 750% };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------- }
+中期底 :   DRAW_调整幅度_L || _DRAW_调整幅度L       COLORCYAN NODRAW;
+
+
+
+
+
+
+
+
+
+{ ----------------------------------------------------------------------------------------------- 大盘 - 顶/底 }
+大盘顶底_STATUS :=     大盘顶底.大盘顶底_STATUS       COLORWHITE NODRAW;
+
+
+NOTEXT_大盘底 :   大盘顶底_STATUS=1;
+NOTEXT_大盘顶 :   大盘顶底_STATUS=2;
+
+
+
+STICKLINE(NOTEXT_大盘底 AND Z          ,0,1  ,0,3)     COLORCYAN;
+STICKLINE(NOTEXT_大盘顶 AND Z          ,0,1  ,0,3)     COLORYELLOW;
